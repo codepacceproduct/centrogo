@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, SlidersHorizontal, X, Star } from 'lucide-react'
@@ -12,7 +12,7 @@ import { StoreCardSkeleton } from '@/components/skeleton-loader'
 import { stores, categories, isStoreOpen } from '@/lib/data'
 import { cn } from '@/lib/utils'
 
-export default function LojasPage() {
+function LojasContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get('categoria')
   
@@ -280,5 +280,42 @@ export default function LojasPage() {
 
       <BottomNav />
     </main>
+  )
+}
+
+function LojasPageFallback() {
+  return (
+    <main className="pb-24">
+      <header className="sticky top-0 z-40 bg-background border-b border-border">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <h1 className="font-semibold text-lg">Marketplace</h1>
+        </div>
+        <div className="px-4 pb-3">
+          <div className="h-10 bg-muted rounded-xl animate-pulse" />
+        </div>
+        <div className="flex items-center gap-2 px-4 pb-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-8 w-20 bg-muted rounded-full animate-pulse" />
+          ))}
+        </div>
+      </header>
+      <div className="p-4 space-y-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <StoreCardSkeleton key={i} />
+        ))}
+      </div>
+      <BottomNav />
+    </main>
+  )
+}
+
+export default function LojasPage() {
+  return (
+    <Suspense fallback={<LojasPageFallback />}>
+      <LojasContent />
+    </Suspense>
   )
 }
