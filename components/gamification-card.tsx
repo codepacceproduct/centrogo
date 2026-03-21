@@ -25,14 +25,14 @@ export function GamificationCard() {
   const completedToday = dailyChallenges.filter(c => c.progress >= c.total).length
 
   return (
-    <div className="px-4 -mt-2">
+    <div className="px-4 -mt-2 max-w-7xl mx-auto lg:flex lg:gap-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative overflow-hidden"
       >
         {/* Main card with gradient */}
-        <Link href="/perfil" className="block">
+        <Link href="/perfil" className="block lg:flex-1">
           <motion.div
             whileTap={{ scale: 0.98 }}
             className="relative p-5 bg-gradient-to-br from-card via-card to-muted rounded-3xl border border-border shadow-lg"
@@ -115,7 +115,7 @@ export function GamificationCard() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mt-3 p-4 bg-card rounded-2xl border border-border"
+          className="mt-3 p-4 bg-card rounded-2xl border border-border lg:mt-0 lg:flex-1"
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">

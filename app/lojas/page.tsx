@@ -72,7 +72,7 @@ function LojasContent() {
     <main className="pb-24">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background border-b border-border">
-        <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto">
           <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -80,14 +80,16 @@ function LojasContent() {
         </div>
 
         {/* Busca */}
-        <SearchBar 
-          value={searchValue}
-          onChange={setSearchValue}
-          className="pb-3"
-        />
+        <div className="max-w-7xl mx-auto">
+          <SearchBar 
+            value={searchValue}
+            onChange={setSearchValue}
+            className="pb-3"
+          />
+        </div>
 
         {/* Filtros rápidos */}
-        <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar max-w-7xl mx-auto">
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowFilters(true)}
@@ -139,12 +141,12 @@ function LojasContent() {
       </header>
 
       {/* Lista de Lojas */}
-      <div className="p-4">
+      <div className="p-4 max-w-7xl mx-auto">
         <p className="text-sm text-muted-foreground mb-4">
           {filteredStores.length} {filteredStores.length === 1 ? 'loja encontrada' : 'lojas encontradas'}
         </p>
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {isLoading ? (
             Array.from({ length: 4 }).map((_, i) => (
               <StoreCardSkeleton key={i} />
@@ -287,22 +289,22 @@ function LojasPageFallback() {
   return (
     <main className="pb-24">
       <header className="sticky top-0 z-40 bg-background border-b border-border">
-        <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto">
           <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <h1 className="font-semibold text-lg">Marketplace</h1>
         </div>
-        <div className="px-4 pb-3">
+        <div className="px-4 pb-3 max-w-7xl mx-auto">
           <div className="h-10 bg-muted rounded-xl animate-pulse" />
         </div>
-        <div className="flex items-center gap-2 px-4 pb-3">
+        <div className="flex items-center gap-2 px-4 pb-3 max-w-7xl mx-auto">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-8 w-20 bg-muted rounded-full animate-pulse" />
           ))}
         </div>
       </header>
-      <div className="p-4 space-y-4">
+      <div className="p-4 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <StoreCardSkeleton key={i} />
         ))}

@@ -39,7 +39,7 @@ export default function ExplorarPage() {
     <main className="pb-24">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background border-b border-border">
-        <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto">
           <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -51,11 +51,11 @@ export default function ExplorarPage() {
       </header>
 
       {/* Mapa interativo simulado */}
-      <section className="px-4 pt-4">
+      <section className="px-4 pt-4 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative bg-muted rounded-2xl overflow-hidden h-64"
+          className="relative bg-muted rounded-2xl overflow-hidden h-64 lg:h-80"
         >
           {/* Imagem de mapa estilizado */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/10">
@@ -131,7 +131,7 @@ export default function ExplorarPage() {
       </section>
 
       {/* Sugestões de Descoberta do Dia */}
-      <section className="mt-6 px-4">
+      <section className="mt-6 px-4 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -141,7 +141,7 @@ export default function ExplorarPage() {
           <p className="text-sm text-muted-foreground mb-4">Lugares especiais para você explorar</p>
         </motion.div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex gap-3 p-3 bg-card rounded-xl border border-border">
@@ -196,7 +196,7 @@ export default function ExplorarPage() {
       </section>
 
       {/* Joias Escondidas */}
-      <section className="mt-6 px-4 pb-4">
+      <section className="mt-6 px-4 pb-4 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -206,7 +206,7 @@ export default function ExplorarPage() {
           <p className="text-sm text-muted-foreground mb-4">Lugares menos conhecidos, muito bem avaliados</p>
         </motion.div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {hiddenGems.map((store, index) => (
             <Link key={store.id} href={`/lojas/${store.id}`}>
               <motion.div

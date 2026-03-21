@@ -22,7 +22,7 @@ export function BottomNav() {
       {/* Glassmorphism background */}
       <div className="absolute inset-0 bg-background/80 backdrop-blur-xl border-t border-border" />
       
-      <div className="relative mx-auto max-w-lg safe-bottom">
+      <div className="relative mx-auto max-w-7xl safe-bottom">
         <ul className="flex items-center justify-around py-2 px-2">
           {navItems.map((item, index) => {
             const isActive = pathname === item.href || 
@@ -33,7 +33,7 @@ export function BottomNav() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all relative"
+                  className="flex flex-col items-center gap-1 px-4 py-2 lg:px-6 rounded-2xl transition-all relative"
                 >
                   {/* Active background */}
                   {isActive && (

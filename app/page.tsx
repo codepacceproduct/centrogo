@@ -84,6 +84,8 @@ export default function HomePage() {
       
       <main className="pb-28 bg-background min-h-screen">
         <Header />
+        
+        <div className="max-w-7xl mx-auto">
       
       {/* Story Highlights */}
       <section className="mt-2">
@@ -109,7 +111,7 @@ export default function HomePage() {
           className="mx-4 mt-6"
         >
           <Link href={`/eventos/${featuredEvent.id}`}>
-            <div className="relative h-36 rounded-3xl overflow-hidden">
+            <div className="relative h-36 lg:h-48 rounded-3xl overflow-hidden">
               <div 
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${featuredEvent.image})` }}
@@ -157,7 +159,7 @@ export default function HomePage() {
           </Link>
         </div>
         
-        <div className="flex gap-4 overflow-x-auto no-scrollbar px-4 pb-2">
+        <div className="flex gap-4 overflow-x-auto no-scrollbar px-4 pb-2 lg:grid lg:grid-cols-4">
           {isLoading ? (
             Array.from({ length: 4 }).map((_, i) => (
               <CompactCardSkeleton key={i} />
@@ -178,7 +180,7 @@ export default function HomePage() {
       {/* Categories */}
       <section className="mt-8 px-4">
         <h2 className="font-bold text-lg mb-4">Categorias</h2>
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-5 md:grid-cols-5 lg:flex lg:justify-center gap-3 lg:gap-6">
           {categories.map((category, index) => {
             const Icon = categoryIcons[category.name as keyof typeof categoryIcons] || Tag
             return (
@@ -227,7 +229,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="px-4 space-y-3">
+        <div className="px-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
           {recommendedStores.map((store, index) => (
             <StoreCard 
               key={store.id} 
@@ -260,14 +262,14 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="flex gap-3 overflow-x-auto no-scrollbar px-4 pb-2">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar px-4 pb-2 lg:grid lg:grid-cols-4 xl:grid-cols-5">
           {discoverySuggestions.map((discovery, index) => (
             <motion.div
               key={discovery.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5 + index * 0.1 }}
-              className="w-48 shrink-0"
+              className="w-48 shrink-0 lg:w-auto"
             >
               <div className="relative h-32 rounded-2xl overflow-hidden">
                 <div 
@@ -306,7 +308,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto no-scrollbar px-4">
+        <div className="flex gap-4 overflow-x-auto no-scrollbar px-4 lg:grid lg:grid-cols-4">
           {events.filter(e => !e.isHappening).slice(0, 4).map((event, index) => (
             <EventCard 
               key={event.id} 
@@ -317,6 +319,7 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+      </div>
 
       {/* Floating Action Button */}
       <FloatingActionButton 

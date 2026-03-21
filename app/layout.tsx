@@ -39,8 +39,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: '#0056A3',
 }
 
@@ -52,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
-        <div className="min-h-screen max-w-lg mx-auto bg-background relative">
+        <div className="min-h-screen w-full bg-background relative">
           {children}
         </div>
         <Analytics />

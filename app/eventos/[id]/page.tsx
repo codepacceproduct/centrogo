@@ -58,7 +58,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   return (
     <main className="pb-8">
       {/* Header com imagem */}
-      <div className="relative h-72">
+      <div className="relative h-72 lg:h-96">
         <Image
           src={event.image}
           alt={event.title}
@@ -113,7 +113,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      <div className="px-4 -mt-4 relative z-10">
+      <div className="px-4 -mt-4 relative z-10 max-w-4xl mx-auto">
         {/* Card de info rápida */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
