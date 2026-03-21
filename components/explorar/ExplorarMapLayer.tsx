@@ -1,13 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  Layer,
-  Map,
-  Source,
-  type LayerProps,
-  type MapRef,
-} from 'react-map-gl/maplibre'
+import { Layer, Map, Source, type LayerProps, type MapRef } from 'react-map-gl/maplibre'
 import { Layers3, LocateFixed, LoaderCircle, Route } from 'lucide-react'
 
 import {
@@ -58,6 +52,7 @@ type UserFeatureCollection = {
     type: 'Feature'
     properties: {
       kind: 'user'
+      nome: string
     }
     geometry: {
       type: 'Point'
@@ -69,8 +64,13 @@ type UserFeatureCollection = {
 type ExplorarMapLayerProps = {
   locations: ExplorarLocation[]
   selected: ExplorarLocation | null
+  hoveredLocationId?: string | null
   onSelect: (location: ExplorarLocation) => void
+  onHoverChange?: (locationId: string | null) => void
   isMobileFullscreen?: boolean
+  isFullMap?: boolean
+  resetCounter?: number
+  clearSelectionOnReset?: boolean
 }
 
 type MarkerEntry = {
@@ -154,14 +154,16 @@ function StatusPill({
 export default function ExplorarMapLayer({
   locations,
   selected,
+  hoveredLocationId = null,
   onSelect,
+  onHoverChange,
   isMobileFullscreen = false,
+  isFullMap = false,
+  resetCounter = 0,
 }: ExplorarMapLayerProps) {
   const mapRef = useRef<MapRef | null>(null)
   const [userLocation, setUserLocation] = useState<MapPoint>(DEFAULT_EXPLORAR_CENTER)
-  const [locationMode, setLocationMode] = useState<'locating' | 'live' | 'fallback'>(
-    'locating',
-  )
+  const [locationMode, setLocationMode] = useState<'locating' | 'live' | 'fallback'>('locating')
   const [route, setRoute] = useState<RouteFeature | null>(null)
   const [routeMode, setRouteMode] = useState<RouteMode | null>(null)
   const [isRouting, setIsRouting] = useState(false)
@@ -209,7 +211,7 @@ export default function ExplorarMapLayer({
       features: [
         {
           type: 'Feature',
-          properties: { kind: 'user' },
+          properties: { kind: 'user', nome: 'Sua localizacao' },
           geometry: {
             type: 'Point',
             coordinates: userMapCoordinates,
@@ -220,101 +222,12 @@ export default function ExplorarMapLayer({
     [userMapCoordinates],
   )
   const selectedId = selected?.id ?? '__none__'
-
-  useEffect(() => {
-    let isCancelled = false
-
-    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
-      setLocationMode('fallback')
-      return undefined
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        if (isCancelled) {
-          return
-        }
-
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        })
-        setLocationMode('live')
-      },
-      () => {
-        if (isCancelled) {
-          return
-        }
-
-        setLocationMode('fallback')
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 8000,
-        maximumAge: 60000,
-      },
-    )
-
-    return () => {
-      isCancelled = true
-    }
-  }, [])
-
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.table(
-        markerEntries.map(({ coordinates, location }) => ({
-          nome: location.nome,
-          lat: coordinates[1],
-          lng: coordinates[0],
-        })),
-      )
-    }
-  }, [markerEntries])
-
-  useEffect(() => {
-    if (!selected) {
-      setRoute(null)
-      setRouteMode(null)
-      setIsRouting(false)
-      return
-    }
-
-    mapRef.current?.flyTo({
-      center: selectedMarkerEntry?.coordinates ?? toMapCoordinates(selected),
-      zoom: 15.1,
-      duration: 1200,
-      essential: true,
-    })
-
-    let isCancelled = false
-
-    const syncRoute = async () => {
-      setIsRouting(true)
-
-      const result = await getRoute(userLocation, selected)
-
-      if (isCancelled) {
-        return
-      }
-
-      setRoute(buildRouteFeature(result.coordinates))
-      setRouteMode(result.mode)
-      setIsRouting(false)
-    }
-
-    void syncRoute()
-
-    return () => {
-      isCancelled = true
-    }
-  }, [selected, selectedMarkerEntry, userLocation])
+  const hoveredId = hoveredLocationId ?? '__none__'
 
   function focusAllLocations() {
     const map = mapRef.current
     const shouldIncludeUser =
-      locationMode === 'live' &&
-      getDistanceInKm(userLocation, DEFAULT_EXPLORAR_CENTER) <= 4
+      locationMode === 'live' && getDistanceInKm(userLocation, DEFAULT_EXPLORAR_CENTER) <= 4
     const points = shouldIncludeUser
       ? [userMapCoordinates, ...markerEntries.map(({ coordinates }) => coordinates)]
       : markerEntries.map(({ coordinates }) => coordinates)
@@ -342,9 +255,9 @@ export default function ExplorarMapLayer({
       ],
       {
         padding: {
-          top: 112,
+          top: isFullMap ? 108 : 112,
           right: 28,
-          bottom: isMobileFullscreen ? 132 : 104,
+          bottom: isMobileFullscreen || isFullMap ? 176 : 104,
           left: 28,
         },
         duration: 1050,
@@ -355,18 +268,104 @@ export default function ExplorarMapLayer({
   }
 
   useEffect(() => {
-    if (!isMobileFullscreen) {
+    let isCancelled = false
+
+    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
+      setLocationMode('fallback')
+      return undefined
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (isCancelled) return
+
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        })
+        setLocationMode('live')
+      },
+      () => {
+        if (isCancelled) return
+        setLocationMode('fallback')
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 60000,
+      },
+    )
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!selected) {
+      setRoute(null)
+      setRouteMode(null)
+      setIsRouting(false)
+      return
+    }
+
+    mapRef.current?.flyTo({
+      center: selectedMarkerEntry?.coordinates ?? toMapCoordinates(selected),
+      zoom: isFullMap ? 16 : 15.1,
+      duration: 1000,
+      essential: true,
+    })
+
+    let isCancelled = false
+
+    const syncRoute = async () => {
+      setIsRouting(true)
+      const result = await getRoute(userLocation, selected)
+      if (isCancelled) return
+
+      setRoute(buildRouteFeature(result.coordinates))
+      setRouteMode(result.mode)
+      setIsRouting(false)
+    }
+
+    void syncRoute()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [selected, selectedMarkerEntry, userLocation, isFullMap])
+
+  useEffect(() => {
+    if (resetCounter === 0) return
+
+    setRoute(null)
+    setRouteMode(null)
+    setIsRouting(false)
+
+    const timer = window.setTimeout(() => {
+      focusAllLocations()
+    }, 80)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [resetCounter])
+
+  useEffect(() => {
+    if (!isMobileFullscreen && !isFullMap) {
       return
     }
 
     const timer = window.setTimeout(() => {
-      focusAllLocations()
+      if (!selected) {
+        focusAllLocations()
+      }
     }, 180)
 
     return () => {
       window.clearTimeout(timer)
     }
-  }, [isMobileFullscreen, locationMode, markerEntries, userLocation, userMapCoordinates])
+  }, [isMobileFullscreen, isFullMap, markerEntries, userLocation, userMapCoordinates, selected])
 
   return (
     <div className="absolute inset-0 z-0">
@@ -376,18 +375,17 @@ export default function ExplorarMapLayer({
         onError={() => {
           setMapIssue('Nao foi possivel carregar a base do mapa agora.')
         }}
+        onMouseMove={(event) => {
+          const id = event.features?.[0]?.properties?.id
+          onHoverChange?.(typeof id === 'string' ? id : null)
+        }}
+        onMouseLeave={() => onHoverChange?.(null)}
         onClick={(event) => {
           const id = event.features?.[0]?.properties?.id
-
-          if (typeof id !== 'string') {
-            return
-          }
+          if (typeof id !== 'string') return
 
           const location = markerEntries.find((entry) => entry.location.id === id)?.location
-
-          if (location) {
-            onSelect(location)
-          }
+          if (location) onSelect(location)
         }}
         interactiveLayerIds={[POI_HITBOX_LAYER_ID]}
         initialViewState={{
@@ -413,7 +411,7 @@ export default function ExplorarMapLayer({
             id="explorar-user-halo"
             type="circle"
             paint={{
-              'circle-radius': 18,
+              'circle-radius': 19,
               'circle-color': '#0ea5e9',
               'circle-opacity': 0.18,
             }}
@@ -428,6 +426,21 @@ export default function ExplorarMapLayer({
               'circle-stroke-color': '#ffffff',
             }}
           />
+          <Layer
+            id="explorar-user-label"
+            type="symbol"
+            layout={{
+              'text-field': ['get', 'nome'],
+              'text-size': 11,
+              'text-offset': [0, 1.9],
+              'text-anchor': 'top',
+            }}
+            paint={{
+              'text-color': '#111827',
+              'text-halo-color': '#ffffff',
+              'text-halo-width': 2,
+            }}
+          />
         </Source>
 
         <Source id="explorar-pois" type="geojson" data={markersGeoJSON}>
@@ -435,7 +448,7 @@ export default function ExplorarMapLayer({
             id={POI_HITBOX_LAYER_ID}
             type="circle"
             paint={{
-              'circle-radius': 18,
+              'circle-radius': 20,
               'circle-color': '#000000',
               'circle-opacity': 0.01,
             }}
@@ -443,11 +456,21 @@ export default function ExplorarMapLayer({
           <Layer
             id="explorar-pois-halo"
             type="circle"
-            filter={['==', ['get', 'id'], selectedId] as any}
+            filter={['any', ['==', ['get', 'id'], selectedId], ['==', ['get', 'id'], hoveredId]] as any}
             paint={{
-              'circle-radius': 18,
+              'circle-radius': [
+                'case',
+                ['==', ['get', 'id'], selectedId],
+                20,
+                16,
+              ],
               'circle-color': '#ffffff',
-              'circle-opacity': 0.32,
+              'circle-opacity': [
+                'case',
+                ['==', ['get', 'id'], selectedId],
+                0.34,
+                0.22,
+              ],
             }}
           />
           <Layer
@@ -457,7 +480,9 @@ export default function ExplorarMapLayer({
               'circle-radius': [
                 'case',
                 ['==', ['get', 'id'], selectedId],
-                11,
+                12,
+                ['==', ['get', 'id'], hoveredId],
+                10,
                 8,
               ],
               'circle-color': [
@@ -479,6 +504,8 @@ export default function ExplorarMapLayer({
                 'case',
                 ['==', ['get', 'id'], selectedId],
                 3,
+                ['==', ['get', 'id'], hoveredId],
+                3,
                 2,
               ],
               'circle-stroke-color': [
@@ -492,7 +519,7 @@ export default function ExplorarMapLayer({
           <Layer
             id="explorar-pois-label"
             type="symbol"
-            filter={['==', ['get', 'id'], selectedId] as any}
+            filter={['any', ['==', ['get', 'id'], selectedId], ['==', ['get', 'id'], hoveredId]] as any}
             layout={{
               'text-field': ['get', 'nome'],
               'text-size': 11,
@@ -528,8 +555,8 @@ export default function ExplorarMapLayer({
                 ? 'Rota Mapbox via servidor'
                 : 'Rota fallback mockada'}
           </StatusPill>
-        ) : isMobileFullscreen ? (
-          <StatusPill>Mapa cheio ativo: toque nos pinos para explorar</StatusPill>
+        ) : isMobileFullscreen || isFullMap ? (
+          <StatusPill>Mapa em foco: toque nos pinos ou abra a lista</StatusPill>
         ) : (
           <StatusPill>Toque em um marcador ou card para navegar</StatusPill>
         )}
@@ -560,11 +587,7 @@ export default function ExplorarMapLayer({
           className="flex h-11 w-11 items-center justify-center rounded-full border border-white/55 bg-background/84 text-foreground shadow-xl backdrop-blur-md transition-transform hover:scale-105 sm:h-12 sm:w-12"
           aria-label="Centralizar no usuario"
         >
-          {isRouting ? (
-            <LoaderCircle className="h-4 w-4 animate-spin" />
-          ) : (
-            <LocateFixed className="h-4 w-4" />
-          )}
+          {isRouting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
         </button>
 
         {selected ? (
@@ -572,28 +595,11 @@ export default function ExplorarMapLayer({
             <div className="flex items-center gap-2 text-muted-foreground">
               <Route className="h-3.5 w-3.5" />
               <span>
-                {selected.pesoGamificacao} x {selected.multiplicadorFluxo} ={' '}
-                {formatLocationScore(selected.score)}
+                {selected.pesoGamificacao} x {selected.multiplicadorFluxo} = {formatLocationScore(selected.score)}
               </span>
             </div>
           </div>
         ) : null}
-      </div>
-
-      <div className="absolute bottom-[5.5rem] left-3 z-20 hidden max-w-[18rem] lg:flex lg:flex-col lg:gap-2">
-        <div className="pointer-events-none rounded-2xl border border-white/45 bg-background/84 px-4 py-3 text-sm shadow-xl backdrop-blur-md">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-            Camada interativa
-          </p>
-          <p className="mt-1 font-medium text-foreground">
-            {selected ? selected.nome : 'Explore o centro em modo mapa'}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {selected
-              ? `${formatLocationScore(selected.score)} de relevancia | ${selected.badge}`
-              : 'Todos os pontos usam score mockado com peso x fluxo.'}
-          </p>
-        </div>
       </div>
 
       {mapIssue ? (

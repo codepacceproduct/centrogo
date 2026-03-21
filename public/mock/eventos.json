@@ -1,0 +1,96 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "event_001",
+        "nome": "Aracaju Summer Fest",
+        "categoria": "show",
+        "descricao": "Festival de musica com atracoes nacionais",
+        "data": "2026-04-10",
+        "horario": "20:00 - 03:00",
+        "preco": "A partir de R$ 80",
+        "atracoes": ["DJ Alok", "Xand Aviao", "Vintage Culture"],
+        "endereco": "Orla de Atalaia, Aracaju - SE"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-37.0525, -10.9875]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "event_002",
+        "nome": "Feira Cultural do Centro",
+        "categoria": "cultural",
+        "descricao": "Artesanato, gastronomia e musica local",
+        "data": "2026-04-05",
+        "horario": "09:00 - 17:00",
+        "preco": "Gratuito",
+        "atracoes": ["Artistas locais", "Bandas regionais"],
+        "endereco": "Praca Fausto Cardoso, Centro, Aracaju - SE"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-37.0500, -10.9110]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "event_003",
+        "nome": "Congresso Tech Sergipe",
+        "categoria": "corporativo",
+        "descricao": "Evento de tecnologia e inovacao",
+        "data": "2026-05-02",
+        "horario": "08:00 - 18:00",
+        "preco": "A partir de R$ 150",
+        "atracoes": ["Especialistas em IA", "Empreendedores"],
+        "endereco": "SergipeTec, Aracaju - SE"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-37.0731, -10.9384]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "event_004",
+        "nome": "Noite Gospel Aracaju",
+        "categoria": "religioso",
+        "descricao": "Show com bandas gospel e pregacao",
+        "data": "2026-04-12",
+        "horario": "18:00 - 22:00",
+        "preco": "Gratuito",
+        "atracoes": ["Fernandinho", "Diante do Trono"],
+        "endereco": "Praca de Eventos, Aracaju - SE"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-37.0602, -10.9478]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "event_005",
+        "nome": "SE MAPPING",
+        "categoria": "corporativo",
+        "descricao": "Evento gratuito de mapeamento, tecnologia, colaboracao e dados geograficos em Sergipe",
+        "data": "2026-03-21",
+        "horario": "08:30 - 18:00 | 22/03/2026 08:30 - 12:30",
+        "preco": "Gratuito",
+        "atracoes": ["Comunidade de mapeamento", "Palestras tecnicas", "Oficinas colaborativas"],
+        "endereco": "Praca Fausto Cardoso, Centro, Aracaju - SE"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-37.0500, -10.9110]
+      }
+    }
+  ]
+}
+

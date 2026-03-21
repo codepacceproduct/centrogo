@@ -176,6 +176,42 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     peso_gamificacao: 10,
   },
   {
+    id: 'loc_009a',
+    nome: 'Estacionamento Fausto Cardoso',
+    categoria: 'mobilidade',
+    descricao: 'Estacionamento rotativo proximo a Praca Fausto Cardoso, com acesso rapido aos predios historicos e servicos do centro.',
+    lat: -10.91305,
+    lng: -37.04972,
+    fluxo: 'alto',
+    tipo_publico: ['motoristas', 'trabalhadores', 'turistas'],
+    horario_funcionamento: '07:00 - 19:00',
+    peso_gamificacao: 8,
+  },
+  {
+    id: 'loc_009b',
+    nome: 'Estacionamento General Valadao',
+    categoria: 'mobilidade',
+    descricao: 'Ponto de apoio para quem acessa bancos, comercio popular e servicos no entorno da Praca General Valadao.',
+    lat: -10.90961,
+    lng: -37.04858,
+    fluxo: 'alto',
+    tipo_publico: ['motoristas', 'trabalhadores'],
+    horario_funcionamento: '06:30 - 18:30',
+    peso_gamificacao: 8,
+  },
+  {
+    id: 'loc_009c',
+    nome: 'Estacionamento Rua Laranjeiras',
+    categoria: 'mobilidade',
+    descricao: 'Estacionamento privado com boa cobertura para quem vai ao calcadao e ao comercio popular.',
+    lat: -10.91118,
+    lng: -37.05532,
+    fluxo: 'medio',
+    tipo_publico: ['motoristas', 'moradores'],
+    horario_funcionamento: '08:00 - 18:00',
+    peso_gamificacao: 7,
+  },
+  {
     id: 'loc_010',
     nome: 'Rua Joao Pessoa (Zona Bancaria)',
     categoria: 'servicos',
@@ -318,3 +354,10 @@ export const hiddenExplorarLocations = [...explorarLocations]
 
 
 
+
+
+export const parkingExplorarLocations = [...explorarLocations]
+  .filter((location) =>
+    location.categoria === 'mobilidade' && location.nome.toLowerCase().includes('estacionamento'),
+  )
+  .sort(sortByScore)
