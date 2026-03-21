@@ -1,0 +1,21 @@
+{
+  "name": "CentroGO",
+  "short_name": "CentroGO",
+  "description": "O centro de Aracaju como um shopping a ceu aberto.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0056A3",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
