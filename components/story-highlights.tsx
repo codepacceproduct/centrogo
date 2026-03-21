@@ -50,7 +50,7 @@ export function StoryHighlights({ stories }: StoryHighlightsProps) {
   return (
     <>
       {/* Story Circles */}
-      <div className="flex gap-3 overflow-x-auto no-scrollbar px-4 py-2">
+      <div className="flex gap-3 overflow-x-auto no-scrollbar px-4 py-2 max-w-7xl mx-auto lg:justify-center">
         {stories.map((story, index) => (
           <motion.button
             key={story.id}

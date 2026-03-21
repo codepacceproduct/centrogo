@@ -33,7 +33,7 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: index * 0.1 }}
           whileTap={{ scale: 0.98 }}
-          className="relative w-72 shrink-0 rounded-3xl overflow-hidden shadow-xl"
+          className="relative w-72 shrink-0 lg:w-auto rounded-3xl overflow-hidden shadow-xl"
         >
           <div className="relative h-44">
             <Image

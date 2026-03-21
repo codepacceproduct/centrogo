@@ -36,7 +36,7 @@ export function EventCard({ event, index = 0, variant = 'default' }: EventCardPr
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: index * 0.05 }}
           whileTap={{ scale: 0.95 }}
-          className="w-56 shrink-0"
+          className="w-56 shrink-0 lg:w-auto"
         >
           <div className="relative h-32 rounded-xl overflow-hidden">
             <Image

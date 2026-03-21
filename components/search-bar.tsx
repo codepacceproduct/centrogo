@@ -34,7 +34,7 @@ export function SearchBar({ value, onChange, onFocus, className }: SearchBarProp
   }, [isFocused, value])
 
   return (
-    <div className={cn('px-4', className)}>
+    <div className={cn('px-4 max-w-7xl mx-auto', className)}>
       <div className={cn(
         'relative flex items-center bg-muted rounded-xl transition-all duration-200',
         isFocused && 'ring-2 ring-primary/30'
