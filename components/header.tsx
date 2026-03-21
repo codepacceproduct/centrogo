@@ -35,7 +35,7 @@ export function Header() {
       {/* Clean gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/95 to-primary/90" />
       
-      <div className="relative px-5 pt-5 pb-4">
+      <div className="relative px-5 pt-5 pb-4 max-w-7xl mx-auto">
         {/* Top row - User info and notification */}
         <div className="flex items-center justify-between">
           {/* User greeting */}
@@ -118,7 +118,7 @@ export function Header() {
               </div>
 
               {/* Divider */}
-              <div className="h-10 w-px bg-white/10" />
+              <div className="h-10 w-px bg-white/10 hidden sm:block" />
 
               {/* Level section */}
               <div className="flex items-center gap-3">

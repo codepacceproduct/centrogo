@@ -38,7 +38,7 @@ export default function EventosPage() {
     <main className="pb-24">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background border-b border-border">
-        <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto">
           <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -49,7 +49,7 @@ export default function EventosPage() {
         </div>
 
         {/* Filtros */}
-        <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+        <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar max-w-7xl mx-auto">
           {filterOptions.map(option => (
             <button
               key={option.id}
@@ -71,7 +71,7 @@ export default function EventosPage() {
       </header>
 
       {/* Lista de Eventos em Timeline */}
-      <div className="p-4">
+      <div className="p-4 max-w-7xl mx-auto">
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -80,7 +80,7 @@ export default function EventosPage() {
           {filteredEvents.length} {filteredEvents.length === 1 ? 'evento encontrado' : 'eventos encontrados'}
         </motion.p>
 
-        <div className="space-y-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="mb-4">

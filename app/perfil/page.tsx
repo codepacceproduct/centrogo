@@ -27,7 +27,7 @@ export default function PerfilPage() {
     <main className="pb-24">
       {/* Header */}
       <header className="bg-gradient-to-br from-primary to-secondary text-primary-foreground pb-20 pt-4 px-4">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 max-w-7xl mx-auto">
           <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-primary-foreground/10 transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -36,7 +36,7 @@ export default function PerfilPage() {
           </button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 max-w-7xl mx-auto">
           <motion.div 
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -70,7 +70,7 @@ export default function PerfilPage() {
       </header>
 
       {/* Card de Pontos */}
-      <div className="px-4 -mt-14 relative z-10">
+      <div className="px-4 -mt-14 relative z-10 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -110,7 +110,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Conquistas */}
-      <section className="mt-6 px-4">
+      <section className="mt-6 px-4 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-lg">Minhas Conquistas</h2>
           <span className="text-sm text-muted-foreground">
@@ -118,7 +118,7 @@ export default function PerfilPage() {
           </span>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {currentUser.achievements.map((achievement, index) => (
             <motion.div
               key={achievement.id}
@@ -145,13 +145,13 @@ export default function PerfilPage() {
       </section>
 
       {/* Central de Recompensas */}
-      <section className="mt-6 px-4">
+      <section className="mt-6 px-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-2 mb-3">
           <Gift className="h-5 w-5 text-primary" />
           <h2 className="font-semibold text-lg">Central de Recompensas</h2>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {rewards.map((reward, index) => {
             const canRedeem = currentUser.points >= reward.pointsCost
             const isRedeemed = redeemedReward === reward.id
@@ -207,7 +207,7 @@ export default function PerfilPage() {
       </section>
 
       {/* Histórico */}
-      <section className="mt-6 px-4">
+      <section className="mt-6 px-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-2 mb-3">
           <History className="h-5 w-5 text-primary" />
           <h2 className="font-semibold text-lg">Histórico de Atividades</h2>
@@ -246,7 +246,7 @@ export default function PerfilPage() {
       </section>
 
       {/* Menu adicional */}
-      <section className="mt-6 px-4 pb-4">
+      <section className="mt-6 px-4 pb-4 max-w-7xl mx-auto">
         <div className="bg-card rounded-xl border border-border divide-y divide-border">
           <button className="w-full flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
