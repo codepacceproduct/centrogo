@@ -24,7 +24,7 @@ export default function PerfilPage() {
   }
 
   return (
-    <main className="pb-24">
+    <main className="pb-24 lg:pb-8 lg:pt-24">
       {/* Header */}
       <header className="bg-gradient-to-br from-primary to-secondary text-primary-foreground pb-20 pt-4 px-4">
         <div className="flex items-center justify-between mb-6 max-w-7xl mx-auto">
@@ -42,8 +42,14 @@ export default function PerfilPage() {
             animate={{ scale: 1 }}
             className="relative"
           >
-            <div className="h-20 w-20 rounded-full bg-primary-foreground/20 flex items-center justify-center text-3xl">
-              👤
+            <div className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-primary-foreground/20">
+              <Image
+                src="/1.jpg"
+                alt={`Foto de ${currentUser.name}`}
+                fill
+                sizes="80px"
+                className="object-cover"
+              />
             </div>
             <div className="absolute -bottom-1 -right-1 h-7 w-7 bg-gold rounded-full flex items-center justify-center border-2 border-primary">
               <Star className="h-4 w-4 text-gold-dark fill-gold-dark" />

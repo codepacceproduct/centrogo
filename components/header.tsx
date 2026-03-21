@@ -48,8 +48,14 @@ export function Header() {
             >
               {/* Profile picture with gradient border */}
               <div className="h-14 w-14 rounded-full p-0.5 bg-gradient-to-br from-white/40 to-white/10">
-                <div className="h-full w-full rounded-full bg-primary-foreground/20 flex items-center justify-center overflow-hidden">
-                  <span className="text-2xl">👤</span>
+                <div className="relative h-full w-full rounded-full bg-primary-foreground/20 overflow-hidden">
+                  <Image
+                    src="/1.jpg"
+                    alt={`Foto de ${currentUser.name}`}
+                    fill
+                    sizes="56px"
+                    className="object-cover"
+                  />
                 </div>
               </div>
               {/* Online indicator */}
@@ -71,7 +77,7 @@ export function Header() {
                 className="flex items-center gap-1.5 mt-1"
               >
                 <MapPin className="h-3.5 w-3.5 text-white/60" />
-                <span className="text-xs text-white/60">Centro Historico - Aracaju</span>
+                <span className="text-xs text-white/60">Centro Histórico - Aracaju</span>
               </motion.div>
             </div>
           </div>
@@ -126,7 +132,7 @@ export function Header() {
                   <Trophy className="h-5 w-5 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-white font-bold text-lg leading-tight">Nivel {currentUser.levelNumber}</p>
+                  <p className="text-white font-bold text-lg leading-tight">Nível {currentUser.levelNumber}</p>
                   <p className="text-amber-400 text-xs font-medium">{currentUser.level}</p>
                 </div>
               </div>
@@ -140,7 +146,7 @@ export function Header() {
             {/* Progress bar */}
             <div className="mt-4">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs text-white/50">Progresso para Nivel {currentUser.levelNumber + 1}</span>
+                <span className="text-xs text-white/50">Progresso para Nível {currentUser.levelNumber + 1}</span>
                 <span className="text-xs text-white/70 font-medium">{progressToNextLevel}%</span>
               </div>
               <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
@@ -175,8 +181,8 @@ export function Header() {
             >
               <div className="sticky top-0 bg-card/95 backdrop-blur-lg flex items-center justify-between p-4 border-b border-border">
                 <div>
-                  <h2 className="font-bold text-lg">Notificacoes</h2>
-                  <p className="text-xs text-muted-foreground">{unreadCount} nao lidas</p>
+                  <h2 className="font-bold text-lg">Notificações</h2>
+                  <p className="text-xs text-muted-foreground">{unreadCount} não lidas</p>
                 </div>
                 <button 
                   onClick={() => setShowNotifications(false)}
@@ -231,7 +237,7 @@ export function Header() {
               
               <div className="p-4 border-t border-border">
                 <button className="w-full py-3 text-center text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors">
-                  Ver todas as notificacoes
+                  Ver todas as notificações
                 </button>
               </div>
             </motion.div>

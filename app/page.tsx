@@ -29,12 +29,14 @@ const categoryIcons = {
 
 // Story data from events and promotions
 const storyData = [
-  { id: '1', title: 'Forrozim', image: '/images/evento-forrozim.jpg', viewed: false },
-  { id: '2', title: 'Promocoes', image: '/images/cafe-sergipano.jpg', viewed: false },
-  { id: '3', title: 'Artesanato', image: '/images/evento-feira-artesanato.jpg', viewed: true },
-  { id: '4', title: 'Gastronomia', image: '/images/evento-gastronomia.jpg', viewed: true },
-  { id: '5', title: 'Novidades', image: '/images/boutique-atalaia.jpg', viewed: true },
+  { id: '1', title: 'Forró Caju', image: '/img-centro/forrocaju.jpg', viewed: false },
+  { id: '2', title: 'Mercadão', image: '/images/cafe-sergipano.jpg', viewed: false },
+  { id: '3', title: 'Feirinha', image: '/images/evento-feira-artesanato.jpg', viewed: true },
+  { id: '4', title: 'Orla', image: '/img-centro/orladeatalaia.jpg', viewed: true },
+  { id: '5', title: 'Cultura', image: '/img-centro/centrodeartesanatochicachaves.jpg', viewed: true },
 ]
+
+let hasShownStartupSplash = false
 
 export default function HomePage() {
   const [searchValue, setSearchValue] = useState('')
@@ -43,18 +45,27 @@ export default function HomePage() {
   const [showQRScanner, setShowQRScanner] = useState(false)
   const [showRatingModal, setShowRatingModal] = useState(false)
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null)
-  const [showSplash, setShowSplash] = useState(true)
+  const [showSplash, setShowSplash] = useState(false)
 
   useEffect(() => {
     setVisitors(getRandomVisitors())
     const timer = setTimeout(() => setIsLoading(false), 600)
-    
-    // Hide splash screen after animation
-    const splashTimer = setTimeout(() => setShowSplash(false), 2500)
+
+    let splashTimer: ReturnType<typeof setTimeout> | undefined
+
+    // Mostra splash apenas no carregamento inicial do documento.
+    // Em navegacao interna (SPA), a variavel permanece true e evita repetir.
+    if (!hasShownStartupSplash) {
+      setShowSplash(true)
+      hasShownStartupSplash = true
+      splashTimer = setTimeout(() => setShowSplash(false), 2500)
+    } else {
+      setShowSplash(false)
+    }
     
     return () => {
       clearTimeout(timer)
-      clearTimeout(splashTimer)
+      if (splashTimer) clearTimeout(splashTimer)
     }
   }, [])
 
@@ -82,7 +93,7 @@ export default function HomePage() {
     <>
       <SplashScreen isVisible={showSplash} />
       
-      <main className="pb-28 bg-background min-h-screen">
+      <main className="pb-28 lg:pb-8 lg:pt-24 bg-background min-h-screen">
         <Header />
         
         <div className="max-w-7xl mx-auto">
@@ -211,13 +222,10 @@ export default function HomePage() {
       {/* For You Section */}
       <section className="mt-8">
         <div className="flex items-center justify-between px-4 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-primary" />
-            </div>
+          <div>
             <div>
-              <h2 className="font-bold text-lg">Para Voce</h2>
-              <p className="text-xs text-muted-foreground">Baseado nas suas preferencias</p>
+              <h2 className="font-bold text-lg">Para Você</h2>
+              <p className="text-xs text-muted-foreground">Baseado nas suas preferências</p>
             </div>
           </div>
           <Link 
@@ -244,10 +252,7 @@ export default function HomePage() {
       {/* Discoveries Section */}
       <section className="mt-8">
         <div className="flex items-center justify-between px-4 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-              <span className="text-lg">💎</span>
-            </div>
+          <div>
             <div>
               <h2 className="font-bold text-lg">Joias Escondidas</h2>
               <p className="text-xs text-muted-foreground">Descubra lugares unicos</p>

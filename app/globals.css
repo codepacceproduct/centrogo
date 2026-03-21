@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Centro Vivo Aracaju - Paleta inspirada no Gov de Sergipe */
+  /* CentroGO Aracaju - Paleta inspirada no Gov de Sergipe */
   --background: oklch(1 0 0); /* Branco puro */
   --foreground: oklch(0.2 0.02 250); /* Texto escuro azulado */
   
@@ -149,7 +149,7 @@
   }
 }
 
-/* Custom animations for Centro Vivo */
+/* Custom animations for CentroGO */
 @keyframes pulse-live {
   0%, 100% {
     opacity: 1;
@@ -317,6 +317,21 @@
 
 .touch-feedback:active {
   transform: scale(0.97);
+}
+
+/* Remove containers visuais dos icones, mantendo apenas os icones */
+.icons-no-container :where(div, span, a, button)[class*='rounded'][class*='bg-'][class*='items-center'][class*='justify-center']:has(> svg),
+.icons-no-container :where(div, span, a, button)[class*='rounded'][class*='bg-'][class*='items-center'][class*='justify-center']:has(> [data-lucide]),
+.icons-no-container :where(div, span, a, button)[class*='rounded'][class*='bg-'][class*='items-center'][class*='justify-center']:has(> span:only-child) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
 }
 
 /* Card hover effects */

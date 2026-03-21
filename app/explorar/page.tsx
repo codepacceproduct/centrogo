@@ -36,9 +36,9 @@ export default function ExplorarPage() {
   }, [])
 
   return (
-    <main className="pb-24">
+    <main className="pb-24 lg:pb-8 lg:pt-24">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background border-b border-border">
+      <header className="sticky top-0 lg:top-20 z-40 bg-background border-b border-border">
         <div className="flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto">
           <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
             <ArrowLeft className="h-5 w-5" />

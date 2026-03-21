@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin } from 'lucide-react'
+import Image from 'next/image'
 
 interface SplashScreenProps {
   isVisible: boolean
@@ -49,7 +49,7 @@ export function SplashScreen({ isVisible, onComplete }: SplashScreenProps) {
           />
 
           {/* Content */}
-          <div className="relative flex flex-col items-center">
+          <div className="relative flex flex-col items-center pt-6">
             {/* Logo container */}
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -72,11 +72,11 @@ export function SplashScreen({ isVisible, onComplete }: SplashScreenProps) {
                   repeat: Infinity,
                   repeatDelay: 0.5
                 }}
-                className="absolute inset-0 rounded-3xl bg-primary-foreground"
+                className="absolute inset-2 rounded-full bg-primary-foreground/30 blur-xl"
               />
               
               {/* Main logo */}
-              <div className="relative h-28 w-28 rounded-3xl bg-primary-foreground shadow-2xl flex items-center justify-center">
+              <div className="relative h-44 w-44 flex items-center justify-center">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -87,7 +87,14 @@ export function SplashScreen({ isVisible, onComplete }: SplashScreenProps) {
                     delay: 0.3
                   }}
                 >
-                  <MapPin className="h-14 w-14 text-primary" strokeWidth={2.5} />
+                  <Image
+                    src="/logo.png"
+                    alt="CentroGO"
+                    width={176}
+                    height={176}
+                    priority
+                    className="h-40 w-40 object-contain drop-shadow-2xl"
+                  />
                 </motion.div>
               </div>
             </motion.div>
@@ -97,7 +104,7 @@ export function SplashScreen({ isVisible, onComplete }: SplashScreenProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="mt-8 text-center"
+              className="mt-2 text-center"
             >
               <motion.h1 
                 className="text-3xl font-bold text-primary-foreground tracking-tight"
@@ -105,7 +112,7 @@ export function SplashScreen({ isVisible, onComplete }: SplashScreenProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.4 }}
               >
-                Centro Vivo
+                CentroGO
               </motion.h1>
               <motion.p 
                 className="text-lg text-primary-foreground/80 font-medium mt-1"
@@ -124,7 +131,7 @@ export function SplashScreen({ isVisible, onComplete }: SplashScreenProps) {
               transition={{ delay: 0.9, duration: 0.5 }}
               className="mt-4 text-sm text-primary-foreground/60 text-center max-w-[200px]"
             >
-              O centro como um shopping a ceu aberto
+              O centro como um shopping a céu aberto
             </motion.p>
 
             {/* Progress bar */}

@@ -65,7 +65,7 @@ export function GamificationCard() {
 
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Nivel</span>
+                    <span className="text-sm text-muted-foreground">Nível</span>
                     <span className="px-2 py-0.5 bg-gold/10 text-gold-dark rounded-full text-xs font-bold">
                       {currentLevel.name}
                     </span>
@@ -91,7 +91,7 @@ export function GamificationCard() {
             {/* Progress bar */}
             <div className="relative mt-5">
               <div className="flex items-center justify-between text-xs mb-2">
-                <span className="text-muted-foreground">Proximo nivel</span>
+                <span className="text-muted-foreground">Próximo nível</span>
                 <span className="font-medium text-gold-dark">
                   {currentLevel.maxPoints - currentUser.points} pts restantes
                 </span>

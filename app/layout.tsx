@@ -13,26 +13,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Centro Vivo Aracaju',
+  title: 'CentroGO',
   description: 'O centro de Aracaju como um shopping a céu aberto. Descubra lojas, eventos e ganhe recompensas!',
   generator: 'v0.app',
   manifest: '/manifest.json',
   icons: {
     icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
+      { url: '/logo.png', sizes: '64x64', type: 'image/png' },
+      { url: '/logo.png', sizes: '256x256', type: 'image/png' },
+      { url: '/logo.png', sizes: '1024x1024', type: 'image/png' },
     ],
-    apple: '/apple-icon.png',
+    shortcut: '/logo.png',
+    apple: [
+      { url: '/logo.png', sizes: '512x512', type: 'image/png' },
+    ],
   },
 }
 
@@ -49,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased icons-no-container`}>
         <div className="min-h-screen w-full bg-background relative">
           {children}
         </div>
