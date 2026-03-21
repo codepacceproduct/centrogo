@@ -1,11 +1,11 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Star, MapPin, Clock, Heart, Sparkles, ExternalLink } from 'lucide-react'
+import { Star, MapPin, Clock, Heart } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Store, isStoreOpen, getRandomDistance } from '@/lib/data'
+import { Store, isStoreOpen } from '@/lib/data'
 import { cn } from '@/lib/utils'
 import { LiveBadge, PromoBadge, PointsBadge } from './live-badge'
 
@@ -15,13 +15,10 @@ interface StoreCardProps {
   variant?: 'default' | 'compact' | 'horizontal' | 'featured'
 }
 
-export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardProps) {
-  const [distance, setDistance] = useState<string>('...')
-  const [isOpen, setIsOpen] = useState(true)
+export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardProps) {  const [isOpen, setIsOpen] = useState(true)
   const [isFavorite, setIsFavorite] = useState(false)
 
   useEffect(() => {
-    setDistance(getRandomDistance())
     setIsOpen(isStoreOpen(store.openHour, store.closeHour))
   }, [store.openHour, store.closeHour])
 
@@ -72,7 +69,7 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
             <div className="flex items-start justify-between gap-2">
               <div>
                 <h3 className="font-bold text-lg leading-tight">{store.name}</h3>
-                <p className="text-primary-foreground/70 text-sm">{store.category}</p>
+                <p className="text-primary-foreground/70 text-sm">{store.subcategoryLabel}</p>
               </div>
               <div className="flex items-center gap-1 bg-primary-foreground/20 backdrop-blur-sm px-2.5 py-1 rounded-xl">
                 <Star className="h-4 w-4 text-gold fill-gold" />
@@ -83,7 +80,7 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
             <div className="flex items-center gap-3 mt-3 text-sm text-primary-foreground/70">
               <div className="flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5" />
-                <span>{distance}</span>
+                <span>{store.neighborhood}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5" />
@@ -124,7 +121,7 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <h3 className="font-bold text-base truncate">{store.name}</h3>
-                <p className="text-sm text-muted-foreground">{store.category}</p>
+                <p className="text-sm text-muted-foreground">{store.subcategoryLabel}</p>
               </div>
               <span className={cn(
                 'px-2.5 py-1 text-xs font-semibold rounded-full shrink-0',
@@ -142,7 +139,7 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
               </div>
               <div className="flex items-center gap-1 text-muted-foreground">
                 <MapPin className="h-3.5 w-3.5" />
-                <span className="text-sm">{distance}</span>
+                <span className="text-sm">{store.neighborhood}</span>
               </div>
               <PointsBadge points={store.loyaltyPoints} size="sm" showPlus={false} />
             </div>
@@ -187,7 +184,7 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
               <Star className="h-3.5 w-3.5 text-gold fill-gold" />
               <span className="text-sm font-semibold">{store.rating}</span>
             </div>
-            <span className="text-xs text-muted-foreground">{distance}</span>
+            <span className="text-xs text-muted-foreground">{store.neighborhood}</span>
           </div>
         </motion.div>
       </Link>
@@ -246,7 +243,7 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h3 className="font-bold text-lg truncate">{store.name}</h3>
-              <p className="text-sm text-muted-foreground">{store.category}</p>
+              <p className="text-sm text-muted-foreground">{store.subcategoryLabel}</p>
             </div>
             <div className="flex items-center gap-1.5 bg-gold/10 px-2.5 py-1.5 rounded-xl shrink-0">
               <Star className="h-4 w-4 text-gold fill-gold" />
@@ -257,7 +254,7 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
           <div className="flex items-center flex-wrap gap-3 mt-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <MapPin className="h-4 w-4" />
-              <span>{distance}</span>
+              <span>{store.neighborhood}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span>{store.reviewCount} avaliacoes</span>
@@ -269,3 +266,6 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
     </Link>
   )
 }
+
+
+

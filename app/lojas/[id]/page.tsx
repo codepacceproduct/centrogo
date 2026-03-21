@@ -78,7 +78,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
               )}
             </div>
             <h1 className="text-2xl font-bold text-primary-foreground">{store.name}</h1>
-            <p className="text-primary-foreground/80 text-sm">{store.category}</p>
+            <p className="text-primary-foreground/80 text-sm">{store.subcategoryLabel}</p>
           </motion.div>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
             <MapPin className="h-5 w-5 text-primary" />
             <div>
               <p className="text-sm font-medium">{store.address}</p>
-              <p className="text-xs text-muted-foreground">Centro - Aracaju, SE</p>
+              <p className="text-xs text-muted-foreground">{store.neighborhood} - Aracaju, SE</p>
             </div>
           </div>
 
@@ -242,3 +242,4 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
     </main>
   )
 }
+

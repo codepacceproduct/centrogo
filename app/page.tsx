@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ChevronRight, Utensils, Shirt, Wrench, Palette, Tag, TrendingUp, Sparkles, Clock, Users, ArrowRight } from 'lucide-react'
+import { ChevronRight, ShoppingBag, Building2, ShoppingCart, Cross, Landmark, Tag, TrendingUp, Sparkles, Clock, Users, ArrowRight } from 'lucide-react'
 import { Header } from '@/components/header'
 import { BottomNav } from '@/components/bottom-nav'
 import { GamificationCard } from '@/components/gamification-card'
@@ -20,11 +20,11 @@ import { stores, events, categories, currentUser, getRandomVisitors, discoverySu
 import { SplashScreen } from '@/components/splash-screen'
 
 const categoryIcons = {
-  'Gastronomia': Utensils,
-  'Moda': Shirt,
-  'Servicos': Wrench,
-  'Cultura': Palette,
-  'Ofertas': Tag,
+  'Lojas': ShoppingBag,
+  'Shoppings': Building2,
+  'Mercados': ShoppingCart,
+  'Farmacias': Cross,
+  'Servicos': Landmark,
 }
 
 // Story data from events and promotions
@@ -373,3 +373,4 @@ export default function HomePage() {
     </>
   )
 }
+

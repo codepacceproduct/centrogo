@@ -79,19 +79,29 @@ export const currentUser: User = {
     { id: '4', action: 'Visita ao Centro de Artesanato Chica Chaves', points: 20, date: '2026-03-14', type: 'earned' },
     { id: '5', action: 'Check-in na Feirinha da Orla de Atalaia', points: 50, date: '2026-03-12', type: 'earned' },
   ],
-  preferences: ['Gastronomia', 'Cultura', 'Moda']
+  preferences: ['Lojas', 'Mercados', 'Farmacias']
 }
 
 // Tipos de Loja
+export type StoreGroup = 'lojas' | 'shoppings' | 'mercados' | 'farmacias' | 'servicos'
+
 export interface Store {
   id: string
   name: string
   category: string
   categoryIcon: string
+  group: StoreGroup
+  groupLabel: string
+  subcategory: string
+  subcategoryLabel: string
+  color: string
   image: string
   rating: number
   reviewCount: number
   address: string
+  neighborhood: string
+  latitude: number
+  longitude: number
   openHour: number
   closeHour: number
   phone: string
@@ -111,151 +121,371 @@ export interface Product {
 
 export const stores: Store[] = [
   {
-    id: '1',
-    name: 'Mercado Municipal Antônio Franco',
-    category: 'Gastronomia',
-    categoryIcon: '🍽️',
-    image: '/images/cafe-sergipano.jpg',
+    id: 'store_001',
+    name: 'Passo Forte Calcados',
+    category: 'Lojas',
+    categoryIcon: '??',
+    group: 'lojas',
+    groupLabel: 'Lojas',
+    subcategory: 'sapatos',
+    subcategoryLabel: 'Lojas de sapatos',
+    color: '#FF4D4D',
+    image: '/img-centro/oticasdiniz.png',
     rating: 4.8,
-    reviewCount: 234,
-    address: 'Av. Coelho e Campos, s/n - Centro',
-    openHour: 6,
+    reviewCount: 124,
+    address: 'Rua Joao Pessoa, 182 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.9107,
+    longitude: -37.0492,
+    openHour: 8,
     closeHour: 18,
     phone: '(79) 3211-1234',
-    description: 'Mercado tradicional no centro de Aracaju com boxes de comidas típicas, temperos regionais e produtos sergipanos.',
+    description: 'Loja mockada com calcados casuais e sociais para o fluxo comercial do centro de Aracaju.',
     highlights: [
-      { id: '1', name: 'Queijo Coalho Regional', price: 24.90, image: '/images/cafe-sergipano.jpg' },
-      { id: '2', name: 'Cuscuz com Carne de Sol', price: 22.90, image: '/images/cafe-sergipano.jpg' },
+      { id: '1', name: 'Sapato social couro', price: 189.9, image: '/img-centro/oticasdiniz.png' },
+      { id: '2', name: 'Tenis urbano leve', price: 149.9, image: '/img-centro/oticasdiniz.png' },
     ],
     hasPromotion: true,
-    promotionText: '15% OFF em produtos regionais selecionados',
-    loyaltyPoints: 50
+    promotionText: '15% OFF na segunda unidade',
+    loyaltyPoints: 60
   },
   {
-    id: '2',
-    name: 'Shopping Jardins Aracaju',
-    category: 'Moda',
-    categoryIcon: '👗',
+    id: 'store_002',
+    name: 'Conecta Cell Centro',
+    category: 'Lojas',
+    categoryIcon: '??',
+    group: 'lojas',
+    groupLabel: 'Lojas',
+    subcategory: 'celulares',
+    subcategoryLabel: 'Lojas de celulares',
+    color: '#FF4D4D',
     image: '/images/boutique-atalaia.jpg',
-    rating: 4.5,
-    reviewCount: 156,
-    address: 'Av. Ministro Geraldo Barreto Sobral, 215 - Jardins',
-    openHour: 10,
-    closeHour: 22,
+    rating: 4.7,
+    reviewCount: 98,
+    address: 'Rua Laranjeiras, 244 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.9115,
+    longitude: -37.0485,
+    openHour: 8,
+    closeHour: 18,
     phone: '(79) 3212-5678',
-    description: 'Centro de compras com lojas de moda, serviços e alimentação, referência para compras em Aracaju.',
+    description: 'Loja mockada de celulares, acessorios e manutencao rapida no coracao comercial da cidade.',
     highlights: [
-      { id: '1', name: 'Coleção Verão 2026', price: 129.90, image: '/images/boutique-atalaia.jpg' },
-      { id: '2', name: 'Camisa de Linho Premium', price: 99.90, image: '/images/boutique-atalaia.jpg' },
+      { id: '1', name: 'Smartphone 128GB', price: 1399.9, image: '/images/boutique-atalaia.jpg' },
+      { id: '2', name: 'Fone bluetooth', price: 129.9, image: '/images/boutique-atalaia.jpg' },
     ],
     hasPromotion: true,
-    promotionText: 'Semana da Moda com até 40% OFF',
+    promotionText: 'Peliculas gratis na compra do aparelho',
     loyaltyPoints: 80
   },
   {
-    id: '3',
-    name: 'Centro de Artesanato Chica Chaves',
-    category: 'Cultura',
-    categoryIcon: '🎨',
+    id: 'store_003',
+    name: 'Vitrine dos Pes',
+    category: 'Lojas',
+    categoryIcon: '???',
+    group: 'lojas',
+    groupLabel: 'Lojas',
+    subcategory: 'sapatos',
+    subcategoryLabel: 'Lojas de sapatos',
+    color: '#FF4D4D',
     image: '/img-centro/centrodeartesanatochicachaves.jpg',
-    rating: 4.9,
-    reviewCount: 89,
-    address: 'Av. Ivo do Prado, 398 - Centro',
-    openHour: 10,
+    rating: 4.6,
+    reviewCount: 76,
+    address: 'Rua Itabaianinha, 91 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.9102,
+    longitude: -37.0478,
+    openHour: 9,
     closeHour: 18,
     phone: '(79) 3213-9012',
-    description: 'Espaço tradicional de artesanato sergipano com renda, cerâmica, madeira e peças autorais de artistas locais.',
+    description: 'Operacao mockada voltada a calcados femininos e linha casual, pensada para o polo do centro.',
     highlights: [
-      { id: '1', name: 'Cerâmica Sergipana', price: 75.00, image: '/img-centro/centrodeartesanatochicachaves.jpg' },
-      { id: '2', name: 'Renda Irlandesa de Divina Pastora', price: 140.00, image: '/img-centro/centrodeartesanatochicachaves.jpg' },
+      { id: '1', name: 'Sandalia comfort', price: 99.9, image: '/img-centro/centrodeartesanatochicachaves.jpg' },
+      { id: '2', name: 'Mocassim urbano', price: 169.9, image: '/img-centro/centrodeartesanatochicachaves.jpg' },
     ],
     hasPromotion: false,
-    loyaltyPoints: 100
+    loyaltyPoints: 55
   },
   {
-    id: '4',
-    name: 'Restaurante Cariri',
-    category: 'Gastronomia',
-    categoryIcon: '🍽️',
+    id: 'mall_001',
+    name: 'Shopping Centro Aracaju',
+    category: 'Shoppings',
+    categoryIcon: '??',
+    group: 'shoppings',
+    groupLabel: 'Shoppings',
+    subcategory: 'centro-comercial',
+    subcategoryLabel: 'Centro comercial',
+    color: '#8E44AD',
     image: '/images/caranguejo-sergipano.jpg',
     rating: 4.7,
-    reviewCount: 312,
-    address: 'Av. Santos Dumont, 1870 - Atalaia',
-    openHour: 11,
-    closeHour: 23,
+    reviewCount: 210,
+    address: 'Praca Fausto Cardoso, 55 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.9095,
+    longitude: -37.0489,
+    openHour: 9,
+    closeHour: 20,
     phone: '(79) 3214-3456',
-    description: 'Restaurante tradicional em Aracaju com pratos regionais e culinária nordestina, muito procurado na orla.',
+    description: 'Galeria mockada com mix de lojas, servicos e operacoes de conveniencia no Centro de Aracaju.',
     highlights: [
-      { id: '1', name: 'Carne de Sol na Chapa', price: 84.90, image: '/images/caranguejo-sergipano.jpg' },
-      { id: '2', name: 'Moqueca Sergipana', price: 94.90, image: '/images/caranguejo-sergipano.jpg' },
+      { id: '1', name: 'Praca de servicos', price: 0, image: '/images/caranguejo-sergipano.jpg' },
+      { id: '2', name: 'Vagas rotativas', price: 12, image: '/images/caranguejo-sergipano.jpg' },
     ],
     hasPromotion: true,
-    promotionText: 'Sobremesa regional grátis no almoço',
+    promotionText: 'Campanha de vitrine ativa nesta semana',
     loyaltyPoints: 70
   },
   {
-    id: '5',
-    name: 'Livraria Escariz',
-    category: 'Serviços',
-    categoryIcon: '📚',
+    id: 'mall_002',
+    name: 'Galeria Comercial Sergipe',
+    category: 'Shoppings',
+    categoryIcon: '??',
+    group: 'shoppings',
+    groupLabel: 'Shoppings',
+    subcategory: 'galeria',
+    subcategoryLabel: 'Galeria comercial',
+    color: '#8E44AD',
     image: '/images/livraria-leitura.jpg',
     rating: 4.6,
-    reviewCount: 178,
-    address: 'Av. Jorge Amado, 1565 - Jardins',
+    reviewCount: 142,
+    address: 'Rua Santa Rosa, 118 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.911,
+    longitude: -37.05,
     openHour: 8,
-    closeHour: 20,
+    closeHour: 19,
     phone: '(79) 3215-7890',
-    description: 'Livraria tradicional em Aracaju com amplo acervo, papelaria e espaço para lançamentos e eventos culturais.',
+    description: 'Galeria mockada com operacoes de varejo rapido e servicos de apoio para o fluxo do centro.',
     highlights: [
-      { id: '1', name: 'Lançamentos Nacionais', price: 59.90, image: '/images/livraria-leitura.jpg' },
-      { id: '2', name: 'Coleção Sergipe em História', price: 49.90, image: '/images/livraria-leitura.jpg' },
+      { id: '1', name: 'Mix de boxes', price: 0, image: '/images/livraria-leitura.jpg' },
+      { id: '2', name: 'Acesso coberto', price: 0, image: '/images/livraria-leitura.jpg' },
     ],
     hasPromotion: false,
     loyaltyPoints: 40
   },
   {
-    id: '6',
-    name: 'Óticas Diniz Centro',
-    category: 'Serviços',
-    categoryIcon: '👓',
+    id: 'market_001',
+    name: 'Mercado Popular Central',
+    category: 'Mercados',
+    categoryIcon: '??',
+    group: 'mercados',
+    groupLabel: 'Mercados',
+    subcategory: 'mercado-popular',
+    subcategoryLabel: 'Mercado popular',
+    color: '#27AE60',
     image: '/img-centro/oticasdiniz.png',
-    rating: 4.4,
-    reviewCount: 98,
-    address: 'Rua João Pessoa, 214 - Centro',
-    openHour: 9,
+    rating: 4.5,
+    reviewCount: 188,
+    address: 'Av. Coelho e Campos, 310 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.9115,
+    longitude: -37.051,
+    openHour: 7,
     closeHour: 18,
     phone: '(79) 3216-1234',
-    description: 'Óculos de grau e sol das melhores marcas com atendimento personalizado. Exame de vista gratuito.',
+    description: 'Mercado mockado com alimentos, utilidades e boxes de apoio ao consumidor do centro.',
     highlights: [
-      { id: '1', name: 'Óculos Ray-Ban', price: 450.00, image: '/img-centro/oticasdiniz.png' },
-      { id: '2', name: 'Armação Premium', price: 280.00, image: '/img-centro/oticasdiniz.png' },
+      { id: '1', name: 'Cesta basica expressa', price: 49.9, image: '/img-centro/oticasdiniz.png' },
+      { id: '2', name: 'Kit limpeza', price: 22.9, image: '/img-centro/oticasdiniz.png' },
     ],
     hasPromotion: true,
-    promotionText: '30% OFF na segunda armação',
+    promotionText: 'Desconto progressivo em compras acima de R$ 80',
     loyaltyPoints: 60
   },
   {
-    id: '8',
-    name: 'Mercado Municipal Thales Ferraz',
-    category: 'Gastronomia',
-    categoryIcon: '🧀',
+    id: 'market_002',
+    name: 'Mini Mercado Aracaju',
+    category: 'Mercados',
+    categoryIcon: '??',
+    group: 'mercados',
+    groupLabel: 'Mercados',
+    subcategory: 'mini-mercado',
+    subcategoryLabel: 'Mini mercado',
+    color: '#27AE60',
     image: '/images/emporio-nordeste.jpg',
     rating: 4.6,
-    reviewCount: 167,
-    address: 'Av. Coelho e Campos, s/n - Centro',
+    reviewCount: 133,
+    address: 'Rua Pacatuba, 73 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.9122,
+    longitude: -37.0475,
     openHour: 8,
     closeHour: 19,
     phone: '(79) 3218-9012',
-    description: 'Mercado municipal com produtos regionais, carnes, queijos e artigos típicos da culinária sergipana.',
+    description: 'Mercado de bairro mockado, pratico para compras rapidas no eixo comercial do centro.',
     highlights: [
-      { id: '1', name: 'Farinha e Temperos Regionais', price: 18.00, image: '/images/emporio-nordeste.jpg' },
-      { id: '2', name: 'Cesta Sergipana', price: 99.90, image: '/images/emporio-nordeste.jpg' },
+      { id: '1', name: 'Mercearia rapida', price: 18, image: '/images/emporio-nordeste.jpg' },
+      { id: '2', name: 'Combo cafe da manha', price: 24.9, image: '/images/emporio-nordeste.jpg' },
     ],
     hasPromotion: true,
-    promotionText: '10% OFF aos sábados',
+    promotionText: '10% OFF em itens de conveniencia',
     loyaltyPoints: 50
+  },
+  {
+    id: 'pharma_001',
+    name: 'Farmacia Vida+',
+    category: 'Farmacias',
+    categoryIcon: '??',
+    group: 'farmacias',
+    groupLabel: 'Farmacias',
+    subcategory: 'farmacia',
+    subcategoryLabel: 'Farmacia',
+    color: '#3498DB',
+    image: '/images/cafe-sergipano.jpg',
+    rating: 4.8,
+    reviewCount: 154,
+    address: 'Rua Capela, 201 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.9108,
+    longitude: -37.0503,
+    openHour: 7,
+    closeHour: 22,
+    phone: '(79) 3220-4100',
+    description: 'Farmacia mockada com mix de medicamentos, higiene e atendimento rapido para o centro.',
+    highlights: [
+      { id: '1', name: 'Kit primeiros socorros', price: 39.9, image: '/images/cafe-sergipano.jpg' },
+      { id: '2', name: 'Vitaminas essenciais', price: 27.9, image: '/images/cafe-sergipano.jpg' },
+    ],
+    hasPromotion: true,
+    promotionText: 'Ate 20% OFF em higiene pessoal',
+    loyaltyPoints: 65
+  },
+  {
+    id: 'pharma_002',
+    name: 'Drogaria Central AJU',
+    category: 'Farmacias',
+    categoryIcon: '??',
+    group: 'farmacias',
+    groupLabel: 'Farmacias',
+    subcategory: 'drogaria',
+    subcategoryLabel: 'Drogaria',
+    color: '#3498DB',
+    image: '/images/livraria-leitura.jpg',
+    rating: 4.5,
+    reviewCount: 117,
+    address: 'Rua Itaporanga, 66 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.9099,
+    longitude: -37.048,
+    openHour: 7,
+    closeHour: 21,
+    phone: '(79) 3220-4200',
+    description: 'Drogaria mockada com atendimento estendido e linha de conveniencia para quem circula no centro.',
+    highlights: [
+      { id: '1', name: 'Fraldas e higiene', price: 59.9, image: '/images/livraria-leitura.jpg' },
+      { id: '2', name: 'Dermocosmeticos', price: 84.9, image: '/images/livraria-leitura.jpg' },
+    ],
+    hasPromotion: false,
+    loyaltyPoints: 55
+  },
+  {
+    id: 'service_001',
+    name: 'Banco Regional Sergipe',
+    category: 'Servicos',
+    categoryIcon: '??',
+    group: 'servicos',
+    groupLabel: 'Servicos',
+    subcategory: 'bancos',
+    subcategoryLabel: 'Bancos',
+    color: '#F39C12',
+    image: '/images/boutique-atalaia.jpg',
+    rating: 4.3,
+    reviewCount: 96,
+    address: 'Praca General Valadao, 27 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.912,
+    longitude: -37.0483,
+    openHour: 9,
+    closeHour: 16,
+    phone: '(79) 3221-1000',
+    description: 'Agencia bancaria mockada para representar os servicos financeiros mais procurados no centro.',
+    highlights: [
+      { id: '1', name: 'Caixa eletronico 24h', price: 0, image: '/images/boutique-atalaia.jpg' },
+      { id: '2', name: 'Atendimento PJ', price: 0, image: '/images/boutique-atalaia.jpg' },
+    ],
+    hasPromotion: false,
+    loyaltyPoints: 35
+  },
+  {
+    id: 'service_002',
+    name: 'Prefeitura Centro Atendimento',
+    category: 'Servicos',
+    categoryIcon: '???',
+    group: 'servicos',
+    groupLabel: 'Servicos',
+    subcategory: 'prefeitura',
+    subcategoryLabel: 'Prefeitura',
+    color: '#F39C12',
+    image: '/img-centro/projetoveraoaracaju.jpg',
+    rating: 4.4,
+    reviewCount: 88,
+    address: 'Rua Propria, 45 - Centro',
+    neighborhood: 'Centro',
+    latitude: -10.91,
+    longitude: -37.0507,
+    openHour: 8,
+    closeHour: 17,
+    phone: '(79) 3221-2000',
+    description: 'Ponto mockado de atendimento municipal para concentrar servicos publicos no mapa do centro.',
+    highlights: [
+      { id: '1', name: 'Protocolo digital', price: 0, image: '/img-centro/projetoveraoaracaju.jpg' },
+      { id: '2', name: 'Atendimento cadastral', price: 0, image: '/img-centro/projetoveraoaracaju.jpg' },
+    ],
+    hasPromotion: false,
+    loyaltyPoints: 30
   }
 ]
+
+export interface StoreFilterCategory {
+  id: StoreGroup
+  name: string
+  icon: string
+  color: string
+  markerColor: string
+}
+
+export const storeSubcategoryFilters: Record<StoreGroup, Array<{ id: string; name: string }>> = {
+  lojas: [
+    { id: 'sapatos', name: 'Lojas de sapatos' },
+    { id: 'celulares', name: 'Lojas de celulares' },
+  ],
+  shoppings: [
+    { id: 'centro-comercial', name: 'Centro comercial' },
+    { id: 'galeria', name: 'Galeria comercial' },
+  ],
+  mercados: [
+    { id: 'mercado-popular', name: 'Mercado popular' },
+    { id: 'mini-mercado', name: 'Mini mercado' },
+  ],
+  farmacias: [
+    { id: 'farmacia', name: 'Farmacia' },
+    { id: 'drogaria', name: 'Drogaria' },
+  ],
+  servicos: [
+    { id: 'prefeitura', name: 'Prefeitura' },
+    { id: 'bancos', name: 'Bancos' },
+  ],
+}
+
+export const storesGeoJson = {
+  type: 'FeatureCollection' as const,
+  features: stores.map((store) => ({
+    type: 'Feature' as const,
+    properties: {
+      id: store.id,
+      nome: store.name,
+      categoria: store.group.slice(0, -1),
+      cor: store.color,
+      grupo: store.group,
+      subcategoria: store.subcategory,
+      endereco: store.address,
+    },
+    geometry: {
+      type: 'Point' as const,
+      coordinates: [store.longitude, store.latitude] as [number, number],
+    },
+  })),
+}
 
 // Tipos de Evento
 export interface Event {
@@ -284,7 +514,7 @@ export const events: Event[] = [
     category: 'Música',
     categoryTag: 'Forró ao Vivo',
     isHappening: true,
-    nearbyStores: ['1', '3']
+    nearbyStores: ['store_001', 'store_003']
   },
   {
     id: '2',
@@ -297,7 +527,7 @@ export const events: Event[] = [
     category: 'Cultura',
     categoryTag: 'Artesanato',
     isHappening: false,
-    nearbyStores: ['3', '5']
+    nearbyStores: ['store_003', 'mall_002']
   },
   {
     id: '3',
@@ -310,7 +540,7 @@ export const events: Event[] = [
     category: 'Gastronomia',
     categoryTag: 'Festival Gastronômico',
     isHappening: false,
-    nearbyStores: ['1', '4']
+    nearbyStores: ['market_001', 'mall_001']
   },
   {
     id: '4',
@@ -323,7 +553,7 @@ export const events: Event[] = [
     category: 'Música',
     categoryTag: 'Micareta',
     isHappening: false,
-    nearbyStores: ['2', '8']
+    nearbyStores: ['store_002', 'market_002']
   },
   {
     id: '5',
@@ -336,7 +566,7 @@ export const events: Event[] = [
     category: 'Cultura',
     categoryTag: 'Verão',
     isHappening: false,
-    nearbyStores: ['5', '3']
+    nearbyStores: ['mall_002', 'store_003']
   },
   {
     id: '6',
@@ -349,24 +579,25 @@ export const events: Event[] = [
     category: 'Cultura',
     categoryTag: 'Natal',
     isHappening: false,
-    nearbyStores: ['1', '4']
+    nearbyStores: ['market_001', 'mall_001']
   }
 ]
 
 // Categorias
 export interface Category {
-  id: string
+  id: StoreGroup
   name: string
   icon: string
   color: string
+  markerColor: string
 }
 
 export const categories: Category[] = [
-  { id: '1', name: 'Gastronomia', icon: '🍽️', color: 'bg-orange-100 text-orange-600' },
-  { id: '2', name: 'Moda', icon: '👗', color: 'bg-pink-100 text-pink-600' },
-  { id: '3', name: 'Serviços', icon: '🔧', color: 'bg-blue-100 text-blue-600' },
-  { id: '4', name: 'Cultura', icon: '🎨', color: 'bg-purple-100 text-purple-600' },
-  { id: '5', name: 'Ofertas', icon: '🏷️', color: 'bg-red-100 text-red-600' },
+  { id: 'lojas', name: 'Lojas', icon: 'LJ', color: 'bg-rose-100 text-rose-700', markerColor: '#FF4D4D' },
+  { id: 'shoppings', name: 'Shoppings', icon: 'SH', color: 'bg-violet-100 text-violet-700', markerColor: '#8E44AD' },
+  { id: 'mercados', name: 'Mercados', icon: 'MC', color: 'bg-emerald-100 text-emerald-700', markerColor: '#27AE60' },
+  { id: 'farmacias', name: 'Farmacias', icon: 'FM', color: 'bg-sky-100 text-sky-700', markerColor: '#3498DB' },
+  { id: 'servicos', name: 'Servicos', icon: 'SV', color: 'bg-amber-100 text-amber-700', markerColor: '#F39C12' },
 ]
 
 // Recompensas
@@ -386,8 +617,8 @@ export const rewards: Reward[] = [
     id: '1',
     title: '10% de desconto',
     description: 'Válido em qualquer produto da loja',
-    storeName: 'Mercado Municipal Antônio Franco',
-    storeId: '1',
+    storeName: 'Mercado Popular Central',
+    storeId: 'market_001',
     pointsCost: 300,
     image: '/images/cafe-sergipano.jpg',
     expiresAt: '2024-04-30'
@@ -396,8 +627,8 @@ export const rewards: Reward[] = [
     id: '2',
     title: 'Sobremesa Grátis',
     description: 'Na compra de qualquer prato principal',
-    storeName: 'Restaurante Cariri',
-    storeId: '4',
+    storeName: 'Shopping Centro Aracaju',
+    storeId: 'mall_001',
     pointsCost: 500,
     image: '/images/caranguejo-sergipano.jpg',
     expiresAt: '2024-04-15'
@@ -416,8 +647,8 @@ export const rewards: Reward[] = [
     id: '5',
     title: 'Livro Sergipano de Brinde',
     description: 'Livro de autor local na compra acima de R$50',
-    storeName: 'Livraria Escariz',
-    storeId: '5',
+    storeName: 'Galeria Comercial Sergipe',
+    storeId: 'mall_002',
     pointsCost: 350,
     image: '/images/livraria-leitura.jpg',
     expiresAt: '2024-04-25'
@@ -490,3 +721,5 @@ export const levels = [
 export function getUserLevel(points: number) {
   return levels.find(l => points >= l.minPoints && points < l.maxPoints) || levels[0]
 }
+
+

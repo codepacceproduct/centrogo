@@ -1,247 +1,372 @@
 'use client'
 
-import { useState, useMemo, useEffect, Suspense } from 'react'
+import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, SlidersHorizontal, X, Star } from 'lucide-react'
+import { ArrowLeft, SlidersHorizontal, X, Star, MapPinned } from 'lucide-react'
 import Link from 'next/link'
+
 import { BottomNav } from '@/components/bottom-nav'
 import { SearchBar } from '@/components/search-bar'
 import { StoreCard } from '@/components/store-card'
 import { StoreCardSkeleton } from '@/components/skeleton-loader'
-import { stores, categories, isStoreOpen } from '@/lib/data'
+import { categories, isStoreOpen, stores, storeSubcategoryFilters, type StoreGroup } from '@/lib/data'
 import { cn } from '@/lib/utils'
+
+const StoresMapLayer = dynamic(() => import('@/components/stores-map-layer'), {
+  ssr: false,
+})
 
 function LojasContent() {
   const searchParams = useSearchParams()
-  const categoryParam = searchParams.get('categoria')
-  
+  const categoryParam = searchParams.get('categoria') as StoreGroup | null
+  const promoParam = searchParams.get('filter')
+
   const [searchValue, setSearchValue] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam)
+  const [selectedCategory, setSelectedCategory] = useState<StoreGroup | null>(categoryParam)
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
+  const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [filters, setFilters] = useState({
     openNow: false,
     minRating: 0,
+    promoOnly: promoParam === 'promo',
   })
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 600)
+    const timer = setTimeout(() => setIsLoading(false), 500)
     return () => clearTimeout(timer)
   }, [])
 
+  useEffect(() => {
+    if (categoryParam && categories.some((item) => item.id === categoryParam)) {
+      setSelectedCategory(categoryParam)
+    }
+  }, [categoryParam])
+
+  useEffect(() => {
+    if (promoParam === 'promo') {
+      setFilters((current) => ({ ...current, promoOnly: true }))
+    }
+  }, [promoParam])
+
+  const subcategoryOptions = useMemo(
+    () => (selectedCategory ? storeSubcategoryFilters[selectedCategory] ?? [] : []),
+    [selectedCategory],
+  )
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      setSelectedSubcategory(null)
+      return
+    }
+
+    const stillValid = subcategoryOptions.some((option) => option.id === selectedSubcategory)
+    if (!stillValid) {
+      setSelectedSubcategory(null)
+    }
+  }, [selectedCategory, selectedSubcategory, subcategoryOptions])
+
   const filteredStores = useMemo(() => {
-    return stores.filter(store => {
-      // Busca por texto
+    return stores.filter((store) => {
       if (searchValue) {
-        const searchLower = searchValue.toLowerCase()
-        const matchesSearch = 
-          store.name.toLowerCase().includes(searchLower) ||
-          store.category.toLowerCase().includes(searchLower) ||
-          store.description.toLowerCase().includes(searchLower)
+        const query = searchValue.toLowerCase()
+        const matchesSearch =
+          store.name.toLowerCase().includes(query) ||
+          store.groupLabel.toLowerCase().includes(query) ||
+          store.subcategoryLabel.toLowerCase().includes(query) ||
+          store.address.toLowerCase().includes(query) ||
+          store.description.toLowerCase().includes(query)
+
         if (!matchesSearch) return false
       }
 
-      // Filtro por categoria
-      if (selectedCategory) {
-        if (store.category.toLowerCase() !== selectedCategory.toLowerCase()) return false
+      if (selectedCategory && store.group !== selectedCategory) {
+        return false
       }
 
-      // Filtro "Aberto Agora"
-      if (filters.openNow) {
-        if (!isStoreOpen(store.openHour, store.closeHour)) return false
+      if (selectedSubcategory && store.subcategory !== selectedSubcategory) {
+        return false
       }
 
-      // Filtro de avaliação mínima
-      if (filters.minRating > 0) {
-        if (store.rating < filters.minRating) return false
+      if (filters.openNow && !isStoreOpen(store.openHour, store.closeHour)) {
+        return false
+      }
+
+      if (filters.minRating > 0 && store.rating < filters.minRating) {
+        return false
+      }
+
+      if (filters.promoOnly && !store.hasPromotion) {
+        return false
       }
 
       return true
     })
-  }, [searchValue, selectedCategory, filters])
+  }, [filters, searchValue, selectedCategory, selectedSubcategory])
+
+  useEffect(() => {
+    if (filteredStores.length === 0) {
+      setSelectedStoreId(null)
+      return
+    }
+
+    const stillVisible = filteredStores.some((store) => store.id === selectedStoreId)
+    if (!stillVisible) {
+      setSelectedStoreId(filteredStores[0].id)
+    }
+  }, [filteredStores, selectedStoreId])
+
+  const selectedStore = useMemo(
+    () => filteredStores.find((store) => store.id === selectedStoreId) ?? filteredStores[0] ?? null,
+    [filteredStores, selectedStoreId],
+  )
 
   const activeFiltersCount = useMemo(() => {
     let count = 0
-    if (filters.openNow) count++
-    if (filters.minRating > 0) count++
+    if (filters.openNow) count += 1
+    if (filters.minRating > 0) count += 1
+    if (filters.promoOnly) count += 1
+    if (selectedSubcategory) count += 1
     return count
-  }, [filters])
+  }, [filters, selectedSubcategory])
 
   return (
     <main className="pb-24 lg:pb-8 lg:pt-24">
-      {/* Header */}
-      <header className="sticky top-0 lg:top-20 z-40 bg-background border-b border-border">
-        <div className="flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto">
-          <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
+      <header className="sticky top-0 z-40 border-b border-border bg-background lg:top-20">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
+          <Link href="/" className="rounded-full p-2 transition-colors hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <h1 className="font-semibold text-lg">Marketplace</h1>
+          <div>
+            <h1 className="font-semibold text-lg">Lojas do Centro</h1>
+            <p className="text-xs text-muted-foreground">Filtros especificos por tipo e mapa integrado com markers</p>
+          </div>
         </div>
 
-        {/* Busca */}
-        <div className="max-w-7xl mx-auto">
-          <SearchBar 
-            value={searchValue}
-            onChange={setSearchValue}
-            className="pb-3"
-          />
+        <div className="mx-auto max-w-7xl">
+          <SearchBar value={searchValue} onChange={setSearchValue} className="pb-3" />
         </div>
 
-        {/* Filtros rápidos */}
-        <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar max-w-7xl mx-auto">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 pb-3 no-scrollbar">
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowFilters(true)}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium shrink-0 transition-colors',
-              activeFiltersCount > 0 
-                ? 'border-primary bg-primary/10 text-primary' 
-                : 'border-border'
+              'flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+              activeFiltersCount > 0 ? 'border-primary bg-primary/10 text-primary' : 'border-border',
             )}
           >
             <SlidersHorizontal className="h-4 w-4" />
             Filtros
-            {activeFiltersCount > 0 && (
-              <span className="h-5 w-5 bg-primary text-primary-foreground rounded-full text-xs flex items-center justify-center">
+            {activeFiltersCount > 0 ? (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
                 {activeFiltersCount}
               </span>
-            )}
+            ) : null}
           </motion.button>
 
           <button
             onClick={() => setSelectedCategory(null)}
             className={cn(
-              'px-3 py-1.5 rounded-full border text-sm font-medium shrink-0 transition-colors',
-              !selectedCategory 
-                ? 'border-primary bg-primary text-primary-foreground' 
-                : 'border-border hover:bg-muted'
+              'shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+              !selectedCategory ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:bg-muted',
             )}
           >
             Todas
           </button>
 
-          {categories.map(category => (
+          {categories.map((category) => (
             <button
               key={category.id}
-              onClick={() => setSelectedCategory(
-                selectedCategory === category.name.toLowerCase() ? null : category.name.toLowerCase()
-              )}
+              onClick={() => setSelectedCategory((current) => (current === category.id ? null : category.id))}
               className={cn(
-                'px-3 py-1.5 rounded-full border text-sm font-medium shrink-0 transition-colors',
-                selectedCategory === category.name.toLowerCase()
-                  ? 'border-primary bg-primary text-primary-foreground' 
-                  : 'border-border hover:bg-muted'
+                'shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+                selectedCategory === category.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:bg-muted',
               )}
             >
-              {category.icon} {category.name}
+              {category.name}
             </button>
           ))}
         </div>
+
+        {subcategoryOptions.length > 0 ? (
+          <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 pb-3 no-scrollbar">
+            {subcategoryOptions.map((subcategory) => (
+              <button
+                key={subcategory.id}
+                onClick={() => setSelectedSubcategory((current) => (current === subcategory.id ? null : subcategory.id))}
+                className={cn(
+                  'shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+                  selectedSubcategory === subcategory.id
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border bg-card hover:bg-muted',
+                )}
+              >
+                {subcategory.name}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </header>
 
-      {/* Lista de Lojas */}
-      <div className="p-4 max-w-7xl mx-auto">
-        <p className="text-sm text-muted-foreground mb-4">
-          {filteredStores.length} {filteredStores.length === 1 ? 'loja encontrada' : 'lojas encontradas'}
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {isLoading ? (
-            Array.from({ length: 4 }).map((_, i) => (
-              <StoreCardSkeleton key={i} />
-            ))
-          ) : filteredStores.length > 0 ? (
-            filteredStores.map((store, index) => (
-              <StoreCard key={store.id} store={store} index={index} />
-            ))
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center py-12"
-            >
-              <div className="text-4xl mb-3">🔍</div>
-              <h3 className="font-semibold text-lg">Nenhuma loja encontrada</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Tente ajustar os filtros ou buscar por outro termo
+      <div className="mx-auto grid max-w-7xl gap-5 px-4 py-4 xl:grid-cols-[1.08fr_0.92fr]">
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-foreground">
+                {filteredStores.length} {filteredStores.length === 1 ? 'resultado encontrado' : 'resultados encontrados'}
               </p>
-              <button
-                onClick={() => {
-                  setSearchValue('')
-                  setSelectedCategory(null)
-                  setFilters({ openNow: false, minRating: 0 })
-                }}
-                className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium"
-              >
-                Limpar filtros
-              </button>
-            </motion.div>
-          )}
-        </div>
+              <p className="text-xs text-muted-foreground">Dados mockados integrados ao mapa do Centro de Aracaju</p>
+            </div>
+            <div className="hidden items-center gap-2 md:flex">
+              {categories.map((category) => (
+                <div key={category.id} className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: category.markerColor }} />
+                  <span>{category.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <StoresMapLayer
+            stores={filteredStores}
+            selectedStore={selectedStore}
+            onSelect={(store) => setSelectedStoreId(store.id)}
+          />
+
+          {selectedStore ? (
+            <div className="rounded-[1.75rem] border border-border bg-card p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: selectedStore.color }} />
+                    <span className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                      {selectedStore.groupLabel}
+                    </span>
+                  </div>
+                  <h2 className="font-semibold text-lg">{selectedStore.name}</h2>
+                  <p className="text-sm text-muted-foreground">{selectedStore.subcategoryLabel}</p>
+                </div>
+                <div className="flex items-center gap-1 rounded-xl bg-gold/10 px-2.5 py-1.5 text-sm font-semibold">
+                  <Star className="h-4 w-4 fill-gold text-gold" />
+                  {selectedStore.rating}
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <span>{selectedStore.address}</span>
+                <span>{selectedStore.openHour}:00 - {selectedStore.closeHour}:00</span>
+                <span>{selectedStore.phone}</span>
+              </div>
+            </div>
+          ) : null}
+        </section>
+
+        <section>
+          <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+            <MapPinned className="h-4 w-4" />
+            Cards e markers usam a mesma base mockada: nome, categoria, cor e localizacao.
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-1">
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, index) => <StoreCardSkeleton key={index} />)
+            ) : filteredStores.length > 0 ? (
+              filteredStores.map((store, index) => (
+                <div
+                  key={store.id}
+                  onClick={() => setSelectedStoreId(store.id)}
+                  className={cn(
+                    'cursor-pointer rounded-[1.75rem] transition-all',
+                    selectedStore?.id === store.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : '',
+                  )}
+                >
+                  <StoreCard store={store} index={index} />
+                </div>
+              ))
+            ) : (
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="py-14 text-center">
+                <div className="mb-3 text-4xl">MAP</div>
+                <h3 className="font-semibold text-lg">Nenhum ponto encontrado</h3>
+                <p className="mt-1 text-sm text-muted-foreground">Ajuste os filtros para exibir lojas e markers novamente.</p>
+                <button
+                  onClick={() => {
+                    setSearchValue('')
+                    setSelectedCategory(null)
+                    setSelectedSubcategory(null)
+                    setFilters({ openNow: false, minRating: 0, promoOnly: false })
+                  }}
+                  className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+                >
+                  Limpar filtros
+                </button>
+              </motion.div>
+            )}
+          </div>
+        </section>
       </div>
 
-      {/* Modal de Filtros */}
       <AnimatePresence>
-        {showFilters && (
+        {showFilters ? (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-foreground/20 z-50"
+              className="fixed inset-0 z-50 bg-foreground/20"
               onClick={() => setShowFilters(false)}
             />
             <motion.div
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 bg-background z-50 rounded-t-3xl max-h-[70vh] overflow-auto"
+              transition={{ type: 'spring', damping: 24, stiffness: 280 }}
+              className="fixed bottom-0 left-0 right-0 z-50 max-h-[72vh] overflow-auto rounded-t-3xl bg-background"
             >
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <h2 className="font-semibold text-lg">Filtros</h2>
-                <button 
-                  onClick={() => setShowFilters(false)}
-                  className="p-2 rounded-full hover:bg-muted transition-colors"
-                >
+              <div className="flex items-center justify-between border-b border-border p-4">
+                <h2 className="font-semibold text-lg">Filtros da rota /lojas</h2>
+                <button onClick={() => setShowFilters(false)} className="rounded-full p-2 transition-colors hover:bg-muted">
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
-              <div className="p-4 space-y-6">
-                {/* Aberto Agora */}
+              <div className="space-y-6 p-4">
                 <div>
-                  <label className="flex items-center justify-between cursor-pointer">
+                  <label className="flex cursor-pointer items-center justify-between">
                     <span className="font-medium">Aberto agora</span>
-                    <div 
-                      className={cn(
-                        'w-12 h-7 rounded-full p-1 transition-colors',
-                        filters.openNow ? 'bg-primary' : 'bg-muted'
-                      )}
-                      onClick={() => setFilters(f => ({ ...f, openNow: !f.openNow }))}
+                    <div
+                      className={cn('h-7 w-12 rounded-full p-1 transition-colors', filters.openNow ? 'bg-primary' : 'bg-muted')}
+                      onClick={() => setFilters((current) => ({ ...current, openNow: !current.openNow }))}
                     >
-                      <motion.div 
-                        className="h-5 w-5 bg-background rounded-full shadow"
-                        animate={{ x: filters.openNow ? 20 : 0 }}
-                      />
+                      <motion.div className="h-5 w-5 rounded-full bg-background shadow" animate={{ x: filters.openNow ? 20 : 0 }} />
                     </div>
                   </label>
                 </div>
 
-                {/* Avaliação mínima */}
                 <div>
-                  <p className="font-medium mb-3">Avaliação mínima</p>
-                  <div className="flex gap-2">
-                    {[0, 3, 4, 4.5].map(rating => (
+                  <label className="flex cursor-pointer items-center justify-between">
+                    <span className="font-medium">Somente promocao</span>
+                    <div
+                      className={cn('h-7 w-12 rounded-full p-1 transition-colors', filters.promoOnly ? 'bg-primary' : 'bg-muted')}
+                      onClick={() => setFilters((current) => ({ ...current, promoOnly: !current.promoOnly }))}
+                    >
+                      <motion.div className="h-5 w-5 rounded-full bg-background shadow" animate={{ x: filters.promoOnly ? 20 : 0 }} />
+                    </div>
+                  </label>
+                </div>
+
+                <div>
+                  <p className="mb-3 font-medium">Avaliacao minima</p>
+                  <div className="flex flex-wrap gap-2">
+                    {[0, 3, 4, 4.5].map((rating) => (
                       <button
                         key={rating}
-                        onClick={() => setFilters(f => ({ ...f, minRating: rating }))}
+                        onClick={() => setFilters((current) => ({ ...current, minRating: rating }))}
                         className={cn(
-                          'flex items-center gap-1 px-3 py-2 rounded-lg border transition-colors',
-                          filters.minRating === rating
-                            ? 'border-primary bg-primary/10 text-primary'
-                            : 'border-border hover:bg-muted'
+                          'flex items-center gap-1 rounded-lg border px-3 py-2 transition-colors',
+                          filters.minRating === rating ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:bg-muted',
                         )}
                       >
                         {rating === 0 ? (
@@ -257,19 +382,19 @@ function LojasContent() {
                   </div>
                 </div>
 
-                {/* Botões de ação */}
-                <div className="flex gap-3 pt-4 border-t border-border">
+                <div className="flex gap-3 border-t border-border pt-4">
                   <button
                     onClick={() => {
-                      setFilters({ openNow: false, minRating: 0 })
+                      setSelectedSubcategory(null)
+                      setFilters({ openNow: false, minRating: 0, promoOnly: false })
                     }}
-                    className="flex-1 py-3 rounded-xl border border-border font-medium"
+                    className="flex-1 rounded-xl border border-border py-3 font-medium"
                   >
                     Limpar
                   </button>
                   <button
                     onClick={() => setShowFilters(false)}
-                    className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-medium"
+                    className="flex-1 rounded-xl bg-primary py-3 font-medium text-primary-foreground"
                   >
                     Aplicar
                   </button>
@@ -277,7 +402,7 @@ function LojasContent() {
               </div>
             </motion.div>
           </>
-        )}
+        ) : null}
       </AnimatePresence>
 
       <BottomNav />
@@ -288,26 +413,24 @@ function LojasContent() {
 function LojasPageFallback() {
   return (
     <main className="pb-24 lg:pb-8 lg:pt-24">
-      <header className="sticky top-0 lg:top-20 z-40 bg-background border-b border-border">
-        <div className="flex items-center gap-3 px-4 py-3 max-w-7xl mx-auto">
-          <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
+      <header className="sticky top-0 z-40 border-b border-border bg-background lg:top-20">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
+          <Link href="/" className="rounded-full p-2 transition-colors hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <h1 className="font-semibold text-lg">Marketplace</h1>
+          <h1 className="font-semibold text-lg">Lojas do Centro</h1>
         </div>
-        <div className="px-4 pb-3 max-w-7xl mx-auto">
-          <div className="h-10 bg-muted rounded-xl animate-pulse" />
-        </div>
-        <div className="flex items-center gap-2 px-4 pb-3 max-w-7xl mx-auto">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-8 w-20 bg-muted rounded-full animate-pulse" />
-          ))}
+        <div className="mx-auto max-w-7xl px-4 pb-3">
+          <div className="h-10 animate-pulse rounded-xl bg-muted" />
         </div>
       </header>
-      <div className="p-4 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <StoreCardSkeleton key={i} />
-        ))}
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-4 py-4 xl:grid-cols-2">
+        <div className="h-[360px] animate-pulse rounded-[2rem] bg-muted" />
+        <div className="grid gap-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <StoreCardSkeleton key={index} />
+          ))}
+        </div>
       </div>
       <BottomNav />
     </main>
