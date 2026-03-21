@@ -18,6 +18,7 @@ import Link from 'next/link'
 
 import { BottomNav } from '@/components/bottom-nav'
 import FloatingLocationPreview from '@/components/explorar/FloatingLocationPreview'
+import LocationDetailsSheet from '@/components/explorar/LocationDetailsSheet'
 import LocationDrawer from '@/components/explorar/LocationDrawer'
 import { Skeleton } from '@/components/skeleton-loader'
 import {
@@ -136,6 +137,7 @@ export default function ExplorarPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isFullMap, setIsFullMap] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [drawerSnap, setDrawerSnap] = useState<DrawerSnap>('peek')
   const [resetCounter, setResetCounter] = useState(0)
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -183,6 +185,7 @@ export default function ExplorarPage() {
     setSelectedLocationId(location.id)
     setHoveredLocationId(location.id)
     setIsFullMap(true)
+    setIsDetailsOpen(false)
 
     if (options?.openDrawer) {
       setIsDrawerOpen(true)
@@ -197,6 +200,7 @@ export default function ExplorarPage() {
     setSelectedLocationId(null)
     setHoveredLocationId(null)
     setIsDrawerOpen(false)
+    setIsDetailsOpen(false)
     setResetCounter((current) => current + 1)
     setIsFullMap(true)
   }
@@ -218,9 +222,9 @@ export default function ExplorarPage() {
 
       <div className={cn('pointer-events-none fixed inset-0', isFullMap ? 'z-40 bg-[linear-gradient(180deg,rgba(15,23,42,0.08)_0%,rgba(15,23,42,0)_28%,rgba(15,23,42,0.12)_100%)]' : 'z-10 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_transparent_30%),linear-gradient(180deg,rgba(15,23,42,0.12)_0%,rgba(15,23,42,0)_32%,rgba(15,23,42,0.08)_100%)]')} />
 
-      <header className={cn('sticky top-0 z-[60]', isFullMap ? 'lg:top-6' : 'lg:top-24 lg:border-none lg:bg-transparent lg:backdrop-blur-0')}>
-        <div className="mx-auto max-w-6xl px-3 py-3 sm:px-4 lg:px-6 lg:py-2">
-          <div className={cn('flex w-full items-center rounded-full border border-white/65 bg-background/88 px-4 shadow-[0_14px_40px_-24px_rgba(15,23,42,0.5)] backdrop-blur-xl transition-all', isFullMap ? 'gap-3 py-2.5 lg:inline-flex lg:w-auto lg:px-4' : 'gap-3 py-3 lg:flex lg:w-full lg:px-5 lg:py-3')}>
+      <header className={cn('z-[60]', isFullMap ? 'fixed right-3 top-3 sm:right-4 lg:right-6 lg:top-6' : 'sticky top-0 lg:top-24 lg:border-none lg:bg-transparent lg:backdrop-blur-0')}>
+        <div className={cn(isFullMap ? 'px-0 py-0' : 'mx-auto max-w-6xl px-3 py-3 sm:px-4 lg:px-6 lg:py-2')}>
+          <div className={cn('flex items-center rounded-full border border-white/65 bg-background/88 px-4 shadow-[0_14px_40px_-24px_rgba(15,23,42,0.5)] backdrop-blur-xl transition-all', isFullMap ? 'w-auto gap-3 py-2.5 lg:px-4' : 'w-full gap-3 py-3 lg:flex lg:w-full lg:px-5 lg:py-3')}>
             <Link href="/" className="-ml-2 rounded-full p-2 transition-colors hover:bg-muted/80">
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -415,7 +419,13 @@ export default function ExplorarPage() {
         </>
       ) : null}
 
-      <AnimatePresence>{isFullMap && selectedLocation ? <FloatingLocationPreview location={selectedLocation} onOpenDetails={() => { setIsDrawerOpen(true); setDrawerSnap('full') }} /> : null}</AnimatePresence>
+      <AnimatePresence>{isFullMap && selectedLocation ? <FloatingLocationPreview location={selectedLocation} onOpenDetails={() => { setIsDetailsOpen(true); setIsDrawerOpen(false) }} /> : null}</AnimatePresence>
+
+      <LocationDetailsSheet
+        isOpen={isDetailsOpen}
+        location={selectedLocation}
+        onClose={() => setIsDetailsOpen(false)}
+      />
 
       <LocationDrawer
         isOpen={isDrawerOpen}
