@@ -43,7 +43,7 @@ export default function FabMenu({
           />
           <FabItem
             icon={ShieldAlert}
-            label="Seguranca"
+            label="Segurança"
             colorClass="bg-gradient-to-br from-rose-500 to-red-600"
             index={1}
             isHighlighted={emphasizedAction === 'security'}
@@ -79,3 +79,4 @@ export default function FabMenu({
     </AnimatePresence>
   )
 }
+

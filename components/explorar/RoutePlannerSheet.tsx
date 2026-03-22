@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -81,12 +81,12 @@ function formatMinutes(minutes: number) {
 
 function getLocationLabel(point: MapPoint, isFallback: boolean) {
   if (isFallback) return 'Origem aproximada no Centro'
-  return `Sua localizacao (${point.lat.toFixed(4)}, ${point.lng.toFixed(4)})`
+  return `Sua localização (${point.lat.toFixed(4)}, ${point.lng.toFixed(4)})`
 }
 
 function buildRouteSteps(location: ExplorarLocation, modeLabel: string, etaLabel: string) {
   return [
-    `Saia da sua localizacao atual e siga em direcao ao eixo central do bairro Centro.`,
+    `Saia da sua localização atual e siga em direção ao eixo central do bairro Centro.`,
     modeLabel === 'Onibus'
       ? `Va para o ponto de embarque mais proximo e acompanhe a rota principal ate ${location.nome}.`
       : `Acompanhe a linha destacada no mapa seguindo o melhor trajeto para ${location.nome}.`,
@@ -167,7 +167,7 @@ export default function RoutePlannerSheet({
         })
       } catch {
         if (isCancelled) return
-        setError('Nao foi possivel calcular a rota agora. Tente novamente em alguns segundos.')
+        setError('Não foi possível calcular a rota agora. Tente novamente em alguns segundos.')
       } finally {
         if (!isCancelled) setIsLoading(false)
       }
@@ -356,3 +356,4 @@ export default function RoutePlannerSheet({
     </AnimatePresence>
   )
 }
+

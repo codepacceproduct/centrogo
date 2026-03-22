@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
@@ -34,7 +34,15 @@ function PromoInfo({ text }: { text: string }) {
   )
 }
 
-function StatusPill({ isOpen }: { isOpen: boolean }) {
+function StatusPill({ isOpen }: { isOpen: boolean | null }) {
+  if (isOpen === null) {
+    return (
+      <span className="inline-flex rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-600">
+        Horario
+      </span>
+    )
+  }
+
   return (
     <span
       className={cn(
@@ -74,7 +82,7 @@ export function StoreCard({
   onCardClick,
   showDetailsButton = false,
 }: StoreCardProps) {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState<boolean | null>(null)
   const [isFavorite, setIsFavorite] = useState(false)
   const content = useNormalizedStore(store)
 
@@ -293,4 +301,6 @@ export function StoreCard({
     </Link>
   )
 }
+
+
 

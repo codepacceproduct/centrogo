@@ -1,6 +1,6 @@
-'use client'
+﻿'use client'
 
-import { use, useMemo } from 'react'
+import { use, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Star, MapPin, Phone, Clock, ExternalLink, Gift, Share2, Users, Tag, CheckCircle2, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
@@ -18,9 +18,18 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
   const router = useRouter()
   const store = stores.find((item) => item.id === id)
 
-  const isOpen = useMemo(() => (store ? isStoreOpen(store.openHour, store.closeHour) : false), [store])
+  const [isOpen, setIsOpen] = useState<boolean | null>(null)
   const distance = useMemo(() => getRandomDistance(id), [id])
   const visitors = useMemo(() => getRandomVisitors(id), [id])
+
+  useEffect(() => {
+    if (!store) {
+      setIsOpen(null)
+      return
+    }
+
+    setIsOpen(isStoreOpen(store.openHour, store.closeHour))
+  }, [store])
 
   if (!store) {
     return (
@@ -28,7 +37,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
         <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4">
           <div className="text-center">
             <p className="mb-3 text-4xl">:-(</p>
-            <h2 className="font-semibold text-lg">Loja nao encontrada</h2>
+            <h2 className="font-semibold text-lg">Loja não encontrada</h2>
             <Link href="/lojas" className="mt-2 inline-block text-sm text-primary">
               Voltar para lojas
             </Link>
@@ -94,10 +103,14 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
                   <span
                     className={cn(
                       'rounded-full px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur-sm',
-                      isOpen ? 'bg-success text-primary-foreground' : 'bg-white/20 text-white',
+                      isOpen === null
+                          ? 'bg-white/16 text-white/88'
+                          : isOpen
+                            ? 'bg-success text-primary-foreground'
+                            : 'bg-white/20 text-white',
                     )}
                   >
-                    {isOpen ? 'Aberto agora' : 'Fechado'}
+                    {isOpen === null ? 'Horario disponivel' : isOpen ? 'Aberto agora' : 'Fechado'}
                   </span>
                   <span className="rounded-full border border-white/10 bg-white/12 px-3 py-1 text-xs font-semibold text-white/92 shadow-sm backdrop-blur-sm">
                     {normalizeText(store.groupLabel)}
@@ -170,7 +183,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
                   <div className="mt-5 rounded-2xl border border-live/20 bg-live/10 p-4">
                     <div className="flex items-center gap-2 text-sm font-medium text-live">
                       <Tag className="h-4 w-4" />
-                      Promocao ativa
+                      Promoção ativa
                     </div>
                     <p className="mt-2 text-sm text-muted-foreground">{normalizeText(store.promotionText)}</p>
                   </div>
@@ -180,7 +193,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
               <div className="rounded-[1.75rem] border border-border bg-card p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-2 text-sm font-medium">
                   <CheckCircle2 className="h-4 w-4 text-primary" />
-                  Informacoes da operacao
+                  Informações da operação
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 rounded-xl bg-muted p-3">
@@ -195,7 +208,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
                     <Clock className="h-5 w-5 text-primary" />
                     <div>
                       <p className="text-sm font-medium">{store.openHour}:00 - {store.closeHour}:00</p>
-                      <p className="text-xs text-muted-foreground">Horario de funcionamento</p>
+                      <p className="text-xs text-muted-foreground">Horário de funcionamento</p>
                     </div>
                   </div>
 
@@ -336,3 +349,6 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
     </>
   )
 }
+
+
+

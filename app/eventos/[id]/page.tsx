@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { use, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
@@ -117,7 +117,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4">
           <div className="text-center">
             <p className="mb-3 text-4xl">:-(</p>
-            <h2 className="font-semibold text-lg">Evento nao encontrado</h2>
+            <h2 className="font-semibold text-lg">Evento não encontrado</h2>
             <Link href="/eventos" className="mt-2 inline-block text-sm text-primary">
               Voltar para eventos
             </Link>
@@ -221,7 +221,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               <div className="rounded-[1.6rem] border border-border bg-card p-4 shadow-sm md:col-span-2 xl:col-span-1">
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <Users className="h-4 w-4 text-primary" />
-                  Publico
+                  Público
                 </div>
                 <p className="mt-3 font-semibold">{attendees} pessoas acompanhando</p>
                 <p className="mt-1 text-sm text-muted-foreground">Presenca e interesse mockados para a experiencia</p>
@@ -232,7 +232,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <h3 className="font-semibold text-lg">Sobre o evento</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Contexto principal e informacoes de apoio</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Contexto principal e informações de apoio</p>
                 </div>
                 <div className="rounded-xl bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
                   {isMapEvent ? `${ambulantes.length} ambulante${ambulantes.length === 1 ? '' : 's'}` : 'Evento em destaque'}
@@ -259,7 +259,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
             <AccessibilityMapCard
               data={accessibilityMap}
-              description="Planejamento de chegada, circulacao e leitura do entorno para quem vai ao evento."
+              description="Planejamento de chegada, circulação e leitura do entorno para quem vai ao evento."
             />
 
             {isMapEvent ? (
@@ -359,7 +359,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               </div>
 
               {isInterested ? (
-                <p className="mt-3 text-center text-sm text-muted-foreground">Voce ganhou 50 pontos por confirmar interesse no evento.</p>
+                <p className="mt-3 text-center text-sm text-muted-foreground">Você ganhou 50 pontos por confirmar interesse no evento.</p>
               ) : null}
             </div>
 
@@ -394,4 +394,5 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
     </main>
   )
 }
+
 

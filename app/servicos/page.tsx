@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
@@ -152,7 +152,7 @@ export default function ServicosPage() {
               <MapPinned className="h-5 w-5 text-primary" />
               <div>
                 <h1 className="text-lg font-semibold">Servicos</h1>
-                <p className="text-[11px] text-muted-foreground">Servicos publicos no centro com mapa, contato e geolocalizacao</p>
+                <p className="text-[11px] text-muted-foreground">Serviços públicos no centro com mapa, contato e geolocalização</p>
               </div>
             </div>
             <div className="ml-auto flex items-center gap-2">
@@ -237,7 +237,7 @@ export default function ServicosPage() {
               <div className="rounded-[1.75rem] border border-border bg-card p-4 shadow-sm">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-foreground">Mapa de servicos publicos</h2>
+                    <h2 className="text-lg font-semibold text-foreground">Mapa de serviços públicos</h2>
                     <p className="text-sm text-muted-foreground">Clique no card para destacar o marker ou abra o modo mapa para navegacao rapida.</p>
                   </div>
                   <ServicoFilters activeCategory={activeCategory} onChange={setActiveCategory} />

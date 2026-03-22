@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -118,7 +118,7 @@ export function RatingModal({ isOpen, onClose, storeName = 'este perfil', onSubm
                   )}
                 >
                   <Send className="h-4 w-4" />
-                  Enviar avaliacao
+                  Enviar avaliação
                 </button>
               </>
             ) : (

@@ -291,7 +291,7 @@ export default function SuggestionsMap({
       <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-6rem)] flex-col gap-2">
         <div className="rounded-full border border-white/55 bg-background/85 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
           {pickerMode
-            ? 'Toque no mapa para definir a localizacao da sua sugestao'
+            ? 'Toque no mapa para definir a localização da sua sugestão'
             : 'Sugestoes publicas visiveis no mapa do centro'}
         </div>
         <div className="rounded-full border border-white/55 bg-background/85 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
@@ -352,4 +352,5 @@ export default function SuggestionsMap({
     </div>
   )
 }
+
 

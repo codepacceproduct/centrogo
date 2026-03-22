@@ -1,4 +1,4 @@
-import { AlertTriangle, Footprints, MapPinned, Route, ShieldCheck } from 'lucide-react'
+﻿import { AlertTriangle, Footprints, MapPinned, Route, ShieldCheck } from 'lucide-react'
 
 import { type AccessibilityMapData } from '@/lib/accessibility'
 import { cn } from '@/lib/utils'
@@ -20,7 +20,7 @@ const sections = [
 export function AccessibilityMapCard({
   data,
   title = 'Mapa de acessibilidade',
-  description = 'Contexto do entorno para planejar deslocamento e chegada com mais seguranca.',
+  description = 'Contexto do entorno para planejar deslocamento e chegada com mais segurança.',
   className,
 }: AccessibilityMapCardProps) {
   return (

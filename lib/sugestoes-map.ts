@@ -35,7 +35,7 @@ export interface Suggestion {
 
 export const suggestionsChannel = {
   route: '/sugestoes',
-  descricao: 'Canal de melhorias e sugestoes para o Centro de Aracaju (CentroGO)',
+  descricao: 'Canal de melhorias e sugestões para o Centro de Aracaju (CentroGO)',
   objetivo_estrategico: [
     'Coletar feedback da populacao, lojistas e organizadores de eventos',
     'Gerar inteligencia urbana baseada em dados reais',
@@ -43,8 +43,8 @@ export const suggestionsChannel = {
     'Criar backlog estruturado para decisoes publicas e privadas',
   ],
   tipos_envio: [
-    { tipo: 'publico' as const, descricao: 'Sugestao visivel para todos (feed comunitario)' },
-    { tipo: 'privado' as const, descricao: 'Sugestao confidencial enviada apenas para administracao' },
+    { tipo: 'publico' as const, descricao: 'Sugestão visível para todos (feed comunitário)' },
+    { tipo: 'privado' as const, descricao: 'Sugestão confidencial enviada apenas para administração' },
   ],
   estrutura_banco: {
     tabela: 'sugestoes_centro',
@@ -71,13 +71,13 @@ export const suggestionsChannel = {
     ],
   },
   regras_negocio: [
-    'Sugestoes publicas aparecem em feed aberto com interacao',
-    'Sugestoes privadas ficam visiveis apenas para admin',
-    'Sugestoes podem ser anonimas',
-    'Sistema de votacao aumenta prioridade automaticamente',
-    'Sugestoes com alta densidade geografica geram hotspots',
+    'Sugestões públicas aparecem em feed aberto com interação',
+    'Sugestões privadas ficam visíveis apenas para admin',
+    'Sugestões podem ser anônimas',
+    'Sistema de votação aumenta prioridade automaticamente',
+    'Sugestões com alta densidade geográfica geram hotspots',
     'Admin pode mudar status e responder',
-    "Empresas podem marcar sugestoes como oportunidade de patrocinio",
+    "Empresas podem marcar sugestões como oportunidade de patrocínio",
   ],
   integracoes: {
     mapa: {
@@ -104,19 +104,19 @@ export const suggestionsChannel = {
   diferencial_estrategico: [
     'Transforma reclamacao em dado estruturado',
     'Cria inteligencia urbana em tempo real',
-    'Conecta populacao + poder publico + lojistas',
+    'Conecta população + poder público + lojistas',
     'Base para decisoes e investimentos no centro',
-    'Ativa engajamento continuo (nao pontual)',
+    'Ativa engajamento contínuo (não pontual)',
   ],
   gamificacao: {
     usuario: [
-      'Ganha pontos ao enviar sugestoes',
-      'Ganha mais pontos se sugestao for aprovada',
-      'Ranking de cidadaos ativos',
+      'Ganha pontos ao enviar sugestões',
+      'Ganha mais pontos se a sugestão for aprovada',
+      'Ranking de cidadãos ativos',
       'Badge: Agente do Centro',
     ],
     lojistas: [
-      'Podem responder sugestoes',
+      'Podem responder sugestões',
       'Podem patrocinar melhorias',
       'Badge: Lojista Engajado',
     ],
@@ -124,26 +124,26 @@ export const suggestionsChannel = {
 } as const
 
 export const suggestionCategoryLabels: Record<SuggestionCategory, string> = {
-  seguranca: 'Seguranca',
+  seguranca: 'Segurança',
   infraestrutura: 'Infraestrutura',
   eventos: 'Eventos',
   limpeza: 'Limpeza',
-  iluminacao: 'Iluminacao',
+  iluminacao: 'Iluminação',
   mobilidade: 'Mobilidade',
   outros: 'Outros',
 }
 
 export const suggestionStatusLabels: Record<SuggestionStatus, string> = {
   pendente: 'Pendente',
-  em_analise: 'Em analise',
+  em_analise: 'Em análise',
   aprovado: 'Aprovado',
-  em_execucao: 'Em execucao',
+  em_execucao: 'Em execução',
   resolvido: 'Resolvido',
   rejeitado: 'Rejeitado',
 }
 
 export const suggestionAuthorTypeLabels: Record<SuggestionAuthorType, string> = {
-  populacao: 'Populacao',
+  populacao: 'População',
   lojista: 'Lojista',
   empresa_evento: 'Empresa/Evento',
 }
@@ -172,8 +172,8 @@ export const suggestionImpactThresholds = {
 export const mockSuggestions: Suggestion[] = [
   {
     id: 'sug_001',
-    titulo: 'Melhorar iluminacao no Calcadao Joao Pessoa',
-    descricao: 'Trecho com pouca iluminacao a noite, aumentando sensacao de inseguranca.',
+    titulo: 'Melhorar iluminação no Calçadão João Pessoa',
+    descricao: 'Trecho com pouca iluminação à noite, aumentando sensação de insegurança.',
     tipo_envio: 'publico',
     categoria: 'iluminacao',
     autor: {
@@ -182,7 +182,7 @@ export const mockSuggestions: Suggestion[] = [
     },
     anonimo: false,
     localizacao: {
-      endereco: 'Calcadao Joao Pessoa, Centro, Aracaju',
+      endereco: 'Calçadão João Pessoa, Centro, Aracaju',
       lat: -10.91079,
       lng: -37.04924,
     },
@@ -196,8 +196,8 @@ export const mockSuggestions: Suggestion[] = [
   },
   {
     id: 'sug_002',
-    titulo: 'Mais seguranca no Mercado Municipal',
-    descricao: 'Aumentar presenca da guarda municipal principalmente no periodo da tarde.',
+    titulo: 'Mais segurança no Mercado Municipal',
+    descricao: 'Aumentar presença da guarda municipal principalmente no período da tarde.',
     tipo_envio: 'publico',
     categoria: 'seguranca',
     autor: {
@@ -220,17 +220,17 @@ export const mockSuggestions: Suggestion[] = [
   },
   {
     id: 'sug_003',
-    titulo: 'Criar eventos culturais semanais na Praca Fausto Cardoso',
-    descricao: 'Atrair mais fluxo de pessoas com musica ao vivo e feiras gastronomicas.',
+    titulo: 'Criar eventos culturais semanais na Praça Fausto Cardoso',
+    descricao: 'Atrair mais fluxo de pessoas com música ao vivo e feiras gastronômicas.',
     tipo_envio: 'publico',
     categoria: 'eventos',
     autor: {
-      nome: 'EventoMix Producoes',
+      nome: 'EventoMix Produções',
       tipo: 'empresa_evento',
     },
     anonimo: false,
     localizacao: {
-      endereco: 'Praca Fausto Cardoso, Centro, Aracaju',
+      endereco: 'Praça Fausto Cardoso, Centro, Aracaju',
       lat: -10.911245,
       lng: -37.048012,
     },
@@ -244,8 +244,8 @@ export const mockSuggestions: Suggestion[] = [
   },
   {
     id: 'sug_004',
-    titulo: 'Reforma das calcadas na Rua Laranjeiras',
-    descricao: 'Calcadas irregulares dificultam circulacao e acessibilidade.',
+    titulo: 'Reforma das calçadas na Rua Laranjeiras',
+    descricao: 'Calçadas irregulares dificultam circulação e acessibilidade.',
     tipo_envio: 'publico',
     categoria: 'infraestrutura',
     autor: {
@@ -268,7 +268,7 @@ export const mockSuggestions: Suggestion[] = [
   },
   {
     id: 'sug_005',
-    titulo: 'Instalar Wi-Fi publico no centro',
+    titulo: 'Instalar Wi‑Fi público no centro',
     descricao: 'Melhorar conectividade para lojistas e visitantes.',
     tipo_envio: 'privado',
     categoria: 'infraestrutura',
@@ -359,4 +359,6 @@ export function sortSuggestions(suggestions: Suggestion[], mode: SuggestionSortM
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   })
 }
+
+
 

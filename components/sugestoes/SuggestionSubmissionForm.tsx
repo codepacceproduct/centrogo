@@ -141,8 +141,8 @@ export default function SuggestionSubmissionForm({ suggestions, onCreated }: Sug
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="descricao">Descricao</Label>
-            <Textarea id="descricao" value={formState.descricao} onChange={(event) => setFormState((current) => ({ ...current, descricao: event.target.value }))} className="min-h-28" placeholder="Descreva o problema ou a oportunidade com o maximo de contexto possivel" />
+            <Label htmlFor="descricao">Descrição</Label>
+            <Textarea id="descricao" value={formState.descricao} onChange={(event) => setFormState((current) => ({ ...current, descricao: event.target.value }))} className="min-h-28" placeholder="Descreva o problema ou a oportunidade com o máximo de contexto possível" />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -167,7 +167,7 @@ export default function SuggestionSubmissionForm({ suggestions, onCreated }: Sug
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="publico">Publico</SelectItem>
+                  <SelectItem value="publico">Público</SelectItem>
                   <SelectItem value="privado">Privado</SelectItem>
                 </SelectContent>
               </Select>
@@ -176,7 +176,7 @@ export default function SuggestionSubmissionForm({ suggestions, onCreated }: Sug
 
           <div className="space-y-2">
             <Label htmlFor="endereco">Endereco de referencia</Label>
-            <Input id="endereco" value={formState.endereco} onChange={(event) => setFormState((current) => ({ ...current, endereco: event.target.value }))} placeholder="Ex.: Rua Laranjeiras, esquina com Joao Pessoa" />
+            <Input id="endereco" value={formState.endereco} onChange={(event) => setFormState((current) => ({ ...current, endereco: event.target.value }))} placeholder="Ex.: Rua Laranjeiras, esquina com João Pessoa" />
           </div>
 
           <div className="space-y-2">
@@ -211,7 +211,7 @@ export default function SuggestionSubmissionForm({ suggestions, onCreated }: Sug
             />
             <div>
               <Label htmlFor="anonimo">Enviar como anonimo</Label>
-              <p className="mt-1 text-sm text-muted-foreground">Quando ativo, o feed publico mostrara sua sugestao sem exibir seu nome.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Quando ativo, o feed público mostrará sua sugestão sem exibir seu nome.</p>
             </div>
           </div>
         </div>
@@ -268,8 +268,8 @@ export default function SuggestionSubmissionForm({ suggestions, onCreated }: Sug
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <div className="rounded-[1.25rem] border border-border bg-card/80 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Cidadao ativo</p>
-              <p className="mt-2 text-lg font-semibold text-foreground">+35 pontos por nova sugestao</p>
-              <p className="mt-1 text-sm text-muted-foreground">+75 pontos extras se a sugestao entrar em aprovacao.</p>
+              <p className="mt-2 text-lg font-semibold text-foreground">+35 pontos por nova sugestão</p>
+              <p className="mt-1 text-sm text-muted-foreground">+75 pontos extras se a sugestão entrar em aprovação.</p>
             </div>
             <div className="rounded-[1.25rem] border border-border bg-card/80 p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Badge</p>
@@ -282,4 +282,5 @@ export default function SuggestionSubmissionForm({ suggestions, onCreated }: Sug
     </section>
   )
 }
+
 

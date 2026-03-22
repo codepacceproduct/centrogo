@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
@@ -187,7 +187,7 @@ function LojasContent() {
     }
 
     if (filters.promoOnly) {
-      tags.push({ id: 'promoOnly', label: 'Somente promocao', onRemove: () => setFilters((current) => ({ ...current, promoOnly: false })) })
+      tags.push({ id: 'promoOnly', label: 'Somente promoção', onRemove: () => setFilters((current) => ({ ...current, promoOnly: false })) })
     }
 
     return tags
@@ -365,7 +365,7 @@ function LojasContent() {
               <div className="flex items-center justify-between border-b border-border p-4">
                 <div>
                   <h2 className="font-semibold text-lg">Refinar lojas</h2>
-                  <p className="text-xs text-muted-foreground">Ajustes rapidos para disponibilidade, promocao e nota.</p>
+                  <p className="text-xs text-muted-foreground">Ajustes rápidos para disponibilidade, promoção e nota.</p>
                 </div>
                 <button onClick={() => setShowFilters(false)} className="rounded-full p-2 transition-colors hover:bg-muted">
                   <X className="h-5 w-5" />
@@ -389,7 +389,7 @@ function LojasContent() {
                 <div className="rounded-2xl border border-border p-4">
                   <p className="mb-3 font-medium">Promocoes</p>
                   <label className="flex cursor-pointer items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Exibir somente lojas com promocao ativa</span>
+                    <span className="text-sm text-muted-foreground">Exibir somente lojas com promoção ativa</span>
                     <div
                       className={cn('h-7 w-12 rounded-full p-1 transition-colors', filters.promoOnly ? 'bg-primary' : 'bg-muted')}
                       onClick={() => setFilters((current) => ({ ...current, promoOnly: !current.promoOnly }))}

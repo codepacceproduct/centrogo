@@ -1,6 +1,6 @@
-export type ServicoCategoria = 'saude' | 'seguranca' | 'financeiro' | 'publico' | 'emergencia'
+﻿export type ServicoCategoria = 'saude' | 'seguranca' | 'financeiro' | 'publico' | 'emergencia'
 
-export type ServicoPublico = {
+export type ServicoPúblico = {
   id: string
   nome: string
   categoria: ServicoCategoria
@@ -22,12 +22,12 @@ export type ServicoCategoryMeta = {
 
 export const SERVICOS_CATEGORY_META: Record<ServicoCategoria, ServicoCategoryMeta> = {
   saude: {
-    label: 'Saude',
+    label: 'Saúde',
     color: '#DC2626',
     pillClass: 'bg-red-100 text-red-700',
   },
   seguranca: {
-    label: 'Seguranca',
+    label: 'Segurança',
     color: '#2563EB',
     pillClass: 'bg-blue-100 text-blue-700',
   },
@@ -37,7 +37,7 @@ export const SERVICOS_CATEGORY_META: Record<ServicoCategoria, ServicoCategoryMet
     pillClass: 'bg-emerald-100 text-emerald-700',
   },
   publico: {
-    label: 'Publico',
+    label: 'Público',
     color: '#6B7280',
     pillClass: 'bg-slate-100 text-slate-700',
   },
@@ -50,14 +50,14 @@ export const SERVICOS_CATEGORY_META: Record<ServicoCategoria, ServicoCategoryMet
 
 export const SERVICOS_FILTERS: Array<{ id: 'all' | ServicoCategoria; label: string }> = [
   { id: 'all', label: 'Todos' },
-  { id: 'saude', label: 'Saude' },
-  { id: 'seguranca', label: 'Seguranca' },
+  { id: 'saude', label: 'Saúde' },
+  { id: 'seguranca', label: 'Segurança' },
   { id: 'financeiro', label: 'Financeiro' },
-  { id: 'publico', label: 'Publico' },
+  { id: 'publico', label: 'Público' },
   { id: 'emergencia', label: 'Emergencia' },
 ]
 
-export const servicosPublicos: ServicoPublico[] = [
+export const servicosPúblicos: ServicoPúblico[] = [
   {
     id: 'srv_001',
     nome: 'Hospital Nestor Piva',
@@ -130,3 +130,4 @@ export function formatDistance(distanceInMeters: number) {
 export function getWhatsAppHref(whatsapp: string) {
   return `https://wa.me/${whatsapp}`
 }
+

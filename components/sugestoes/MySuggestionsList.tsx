@@ -33,8 +33,8 @@ export default function MySuggestionsList({ suggestions, currentUserName, submit
     <section className="rounded-[2rem] border border-border/70 bg-background/92 p-5 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Minhas sugestoes</h2>
-          <p className="text-sm text-muted-foreground">Lista mockada a partir do usuario atual simulado, incluindo sugestoes publicas e privadas enviadas por ele.</p>
+          <h2 className="text-xl font-semibold text-foreground">Minhas sugestões</h2>
+          <p className="text-sm text-muted-foreground">Lista mockada a partir do usuário atual simulado, incluindo sugestões públicas e privadas enviadas por ele.</p>
         </div>
         <Badge variant="secondary" className="rounded-full">
           {currentUserName}
@@ -50,7 +50,7 @@ export default function MySuggestionsList({ suggestions, currentUserName, submit
       <div className="mt-5 space-y-4">
         {suggestions.length === 0 ? (
           <div className="rounded-[1.5rem] border border-dashed border-border bg-card/70 p-8 text-center text-sm text-muted-foreground">
-            O usuario mock atual ainda nao possui sugestoes cadastradas.
+            O usuário mock atual ainda não possui sugestões cadastradas.
           </div>
         ) : (
           suggestions.map((suggestion) => (
@@ -65,7 +65,7 @@ export default function MySuggestionsList({ suggestions, currentUserName, submit
                       {getSuggestionStatusLabel(suggestion.status)}
                     </Badge>
                     <Badge variant="outline" className="rounded-full">
-                      {suggestion.tipo_envio === 'publico' ? 'Publico' : 'Privado'}
+                      {suggestion.tipo_envio === 'publico' ? 'Público' : 'Privado'}
                     </Badge>
                   </div>
                   <h3 className="mt-3 text-lg font-semibold text-foreground">{suggestion.titulo}</h3>
@@ -82,7 +82,7 @@ export default function MySuggestionsList({ suggestions, currentUserName, submit
               <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span>{suggestion.localizacao?.endereco ?? 'Sem endereco informado'}</span>
+                  <span>{suggestion.localizacao?.endereco ?? 'Sem endereço informado'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-amber-600" />
@@ -108,4 +108,5 @@ export default function MySuggestionsList({ suggestions, currentUserName, submit
     </section>
   )
 }
+
 

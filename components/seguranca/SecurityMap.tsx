@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Map, Source, type LayerProps, type MapRef } from 'react-map-gl/maplibre'
@@ -181,7 +181,7 @@ export default function SecurityMap({ locations, selectedLocation, onSelect }: S
           type: 'Feature',
           properties: {
             kind: 'user',
-            nome: 'Sua localizacao',
+            nome: 'Sua localização',
           },
           geometry: {
             type: 'Point',
@@ -412,22 +412,22 @@ export default function SecurityMap({ locations, selectedLocation, onSelect }: S
       <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-6rem)] flex-col gap-2">
         <div className="rounded-full border border-white/55 bg-background/85 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
           {locationMode === 'locating'
-            ? 'Buscando sua localizacao...'
+            ? 'Buscando sua localização...'
             : locationMode === 'live'
-              ? 'Sua localizacao ativa'
-              : 'Ative a geolocalizacao para visualizar sua referencia'}
+              ? 'Sua localização ativa'
+              : 'Ative a geolocalização para visualizar sua referência'}
         </div>
         <div className="rounded-full border border-white/55 bg-background/85 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
           {selectedLocation
             ? !userLocation
-              ? 'Selecione um ponto e ative a localizacao'
+              ? 'Selecione um ponto e ative a localização'
               : isRouting
                 ? 'Gerando rota...'
                 : routeMode === 'mapbox'
                   ? 'Rota do usuario ate a unidade'
                   : 'Rota aproximada do usuario ate a unidade'
             : hoveredId
-              ? 'Ponto de seguranca em destaque'
+              ? 'Ponto de segurança em destaque'
               : 'Toque em um marcador para ver os detalhes'}
         </div>
       </div>
@@ -492,3 +492,4 @@ export default function SecurityMap({ locations, selectedLocation, onSelect }: S
     </div>
   )
 }
+

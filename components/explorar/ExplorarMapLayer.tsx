@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Map, Source, type LayerProps, type MapRef } from 'react-map-gl/maplibre'
@@ -215,7 +215,7 @@ export default function ExplorarMapLayer({
       features: [
         {
           type: 'Feature',
-          properties: { kind: 'user', nome: 'Sua localizacao' },
+          properties: { kind: 'user', nome: 'Sua localização' },
           geometry: {
             type: 'Point',
             coordinates: userMapCoordinates,
@@ -381,7 +381,7 @@ export default function ExplorarMapLayer({
         ref={mapRef}
         onLoad={() => setMapIssue(null)}
         onError={() => {
-          setMapIssue('Nao foi possivel carregar a base do mapa agora.')
+          setMapIssue('Não foi possível carregar a base do mapa agora.')
         }}
         onMouseMove={(event) => {
           const id = event.features?.[0]?.properties?.id
@@ -548,7 +548,7 @@ export default function ExplorarMapLayer({
 
       <div className="pointer-events-none absolute left-3 top-[5.5rem] z-20 flex max-w-[calc(100%-1.5rem)] flex-col gap-2 sm:left-4 sm:top-4 sm:max-w-[calc(100%-8rem)] lg:top-6 lg:max-w-sm">
         {locationMode === 'locating' ? (
-          <StatusPill>Buscando sua localizacao...</StatusPill>
+          <StatusPill>Buscando sua localização...</StatusPill>
         ) : locationMode === 'live' ? (
           <StatusPill>Localizacao ativa</StatusPill>
         ) : (
@@ -618,3 +618,4 @@ export default function ExplorarMapLayer({
     </div>
   )
 }
+

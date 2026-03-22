@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -14,6 +14,7 @@ import { CompactCardSkeleton } from '@/components/skeleton-loader'
 import { LiveBadge } from '@/components/live-badge'
 import { stores, events, categories, currentUser, getRandomVisitors, discoverySuggestions } from '@/lib/data'
 import { SplashScreen } from '@/components/splash-screen'
+import { OnboardingWrapper } from '@/components/onboarding/onboarding-wrapper'
 import { normalizeText } from '@/lib/text'
 
 const categoryIcons = {
@@ -34,12 +35,23 @@ const storyData = [
 
 let hasShownStartupSplash = false
 
+type OnboardingStatus = 'visible' | 'hidden'
+
 export default function HomePageClient() {
   const [searchValue, setSearchValue] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [visitors, setVisitors] = useState(0)
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null)
   const [showSplash, setShowSplash] = useState(false)
+  const [onboardingStatus, setOnboardingStatus] = useState<OnboardingStatus>(() => {
+    if (typeof window === 'undefined') return 'hidden'
+
+    try {
+      return window.localStorage.getItem('onboarding_completed') === 'true' ? 'hidden' : 'visible'
+    } catch {
+      return 'visible'
+    }
+  })
 
   useEffect(() => {
     setVisitors(getRandomVisitors())
@@ -81,6 +93,10 @@ export default function HomePageClient() {
   return (
     <>
       <SplashScreen isVisible={showSplash} />
+      <OnboardingWrapper
+        isVisible={!showSplash && !isLoading && onboardingStatus === 'visible'}
+        onComplete={() => setOnboardingStatus('hidden')}
+      />
       <main className="min-h-screen bg-background pb-28 lg:pb-8 lg:pt-24">
         <Header />
 
@@ -273,7 +289,7 @@ export default function HomePageClient() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold">Proximos Eventos</h2>
-                  <p className="text-xs text-muted-foreground">Nao perca!</p>
+                  <p className="text-xs text-muted-foreground">Não perca!</p>
                 </div>
               </div>
               <Link
@@ -320,3 +336,6 @@ export default function HomePageClient() {
     </>
   )
 }
+
+
+

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
@@ -131,7 +131,7 @@ export function SplashScreen({ isVisible, onComplete }: SplashScreenProps) {
               transition={{ delay: 0.9, duration: 0.5 }}
               className="mt-4 text-sm text-primary-foreground/60 text-center max-w-[200px]"
             >
-              O centro como um shopping a céu aberto
+              {'O centro como um shopping a c\u00e9u aberto'}
             </motion.p>
 
             {/* Progress bar */}
@@ -190,3 +190,4 @@ export function SplashScreen({ isVisible, onComplete }: SplashScreenProps) {
     </AnimatePresence>
   )
 }
+

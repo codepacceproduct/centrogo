@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Map, Source, type LayerProps, type MapRef } from 'react-map-gl/maplibre'
@@ -190,7 +190,7 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
           type: 'Feature',
           properties: {
             kind: 'user',
-            nome: 'Sua localizacao',
+            nome: 'Sua localização',
           },
           geometry: {
             type: 'Point',
@@ -428,15 +428,15 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
       <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-6rem)] flex-col gap-2">
         <div className="rounded-full border border-white/55 bg-background/85 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
           {locationMode === 'locating'
-            ? 'Buscando sua localizacao...'
+            ? 'Buscando sua localização...'
             : locationMode === 'live'
-              ? 'Sua localizacao ativa'
-              : 'Ative a geolocalizacao para tracar a rota'}
+              ? 'Sua localização ativa'
+              : 'Ative a geolocalização para traçar a rota'}
         </div>
         <div className="rounded-full border border-white/55 bg-background/85 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
           {selectedStore
             ? !userLocation
-              ? 'Aguardando sua localizacao para gerar a rota'
+              ? 'Aguardando sua localização para gerar a rota'
               : isRouting
                 ? 'Gerando rota...'
                 : routeMode === 'mapbox'
@@ -508,5 +508,7 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
     </div>
   )
 }
+
+
 
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
@@ -342,7 +342,7 @@ export default function EventosPage() {
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Escalavel</p>
                       <p className="mt-1 flex items-center gap-1 text-sm">
                         <Star className="h-3.5 w-3.5 text-amber-500" />
-                        Pronto para avaliacao, vendas e ranking por evento
+                        Pronto para avaliação, vendas e ranking por evento
                       </p>
                     </div>
                   </div>

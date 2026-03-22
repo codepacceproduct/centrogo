@@ -1,15 +1,14 @@
-import type { MapPoint } from '@/services/mapbox'
+﻿import type { MapPoint } from '@/services/mapbox'
 
 export type SecurityType =
-  | 'delegacia'
   | 'policia_militar'
   | 'guarda_municipal'
-  | 'posto_policial'
-  | 'delegacia_especializada'
   | 'bombeiros'
-  | 'hospital_publico'
-  | 'posto_saude'
   | 'emergencia_medica'
+  | 'defesa_civil'
+  | 'hospital'
+  | 'clinica'
+  | 'plano_saude'
 
 export interface SecurityContact {
   telefone: string
@@ -39,184 +38,226 @@ interface RawSecurityLocation extends MapPoint {
 }
 
 const SECURITY_TYPE_LABELS: Record<SecurityType, string> = {
-  delegacia: 'Delegacia',
   policia_militar: 'Policia Militar',
   guarda_municipal: 'Guarda Municipal',
-  posto_policial: 'Posto Policial',
-  delegacia_especializada: 'Delegacia Especializada',
   bombeiros: 'Bombeiros',
-  hospital_publico: 'Hospital Publico',
-  posto_saude: 'Posto de Saude',
-  emergencia_medica: 'Emergencia Medica',
+  emergencia_medica: 'Emergência Médica',
+  defesa_civil: 'Defesa Civil',
+  hospital: 'Hospital',
+  clinica: 'Clinica',
+  plano_saude: 'Saúde',
 }
 
 const SECURITY_TYPE_COLORS: Record<SecurityType, string> = {
-  delegacia: '#2563eb',
   policia_militar: '#1d4ed8',
   guarda_municipal: '#0f766e',
-  posto_policial: '#0891b2',
-  delegacia_especializada: '#7c3aed',
   bombeiros: '#dc2626',
-  hospital_publico: '#ea580c',
-  posto_saude: '#16a34a',
   emergencia_medica: '#db2777',
+  defesa_civil: '#d97706',
+  hospital: '#ea580c',
+  clinica: '#16a34a',
+  plano_saude: '#7c3aed',
 }
 
 const SECURITY_TYPE_SUMMARY: Record<SecurityType, string> = {
-  delegacia: 'Atendimento policial e registro de ocorrencias',
   policia_militar: 'Patrulhamento ostensivo e apoio imediato',
-  guarda_municipal: 'Seguranca urbana e apoio no centro',
-  posto_policial: 'Ponto de apoio com cobertura local',
-  delegacia_especializada: 'Atendimento especializado ao publico',
-  bombeiros: 'Incendio, resgate e emergencias',
-  hospital_publico: 'Urgencia e atendimento hospitalar',
-  posto_saude: 'Atendimento basico de saude',
-  emergencia_medica: 'Resposta movel de urgencia',
+  guarda_municipal: 'Segurança urbana e apoio no centro',
+  bombeiros: 'Incêndio, resgate e emergências',
+  emergencia_medica: 'Resposta móvel de urgência',
+  defesa_civil: 'Monitoramento de risco e atendimento emergencial',
+  hospital: 'Atendimento hospitalar e suporte de urgencia',
+  clinica: 'Atendimento clínico e suporte em saúde',
+  plano_saude: 'Atendimento médico e rede de saúde',
 }
 
 export const DEFAULT_SECURITY_CENTER: MapPoint = {
-  lat: -10.9138,
-  lng: -37.0489,
+  lat: -10.9140202,
+  lng: -37.0673404,
 }
 
-const RAW_SECURITY_LOCATIONS: RawSecurityLocation[] = [
+const MAIN_SECURITY_LOCATIONS_RAW: RawSecurityLocation[] = [
   {
-    id: 'seg_001',
-    nome: '1a Delegacia Metropolitana',
-    tipo: 'delegacia',
-    endereco: 'Rua Itabaianinha, Centro, Aracaju - SE',
-    lat: -10.911897,
-    lng: -37.048512,
-    contato: {
-      telefone: '(79) 3214-1201',
-      email: '1dm.centro@policiacivil.se.gov.br',
-      responsavel: 'Delegado Joao Ribeiro',
-    },
-    horarioFuncionamento: '24h',
-  },
-  {
-    id: 'seg_002',
-    nome: '2o Batalhao da Policia Militar',
+    id: 'seg_pmse_001',
+    nome: 'PMSE',
     tipo: 'policia_militar',
-    endereco: 'Av. Ivo do Prado, Centro, Aracaju - SE',
-    lat: -10.911122,
-    lng: -37.044875,
+    endereco: 'Ponto mapeado da Policia Militar, Aracaju - SE',
+    lat: -10.9197847,
+    lng: -37.0772116,
     contato: {
-      telefone: '(79) 3226-8300',
-      email: '2bpm@pm.se.gov.br',
-      responsavel: 'Tenente-Coronel Marcos Silva',
+      telefone: '190',
+      email: 'pmse.centro@seguranca.se.gov.br',
+      responsavel: 'Equipe de atendimento PMSE',
     },
     horarioFuncionamento: '24h',
   },
   {
-    id: 'seg_003',
+    id: 'seg_gm_001',
     nome: 'Guarda Municipal de Aracaju - Base Centro',
     tipo: 'guarda_municipal',
     endereco: 'Praca General Valadao, Centro, Aracaju - SE',
     lat: -10.910478,
     lng: -37.048201,
     contato: {
-      telefone: '(79) 3179-1400',
+      telefone: '153',
       email: 'gma.centro@aracaju.se.gov.br',
       responsavel: 'Inspetor Carlos Andrade',
     },
     horarioFuncionamento: '24h',
   },
   {
-    id: 'seg_004',
-    nome: 'Posto Policial - Mercado Municipal',
-    tipo: 'posto_policial',
-    endereco: 'Mercado Municipal Antonio Franco, Centro, Aracaju - SE',
-    lat: -10.909735,
-    lng: -37.052103,
-    contato: {
-      telefone: '(79) 99911-2204',
-      email: 'posto.mercado@pm.se.gov.br',
-      responsavel: 'Sargento Paulo Souza',
-    },
-    horarioFuncionamento: '06:00 - 18:00',
-  },
-  {
-    id: 'seg_005',
-    nome: 'Delegacia de Turismo (Detur)',
-    tipo: 'delegacia_especializada',
-    endereco: 'Rua Pacatuba, Centro, Aracaju - SE',
-    lat: -10.912345,
-    lng: -37.046912,
-    contato: {
-      telefone: '(79) 3214-1450',
-      email: 'detur@policiacivil.se.gov.br',
-      responsavel: 'Delegada Ana Beatriz Costa',
-    },
-    horarioFuncionamento: '08:00 - 18:00',
-  },
-  {
-    id: 'seg_006',
-    nome: 'Central de Flagrantes',
-    tipo: 'delegacia',
-    endereco: 'Av. Tancredo Neves, Aracaju - SE',
-    lat: -10.9275,
-    lng: -37.0603,
-    contato: {
-      telefone: '(79) 3205-9400',
-      email: 'flagrantes@policiacivil.se.gov.br',
-      responsavel: 'Delegado Ricardo Menezes',
-    },
-    horarioFuncionamento: '24h',
-  },
-  {
-    id: 'seg_007',
+    id: 'seg_bomb_001',
     nome: 'Corpo de Bombeiros - Centro',
     tipo: 'bombeiros',
     endereco: 'Rua Itabaiana, Centro, Aracaju - SE',
     lat: -10.908912,
     lng: -37.049887,
     contato: {
-      telefone: '(79) 193',
+      telefone: '193',
       email: 'atendimento@cbmse.se.gov.br',
       responsavel: 'Capitao Eduardo Santos',
     },
     horarioFuncionamento: '24h',
   },
   {
-    id: 'seg_008',
-    nome: 'Hospital de Urgencia de Sergipe (HUSE)',
-    tipo: 'hospital_publico',
-    endereco: 'Av. Tancredo Neves, Aracaju - SE',
-    lat: -10.927923,
-    lng: -37.060456,
-    contato: {
-      telefone: '(79) 3225-8000',
-      email: 'contato@huse.se.gov.br',
-      responsavel: 'Dr. Marcelo Oliveira',
-    },
-    horarioFuncionamento: '24h',
-  },
-  {
-    id: 'seg_009',
-    nome: 'Unidade Basica de Saude - Centro',
-    tipo: 'posto_saude',
-    endereco: 'Centro, Aracaju - SE',
-    lat: -10.9153,
-    lng: -37.0502,
-    contato: {
-      telefone: '(79) 3211-3300',
-      email: 'ubs.centro@aracaju.se.gov.br',
-      responsavel: 'Enf. Juliana Martins',
-    },
-    horarioFuncionamento: '07:00 - 17:00',
-  },
-  {
-    id: 'seg_010',
+    id: 'seg_samu_001',
     nome: 'SAMU Base Aracaju Centro',
     tipo: 'emergencia_medica',
     endereco: 'Centro Administrativo, Aracaju - SE',
     lat: -10.9138,
     lng: -37.0479,
     contato: {
-      telefone: '(79) 192',
+      telefone: '192',
       email: 'samu@saude.se.gov.br',
       responsavel: 'Coordenador Felipe Araujo',
+    },
+    horarioFuncionamento: '24h',
+  },
+  {
+    id: 'seg_dc_001',
+    nome: 'Defesa Civil',
+    tipo: 'defesa_civil',
+    endereco: 'Atendimento emergencial da Defesa Civil, Aracaju - SE',
+    lat: -10.9170397,
+    lng: -37.0504143,
+    contato: {
+      telefone: '199',
+      email: 'defesacivil@aracaju.se.gov.br',
+      responsavel: 'Equipe de plantao da Defesa Civil',
+    },
+    horarioFuncionamento: '24h',
+  },
+]
+
+const HEALTH_LOCATIONS_RAW: RawSecurityLocation[] = [
+  {
+    id: 'health_001',
+    nome: 'Hospital Sao Jose',
+    tipo: 'hospital',
+    endereco: 'Hospital Sao Jose, Aracaju - SE',
+    lat: -10.90176201283367,
+    lng: -37.05452259373581,
+    contato: {
+      telefone: '0000-0000',
+      email: 'contato@hospitalsaojose.se',
+      responsavel: 'Recepcao Hospital Sao Jose',
+    },
+    horarioFuncionamento: '24h',
+  },
+  {
+    id: 'health_002',
+    nome: 'Hospital Dr. Nestor Piva',
+    tipo: 'hospital',
+    endereco: 'Hospital Dr. Nestor Piva, Aracaju - SE',
+    lat: -10.904503423360163,
+    lng: -37.06735883733688,
+    contato: {
+      telefone: '0000-0000',
+      email: 'contato@nestorpiva.se',
+      responsavel: 'Recepcao Hospital Nestor Piva',
+    },
+    horarioFuncionamento: '24h',
+  },
+  {
+    id: 'health_003',
+    nome: 'HAPVIDA',
+    tipo: 'plano_saude',
+    endereco: 'HAPVIDA, Aracaju - SE',
+    lat: -10.911815552812778,
+    lng: -37.05026753588088,
+    contato: {
+      telefone: '0000-0000',
+      email: 'contato@hapvida.com.br',
+      responsavel: 'Atendimento HAPVIDA',
+    },
+    horarioFuncionamento: '24h',
+  },
+  {
+    id: 'health_004',
+    nome: 'Hospital Gabriel Soares',
+    tipo: 'hospital',
+    endereco: 'Hospital Gabriel Soares, Aracaju - SE',
+    lat: -10.919939208114286,
+    lng: -37.050482733390176,
+    contato: {
+      telefone: '0000-0000',
+      email: 'contato@hospitalgabrielsoares.se',
+      responsavel: 'Recepcao Hospital Gabriel Soares',
+    },
+    horarioFuncionamento: '24h',
+  },
+  {
+    id: 'health_005',
+    nome: 'Hospital Cirurgia',
+    tipo: 'hospital',
+    endereco: 'Hospital Cirurgia, Aracaju - SE',
+    lat: -10.917668740057454,
+    lng: -37.05913972741158,
+    contato: {
+      telefone: '0000-0000',
+      email: 'contato@hospitalcirurgia.se',
+      responsavel: 'Recepcao Hospital Cirurgia',
+    },
+    horarioFuncionamento: '24h',
+  },
+  {
+    id: 'health_006',
+    nome: 'IpeSaude',
+    tipo: 'plano_saude',
+    endereco: 'IpeSaude, Aracaju - SE',
+    lat: -10.918270077593359,
+    lng: -37.05959904448518,
+    contato: {
+      telefone: '0000-0000',
+      email: 'contato@ipesaude.se.gov.br',
+      responsavel: 'Atendimento IpeSaude',
+    },
+    horarioFuncionamento: '24h',
+  },
+  {
+    id: 'health_007',
+    nome: 'Hospital Sao Lucas',
+    tipo: 'hospital',
+    endereco: 'Hospital Sao Lucas, Aracaju - SE',
+    lat: -10.924179982501004,
+    lng: -37.05201865349148,
+    contato: {
+      telefone: '0000-0000',
+      email: 'contato@hospitalsaolucas.se',
+      responsavel: 'Recepcao Hospital Sao Lucas',
+    },
+    horarioFuncionamento: '24h',
+  },
+  {
+    id: 'health_008',
+    nome: 'CenterMed',
+    tipo: 'clinica',
+    endereco: 'CenterMed, Aracaju - SE',
+    lat: -10.908360026621,
+    lng: -37.05098341002646,
+    contato: {
+      telefone: '0000-0000',
+      email: 'contato@centermed.se',
+      responsavel: 'Atendimento CenterMed',
     },
     horarioFuncionamento: '24h',
   },
@@ -231,8 +272,10 @@ function buildSecurityLocation(location: RawSecurityLocation): SecurityLocation 
   }
 }
 
-export const securityLocations = RAW_SECURITY_LOCATIONS.map(buildSecurityLocation)
+export const securityLocations = MAIN_SECURITY_LOCATIONS_RAW.map(buildSecurityLocation)
+export const emergencySecurityLocations = securityLocations
+export const healthLocations = HEALTH_LOCATIONS_RAW.map(buildSecurityLocation)
+export const allSecurityLocations = [...securityLocations, ...healthLocations]
 
-export const emergencySecurityLocations = securityLocations.filter((location) =>
-  ['policia_militar', 'bombeiros', 'emergencia_medica'].includes(location.tipo),
-)
+
+

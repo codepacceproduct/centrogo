@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Map, Source, type LayerProps, type MapRef } from 'react-map-gl/maplibre'
@@ -181,7 +181,7 @@ export default function ServicoMap({
           type: 'Feature',
           properties: {
             kind: 'user',
-            nome: 'Sua localizacao',
+            nome: 'Sua localização',
           },
           geometry: {
             type: 'Point',
@@ -363,7 +363,7 @@ export default function ServicoMap({
 
       <div className="pointer-events-none absolute left-3 top-3 z-20 flex max-w-[calc(100%-6rem)] flex-col gap-2">
         <div className="rounded-full border border-white/55 bg-background/84 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
-          {userLocation ? 'Servicos proximos com geolocalizacao ativa' : 'Mapa urbano com localizacao aproximada do centro'}
+          {userLocation ? 'Serviços próximos com geolocalização ativa' : 'Mapa urbano com localização aproximada do centro'}
         </div>
         {nearestDistanceLabel ? (
           <div className="rounded-full border border-white/55 bg-background/84 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
@@ -419,5 +419,6 @@ export default function ServicoMap({
     </div>
   )
 }
+
 
 

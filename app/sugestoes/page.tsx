@@ -154,7 +154,7 @@ export default function SugestoesPage() {
                 </div>
                 <h1 className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Canal de melhorias do CentroGO</h1>
                 <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">
-                  {suggestionsChannel.descricao}. Transforme percepcao da rua em dado estruturado para orientar melhorias no Centro de Aracaju.
+                  {suggestionsChannel.descricao}. Transforme percepção da rua em dado estruturado para orientar melhorias no Centro de Aracaju.
                 </p>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function SugestoesPage() {
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <div className="rounded-[1.35rem] border border-border/70 bg-card/80 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Feed publico</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Feed público</p>
               <p className="mt-2 text-2xl font-semibold text-foreground">{stats.publicCount}</p>
               <p className="text-sm text-muted-foreground">Sugestoes visiveis no mapa comunitario</p>
             </div>
@@ -197,7 +197,7 @@ export default function SugestoesPage() {
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)} className="gap-4">
           <TabsList className="grid h-auto w-full grid-cols-3 rounded-[1.25rem] bg-muted/70 p-1">
-            <TabsTrigger value="feed" className="rounded-[1rem] py-2.5">Feed Publico</TabsTrigger>
+            <TabsTrigger value="feed" className="rounded-[1rem] py-2.5">Feed Público</TabsTrigger>
             <TabsTrigger value="enviar" className="rounded-[1rem] py-2.5">Enviar Sugestao</TabsTrigger>
             <TabsTrigger value="minhas" className="rounded-[1rem] py-2.5">Minhas Sugestoes</TabsTrigger>
           </TabsList>
@@ -296,4 +296,5 @@ export default function SugestoesPage() {
     </main>
   )
 }
+
 
