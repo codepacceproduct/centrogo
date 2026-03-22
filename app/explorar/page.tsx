@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -313,75 +312,74 @@ export default function ExplorarPage() {
                     <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                       {isLoading
                         ? Array.from({ length: 6 }).map((_, index) => (
-                            <div key={index} className="flex gap-3 rounded-[1.6rem] border border-border bg-card/90 p-3">
-                              <Skeleton className="h-20 w-20 shrink-0 rounded-2xl" />
-                              <div className="flex-1 space-y-2">
-                                <Skeleton className="h-4 w-3/4" />
-                                <Skeleton className="h-3 w-full" />
-                                <Skeleton className="h-3 w-2/3" />
-                                <Skeleton className="h-8 w-full" />
-                              </div>
+                          <div key={index} className="flex gap-3 rounded-[1.6rem] border border-border bg-card/90 p-3">
+                            <Skeleton className="h-20 w-20 shrink-0 rounded-2xl" />
+                            <div className="flex-1 space-y-2">
+                              <Skeleton className="h-4 w-3/4" />
+                              <Skeleton className="h-3 w-full" />
+                              <Skeleton className="h-3 w-2/3" />
+                              <Skeleton className="h-8 w-full" />
                             </div>
-                          ))
+                          </div>
+                        ))
                         : featuredExplorarLocations.map((location, index) => {
-                            const isSelected = location.id === selectedLocationId
-                            const isHovered = location.id === hoveredLocationId
+                          const isSelected = location.id === selectedLocationId
+                          const isHovered = location.id === hoveredLocationId
 
-                            return (
-                              <motion.div key={location.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.22 + index * 0.06 }} ref={setCardRef(location.id)}>
-                                <button
-                                  type="button"
-                                  onMouseEnter={() => setHoveredLocationId(location.id)}
-                                  onMouseLeave={() => setHoveredLocationId(null)}
-                                  onClick={() => handleSelectLocation(location)}
-                                  className={cn(
-                                    'flex w-full gap-3 rounded-[1.65rem] border p-3 text-left transition-all',
-                                    isSelected
-                                      ? 'border-primary/70 bg-background shadow-[0_18px_40px_-28px_rgba(15,23,42,0.5)] ring-1 ring-primary/15'
-                                      : isHovered
-                                        ? 'border-primary/45 bg-card shadow-[0_18px_34px_-28px_rgba(37,99,235,0.35)]'
-                                        : 'border-border bg-card/92 hover:border-primary/30 hover:bg-card',
+                          return (
+                            <motion.div key={location.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.22 + index * 0.06 }} ref={setCardRef(location.id)}>
+                              <button
+                                type="button"
+                                onMouseEnter={() => setHoveredLocationId(location.id)}
+                                onMouseLeave={() => setHoveredLocationId(null)}
+                                onClick={() => handleSelectLocation(location)}
+                                className={cn(
+                                  'flex w-full gap-3 rounded-[1.65rem] border p-3 text-left transition-all',
+                                  isSelected
+                                    ? 'border-primary/70 bg-background shadow-[0_18px_40px_-28px_rgba(15,23,42,0.5)] ring-1 ring-primary/15'
+                                    : isHovered
+                                      ? 'border-primary/45 bg-card shadow-[0_18px_34px_-28px_rgba(37,99,235,0.35)]'
+                                      : 'border-border bg-card/92 hover:border-primary/30 hover:bg-card',
+                                )}
+                              >
+                                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.3rem] shadow-lg">
+                                  {location.image ? (
+                                    <img
+                                      src={location.image}
+                                      alt={location.nome}
+                                      className="h-full w-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className={cn('flex h-full w-full flex-col rounded-[1.3rem] bg-gradient-to-br p-3', getCategoryPanelClass(location.categoria))}>
+                                      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">{location.categoryLabel}</span>
+                                      <span className="mt-auto text-lg font-semibold leading-none text-white">{formatLocationScore(location.score)}</span>
+                                      <span className="mt-1 text-[11px] text-white/80">{location.flowLabel}</span>
+                                    </div>
                                   )}
-                                >
-                                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.3rem] shadow-lg">
-                                    {location.image ? (
-                                      <Image
-                                        src={location.image}
-                                        alt={location.nome}
-                                        fill
-                                        className="object-cover"
-                                      />
-                                    ) : (
-                                      <div className={cn('flex h-full w-full flex-col rounded-[1.3rem] bg-gradient-to-br p-3', getCategoryPanelClass(location.categoria))}>
-                                        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">{location.categoryLabel}</span>
-                                        <span className="mt-auto text-lg font-semibold leading-none text-white">{formatLocationScore(location.score)}</span>
-                                        <span className="mt-1 text-[11px] text-white/80">{location.flowLabel}</span>
-                                      </div>
-                                    )}
-                                    <div className={cn('absolute bottom-1 left-1 rounded-lg px-1.5 py-0.5 text-[9px] font-bold text-white shadow bg-gradient-to-r', getCategoryPanelClass(location.categoria))}>
-                                      {formatLocationScore(location.score)}
-                                    </div>
+                                  <div className={cn('absolute bottom-1 left-1 rounded-lg px-1.5 py-0.5 text-[9px] font-bold text-white shadow bg-gradient-to-r', getCategoryPanelClass(location.categoria))}>
+                                    {formatLocationScore(location.score)}
                                   </div>
+                                </div>
 
-                                  <div className="min-w-0 flex-1">
-                                    <div className="flex items-start justify-between gap-3">
-                                      <h3 className="text-sm font-semibold leading-snug text-foreground">{location.nome}</h3>
-                                      {isSelected ? <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">Ativo</span> : null}
-                                    </div>
-                                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{location.descricao}</p>
-                                    <div className="mt-3 flex flex-wrap gap-2">
-                                      <span className={cn('rounded-full px-2.5 py-1 text-[11px] font-medium', getCategoryBadgeClass(location.categoria))}>{location.badge}</span>
-                                      <span className="rounded-full bg-foreground/5 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">{location.horarioFuncionamento}</span>
-                                    </div>
-                                    <div className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
-                                      <Sparkles className="h-3.5 w-3.5" />
-                                      <span className="truncate">{location.audienceLabel}</span>
-                                    </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-start justify-between gap-3">
+                                    <h3 className="text-sm font-semibold leading-snug text-foreground">{location.nome}</h3>
+                                    {isSelected ? <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">Ativo</span> : null}
                                   </div>
-                                </button>
-                              </motion.div>
-                            )
-                          })}
+                                  <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{location.descricao}</p>
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    <span className={cn('rounded-full px-2.5 py-1 text-[11px] font-medium', getCategoryBadgeClass(location.categoria))}>{location.badge}</span>
+                                    <span className="rounded-full bg-foreground/5 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">{location.horarioFuncionamento}</span>
+                                  </div>
+                                  <div className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+                                    <Sparkles className="h-3.5 w-3.5" />
+                                    <span className="truncate">{location.audienceLabel}</span>
+                                  </div>
+                                </div>
+                              </button>
+                            </motion.div>
+                          )
+                        })}
                     </div>
                   </section>
 
@@ -392,23 +390,23 @@ export default function ExplorarPage() {
                       <div className="mt-4 grid grid-cols-1 gap-3">
                         {isLoading
                           ? Array.from({ length: 3 }).map((_, index) => (
-                              <div key={index} className="rounded-[1.25rem] border border-border bg-background/80 p-3">
-                                <Skeleton className="h-4 w-2/3" />
-                                <Skeleton className="mt-2 h-3 w-full" />
-                                <Skeleton className="mt-2 h-3 w-5/6" />
-                              </div>
-                            ))
+                            <div key={index} className="rounded-[1.25rem] border border-border bg-background/80 p-3">
+                              <Skeleton className="h-4 w-2/3" />
+                              <Skeleton className="mt-2 h-3 w-full" />
+                              <Skeleton className="mt-2 h-3 w-5/6" />
+                            </div>
+                          ))
                           : parkingExplorarLocations.map((location) => (
-                              <LocationCardButton
-                                key={location.id}
-                                location={location}
-                                compact
-                                isSelected={location.id === selectedLocationId}
-                                isHovered={location.id === hoveredLocationId}
-                                onSelect={handleSelectLocation}
-                                onHoverChange={setHoveredLocationId}
-                              />
-                            ))}
+                            <LocationCardButton
+                              key={location.id}
+                              location={location}
+                              compact
+                              isSelected={location.id === selectedLocationId}
+                              isHovered={location.id === hoveredLocationId}
+                              onSelect={handleSelectLocation}
+                              onHoverChange={setHoveredLocationId}
+                            />
+                          ))}
                       </div>
                     </motion.div>
 
@@ -420,28 +418,28 @@ export default function ExplorarPage() {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-1">
                       {isLoading
                         ? Array.from({ length: 4 }).map((_, index) => (
-                            <div key={index} className="rounded-[1.5rem] border border-border bg-card/92 p-4">
-                              <Skeleton className="h-4 w-2/3" />
-                              <Skeleton className="mt-3 h-3 w-full" />
-                              <Skeleton className="mt-2 h-3 w-5/6" />
-                              <Skeleton className="mt-4 h-10 w-full" />
-                            </div>
-                          ))
+                          <div key={index} className="rounded-[1.5rem] border border-border bg-card/92 p-4">
+                            <Skeleton className="h-4 w-2/3" />
+                            <Skeleton className="mt-3 h-3 w-full" />
+                            <Skeleton className="mt-2 h-3 w-5/6" />
+                            <Skeleton className="mt-4 h-10 w-full" />
+                          </div>
+                        ))
                         : hiddenExplorarLocations.map((location, index) => {
-                            const isSelected = location.id === selectedLocationId
-                            const isHovered = location.id === hoveredLocationId
-                            return (
-                              <motion.div key={location.id} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.32 + index * 0.06 }} ref={setCardRef(location.id)}>
-                                <LocationCardButton
-                                  location={location}
-                                  isSelected={isSelected}
-                                  isHovered={isHovered}
-                                  onSelect={handleSelectLocation}
-                                  onHoverChange={setHoveredLocationId}
-                                />
-                              </motion.div>
-                            )
-                          })}
+                          const isSelected = location.id === selectedLocationId
+                          const isHovered = location.id === hoveredLocationId
+                          return (
+                            <motion.div key={location.id} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.32 + index * 0.06 }} ref={setCardRef(location.id)}>
+                              <LocationCardButton
+                                location={location}
+                                isSelected={isSelected}
+                                isHovered={isHovered}
+                                onSelect={handleSelectLocation}
+                                onHoverChange={setHoveredLocationId}
+                              />
+                            </motion.div>
+                          )
+                        })}
                     </div>
                   </aside>
                 </div>

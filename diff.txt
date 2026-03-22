@@ -1,0 +1,1157 @@
+﻿commit 5d733f5771573e45c8e29817006985ed27651349
+Author: eycksilva <eycksilva1@gmail.com>
+Date:   Sun Mar 22 02:07:52 2026 -0300
+
+    feat: atualizacao-front
+
+diff --git a/app/configuracoes/page.tsx b/app/configuracoes/page.tsx
+new file mode 100644
+index 0000000..c5b8edc
+--- /dev/null
++++ b/app/configuracoes/page.tsx
+@@ -0,0 +1,385 @@
++'use client'
++
++import { useState } from 'react'
++import { motion, AnimatePresence } from 'framer-motion'
++import {
++  ArrowLeft,
++  Bell,
++  BellOff,
++  Check,
++  ChevronRight,
++  Globe,
++  Info,
++  Lock,
++  MapPin,
++  Moon,
++  Palette,
++  Shield,
++  Smartphone,
++  Star,
++  Sun,
++  User,
++  Volume2,
++  VolumeX,
++  Wifi,
++} from 'lucide-react'
++import Link from 'next/link'
++import { cn } from '@/lib/utils'
++import { useAccessibility } from '@/context/AccessibilityContext'
++
++/* ÔöÇÔöÇÔöÇ Toggle animado ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
++function Toggle({
++  checked,
++  onChange,
++}: {
++  checked: boolean
++  onChange: (v: boolean) => void
++}) {
++  return (
++    <button
++      role="switch"
++      aria-checked={checked}
++      onClick={() => onChange(!checked)}
++      className={cn(
++        'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200',
++        checked ? 'bg-primary' : 'bg-muted-foreground/30',
++      )}
++    >
++      <motion.span
++        className="inline-block h-4 w-4 rounded-full bg-white shadow-md"
++        animate={{ x: checked ? 24 : 4 }}
++        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
++      />
++    </button>
++  )
++}
++
++/* ÔöÇÔöÇÔöÇ Toast de confirma├º├úo ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
++function Toast({ message, visible }: { message: string; visible: boolean }) {
++  return (
++    <AnimatePresence>
++      {visible && (
++        <motion.div
++          initial={{ opacity: 0, y: 60, scale: 0.92 }}
++          animate={{ opacity: 1, y: 0, scale: 1 }}
++          exit={{ opacity: 0, y: 40, scale: 0.95 }}
++          transition={{ type: 'spring', stiffness: 380, damping: 28 }}
++          className="fixed bottom-28 left-1/2 z-[200] flex -translate-x-1/2 items-center gap-2.5 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-[0_16px_40px_-20px_rgba(15,76,163,0.65)] lg:bottom-10"
++        >
++          <motion.div
++            initial={{ scale: 0 }}
++            animate={{ scale: 1 }}
++            transition={{ delay: 0.1, type: 'spring', stiffness: 500 }}
++            className="flex h-5 w-5 items-center justify-center rounded-full bg-white/25"
++          >
++            <Check className="h-3 w-3" />
++          </motion.div>
++          {message}
++        </motion.div>
++      )}
++    </AnimatePresence>
++  )
++}
++
++/* ÔöÇÔöÇÔöÇ Linha de configura├º├úo ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
++function SettingRow({
++  icon: Icon,
++  label,
++  description,
++  toggle,
++  value,
++  onChange,
++  iconBg,
++}: {
++  icon: React.ElementType
++  label: string
++  description?: string
++  toggle?: boolean
++  value?: boolean
++  onChange?: (v: boolean) => void
++  iconBg?: string
++}) {
++  return (
++    <div className="flex items-center gap-4 p-4">
++      <div
++        className={cn(
++          'flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl',
++          iconBg ?? 'bg-primary/10',
++        )}
++      >
++        <Icon className="h-5 w-5 text-primary" />
++      </div>
++      <div className="flex-1 min-w-0">
++        <p className="text-sm font-medium">{label}</p>
++        {description && (
++          <p className="text-xs text-muted-foreground mt-0.5 leading-tight">
++            {description}
++          </p>
++        )}
++      </div>
++      {toggle && onChange !== undefined ? (
++        <Toggle checked={value ?? false} onChange={onChange} />
++      ) : (
++        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
++      )}
++    </div>
++  )
++}
++
++/* ÔöÇÔöÇÔöÇ Cabe├ºalho de se├º├úo ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
++function SectionHeader({
++  title,
++  icon: Icon,
++}: {
++  title: string
++  icon?: React.ElementType
++}) {
++  return (
++    <div className="flex items-center gap-2 px-4 pt-6 pb-2">
++      {Icon && <Icon className="h-4 w-4 text-primary" />}
++      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
++        {title}
++      </h2>
++    </div>
++  )
++}
++
++/* ÔöÇÔöÇÔöÇ P├ígina principal ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
++export default function ConfiguracoesPage() {
++  const { settings, updateSetting } = useAccessibility()
++  const darkMode = settings.darkMode
++
++  const [notifications, setNotifications] = useState(false)
++  const [eventAlerts, setEventAlerts] = useState(false)
++  const [promoAlerts, setPromoAlerts] = useState(false)
++  const [soundEnabled, setSoundEnabled] = useState(false)
++  const [locationEnabled, setLocationEnabled] = useState(true)
++  const [offlineMode, setOfflineMode] = useState(false)
++
++  /* toast state */
++  const [toast, setToast] = useState<{ message: string; key: number } | null>(null)
++
++  function showToast(msg: string) {
++    setToast({ message: msg, key: Date.now() })
++    setTimeout(() => setToast(null), 2800)
++  }
++
++  function handleDarkMode(v: boolean) {
++    updateSetting('darkMode', v)
++  }
++
++  function handleNotifications(v: boolean) {
++    setNotifications(v)
++    if (v) showToast('­ƒöö Notifica├º├Áes push ativadas!')
++  }
++
++  function handleEventAlerts(v: boolean) {
++    setEventAlerts(v)
++    if (v) showToast('­ƒôà Alertas de eventos ativados!')
++  }
++
++  function handlePromoAlerts(v: boolean) {
++    setPromoAlerts(v)
++    if (v) showToast('­ƒÅÀ´©Å Promo├º├Áes e ofertas ativadas!')
++  }
++
++  return (
++    <>
++      <main className="min-h-screen bg-background pb-24 lg:pb-8 lg:pt-24">
++        {/* Header */}
++        <header className="bg-gradient-to-br from-primary to-secondary text-primary-foreground px-4 pb-8 pt-4">
++          <div className="flex items-center gap-3 max-w-2xl mx-auto">
++            <Link
++              href="/perfil"
++              className="p-2 -ml-2 rounded-full hover:bg-primary-foreground/10 transition-colors"
++            >
++              <ArrowLeft className="h-5 w-5" />
++            </Link>
++            <div>
++              <h1 className="text-xl font-bold">Configura├º├Áes</h1>
++              <p className="text-primary-foreground/70 text-sm">
++                Personalize sua experi├¬ncia
++              </p>
++            </div>
++          </div>
++        </header>
++
++        <div className="max-w-2xl mx-auto -mt-2">
++          {/* Cart├úo de perfil r├ípido */}
++          <motion.div
++            initial={{ opacity: 0, y: 16 }}
++            animate={{ opacity: 1, y: 0 }}
++            className="mx-4 -mt-4 bg-card rounded-2xl border border-border shadow-lg p-4 flex items-center gap-4"
++          >
++            <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold text-xl shrink-0">
++              JS
++            </div>
++            <div className="flex-1 min-w-0">
++              <p className="font-semibold">Jo├úo Santos</p>
++              <p className="text-sm text-muted-foreground truncate">
++                Centro Hist├│rico ┬À Aracaju
++              </p>
++            </div>
++            <Link
++              href="/perfil"
++              className="px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors shrink-0"
++            >
++              Ver perfil
++            </Link>
++          </motion.div>
++
++          {/* Notifica├º├Áes */}
++          <motion.div
++            initial={{ opacity: 0, y: 12 }}
++            animate={{ opacity: 1, y: 0 }}
++            transition={{ delay: 0.1 }}
++          >
++            <SectionHeader title="Notifica├º├Áes" icon={Bell} />
++            <div className="mx-4 bg-card rounded-2xl border border-border overflow-hidden divide-y divide-border">
++              <SettingRow
++                icon={notifications ? Bell : BellOff}
++                label="Notifica├º├Áes push"
++                description="Receba alertas de eventos e promo├º├Áes"
++                toggle
++                value={notifications}
++                onChange={handleNotifications}
++                iconBg="bg-blue-500/10"
++              />
++              <SettingRow
++                icon={Star}
++                label="Alertas de eventos"
++                description="Seja avisado sobre eventos pr├│ximos"
++                toggle
++                value={eventAlerts}
++                onChange={handleEventAlerts}
++                iconBg="bg-gold/10"
++              />
++              <SettingRow
++                icon={Bell}
++                label="Promo├º├Áes e ofertas"
++                description="Notifica├º├Áes de descontos nas lojas"
++                toggle
++                value={promoAlerts}
++                onChange={handlePromoAlerts}
++                iconBg="bg-emerald-500/10"
++              />
++              <SettingRow
++                icon={soundEnabled ? Volume2 : VolumeX}
++                label="Sons do aplicativo"
++                description="Ativar sons e vibra├º├Áes"
++                toggle
++                value={soundEnabled}
++                onChange={setSoundEnabled}
++                iconBg="bg-violet-500/10"
++              />
++            </div>
++          </motion.div>
++
++          {/* Apar├¬ncia */}
++          <motion.div
++            initial={{ opacity: 0, y: 12 }}
++            animate={{ opacity: 1, y: 0 }}
++            transition={{ delay: 0.15 }}
++          >
++            <SectionHeader title="Apar├¬ncia" icon={Palette} />
++            <div className="mx-4 bg-card rounded-2xl border border-border overflow-hidden divide-y divide-border">
++              <SettingRow
++                icon={darkMode ? Moon : Sun}
++                label="Modo escuro"
++                description="Alterna entre tema claro e escuro"
++                toggle
++                value={darkMode}
++                onChange={handleDarkMode}
++                iconBg="bg-slate-500/10"
++              />
++              <SettingRow
++                icon={Globe}
++                label="Idioma"
++                description="Portugu├¬s (Brasil)"
++                iconBg="bg-teal-500/10"
++              />
++            </div>
++          </motion.div>
++
++          {/* Localiza├º├úo e conectividade */}
++          <motion.div
++            initial={{ opacity: 0, y: 12 }}
++            animate={{ opacity: 1, y: 0 }}
++            transition={{ delay: 0.2 }}
++          >
++            <SectionHeader title="Localiza├º├úo e conex├úo" icon={MapPin} />
++            <div className="mx-4 bg-card rounded-2xl border border-border overflow-hidden divide-y divide-border">
++              <SettingRow
++                icon={MapPin}
++                label="Localiza├º├úo em tempo real"
++                description="Necess├írio para o mapa e sugest├Áes pr├│ximas"
++                toggle
++                value={locationEnabled}
++                onChange={setLocationEnabled}
++                iconBg="bg-rose-500/10"
++              />
++            </div>
++          </motion.div>
++
++          {/* Privacidade */}
++          <motion.div
++            initial={{ opacity: 0, y: 12 }}
++            animate={{ opacity: 1, y: 0 }}
++            transition={{ delay: 0.25 }}
++          >
++            <SectionHeader title="Privacidade e seguran├ºa" icon={Shield} />
++            <div className="mx-4 bg-card rounded-2xl border border-border overflow-hidden divide-y divide-border">
++              <SettingRow
++                icon={Lock}
++                label="Dados e privacidade"
++                description="Gerencie como seus dados s├úo usados"
++                iconBg="bg-indigo-500/10"
++              />
++              <SettingRow
++                icon={Shield}
++                label="Alterar senha"
++                description="Atualize sua senha de acesso"
++                iconBg="bg-primary/10"
++              />
++            </div>
++          </motion.div>
++
++          {/* Sobre */}
++          <motion.div
++            initial={{ opacity: 0, y: 12 }}
++            animate={{ opacity: 1, y: 0 }}
++            transition={{ delay: 0.3 }}
++          >
++            <SectionHeader title="Sobre" icon={Info} />
++            <div className="mx-4 bg-card rounded-2xl border border-border overflow-hidden divide-y divide-border mb-8">
++              <SettingRow
++                icon={Info}
++                label="Sobre o CentroGO"
++                description="Vers├úo 1.0.0 ┬À Centro Hist├│rico de Aracaju"
++                iconBg="bg-primary/10"
++              />
++              <SettingRow
++                icon={Star}
++                label="Avaliar o app"
++                description="D├¬ sua opini├úo na loja de aplicativos"
++                iconBg="bg-gold/10"
++              />
++              <SettingRow
++                icon={User}
++                label="Termos de uso"
++                iconBg="bg-slate-500/10"
++              />
++            </div>
++          </motion.div>
++        </div>
++      </main>
++
++      {/* Toast global */}
++      <Toast
++        message={toast?.message ?? ''}
++        visible={toast !== null}
++        key={toast?.key}
++      />
++    </>
++  )
++}
+diff --git a/app/eventos/[id]/page.tsx b/app/eventos/[id]/page.tsx
+index 3cbcd2e..7137cc8 100644
+--- a/app/eventos/[id]/page.tsx
++++ b/app/eventos/[id]/page.tsx
+@@ -175,16 +175,16 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
+ 
+       <div className="mx-auto max-w-7xl px-4 py-4">
+         <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_22px_60px_-38px_rgba(15,23,42,0.45)]">
+-          <div className="relative h-[280px] md:h-[340px] lg:h-[390px]">
+-            <Image src={image} alt={title} fill className="object-cover" />
+-            <div className="absolute inset-0 bg-gradient-to-r from-foreground/82 via-foreground/58 to-foreground/18" />
++          <div className="relative h-[340px] md:h-[400px] lg:h-[440px]">
++            <Image src={image} alt={title} fill className="object-cover object-center" />
++            <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/50 to-foreground/10" />
+             <div className="absolute inset-x-0 bottom-0 p-6 lg:p-8">
+               <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-semibold', categoryPillClass, 'border border-white/10 shadow-sm backdrop-blur-sm')}>
+                 {categoryLabel}
+               </span>
+-              <h2 className="mt-4 max-w-3xl text-3xl font-bold leading-tight text-white lg:text-4xl">{title}</h2>
+-              <p className="mt-3 max-w-2xl text-sm text-white/78 lg:text-base">{description}</p>
+-              <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-white/82">
++              <h2 className="mt-3 max-w-3xl text-2xl font-bold leading-tight text-white lg:text-3xl">{title}</h2>
++              <p className="mt-2 max-w-2xl text-sm text-white/78 lg:text-base line-clamp-2">{description}</p>
++              <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-white/82">
+                 <span>{dateFormatted}</span>
+                 <span className="h-1.5 w-1.5 rounded-full bg-white/55" />
+                 <span>{timeLabel}</span>
+diff --git a/app/explorar/page.tsx b/app/explorar/page.tsx
+index 915eda6..c629cf7 100644
+--- a/app/explorar/page.tsx
++++ b/app/explorar/page.tsx
+@@ -342,10 +342,23 @@ export default function ExplorarPage() {
+                                         : 'border-border bg-card/92 hover:border-primary/30 hover:bg-card',
+                                   )}
+                                 >
+-                                  <div className={cn('flex h-20 w-20 shrink-0 flex-col rounded-[1.3rem] bg-gradient-to-br p-3 shadow-lg', getCategoryPanelClass(location.categoria))}>
+-                                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">{location.categoryLabel}</span>
+-                                    <span className="mt-auto text-lg font-semibold leading-none">{formatLocationScore(location.score)}</span>
+-                                    <span className="mt-1 text-[11px] text-white/80">{location.flowLabel}</span>
++                                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.3rem] shadow-lg">
++                                    {location.image ? (
++                                      <img
++                                        src={location.image}
++                                        alt={location.nome}
++                                        className="h-full w-full object-cover"
++                                      />
++                                    ) : (
++                                      <div className={cn('flex h-full w-full flex-col rounded-[1.3rem] bg-gradient-to-br p-3', getCategoryPanelClass(location.categoria))}>
++                                        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">{location.categoryLabel}</span>
++                                        <span className="mt-auto text-lg font-semibold leading-none text-white">{formatLocationScore(location.score)}</span>
++                                        <span className="mt-1 text-[11px] text-white/80">{location.flowLabel}</span>
++                                      </div>
++                                    )}
++                                    <div className={cn('absolute bottom-1 left-1 rounded-lg px-1.5 py-0.5 text-[9px] font-bold text-white shadow bg-gradient-to-r', getCategoryPanelClass(location.categoria))}>
++                                      {formatLocationScore(location.score)}
++                                    </div>
+                                   </div>
+ 
+                                   <div className="min-w-0 flex-1">
+diff --git a/app/page.tsx b/app/page.tsx
+index 6010d19..3173167 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -28,8 +28,8 @@ const storyData = [
+   { id: '1', title: 'Museu', image: '/img-centro/museudagentesergipana.jpg', viewed: false },
+   { id: '2', title: 'Mercado', image: '/images/cafe-sergipano.jpg', viewed: false },
+   { id: '3', title: 'Feirinha', image: '/images/evento-feira-artesanato.jpg', viewed: true },
+-  { id: '4', title: 'Palacio', image: '/img-centro/centrodeartesanatochicachaves.jpg', viewed: true },
+-  { id: '5', title: 'Centro', image: '/images/boutique-atalaia.jpg', viewed: true },
++  { id: '4', title: 'Artesanato', image: '/img-centro/centrodeartesanatochicachaves.jpg', viewed: true },
++  { id: '5', title: 'Orla', image: '/img-centro/orladeatalaia.jpg', viewed: true },
+ ]
+ 
+ let hasShownStartupSplash = false
+diff --git a/app/perfil/page.tsx b/app/perfil/page.tsx
+index a953da3..08d5a9a 100644
+--- a/app/perfil/page.tsx
++++ b/app/perfil/page.tsx
+@@ -131,19 +131,21 @@ export default function PerfilPage() {
+               animate={{ opacity: 1, scale: 1 }}
+               transition={{ delay: 0.1 + index * 0.05 }}
+               className={cn(
+-                'flex flex-col items-center p-3 rounded-xl border text-center',
++                'flex flex-col items-center p-3 rounded-xl border text-center gap-1',
+                 achievement.unlocked 
+                   ? 'bg-card border-gold/30' 
+                   : 'bg-muted/50 border-border opacity-50'
+               )}
+             >
+               <div className={cn(
+-                'text-2xl mb-1',
+-                !achievement.unlocked && 'grayscale'
++                'w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-1 shadow-sm',
++                achievement.unlocked
++                  ? 'bg-gradient-to-br from-gold/20 to-gold/10 border border-gold/30'
++                  : 'bg-muted border border-border'
+               )}>
+-                {achievement.icon}
++                <span role="img" aria-label={achievement.name}>{achievement.icon}</span>
+               </div>
+-              <p className="text-xs font-medium line-clamp-2">{achievement.name}</p>
++              <p className="text-xs font-medium line-clamp-2 leading-tight">{achievement.name}</p>
+             </motion.div>
+           ))}
+         </div>
+@@ -253,13 +255,13 @@ export default function PerfilPage() {
+       {/* Menu adicional */}
+       <section className="mt-6 px-4 pb-4 max-w-7xl mx-auto">
+         <div className="bg-card rounded-xl border border-border divide-y divide-border">
+-          <button className="w-full flex items-center justify-between p-4">
++          <Link href="/configuracoes" className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+             <div className="flex items-center gap-3">
+               <Settings className="h-5 w-5 text-muted-foreground" />
+               <span>Configura├º├Áes</span>
+             </div>
+             <ChevronRight className="h-5 w-5 text-muted-foreground" />
+-          </button>
++          </Link>
+           <button className="w-full flex items-center justify-between p-4 text-destructive">
+             <div className="flex items-center gap-3">
+               <LogOut className="h-5 w-5" />
+diff --git a/components/accessibility-panel.tsx b/components/accessibility-panel.tsx
+index 593f583..c557874 100644
+--- a/components/accessibility-panel.tsx
++++ b/components/accessibility-panel.tsx
+@@ -48,10 +48,9 @@ function ToggleRow({ icon: Icon, label, description, value, onChange }: ToggleRo
+         type="button"
+         aria-pressed={value}
+         onClick={() => onChange(!value)}
+-        className={cn('flex h-7 w-12 rounded-full p-1 transition-colors', value ? 'bg-primary' : 'bg-muted')}
++        className={cn('flex h-7 w-12 shrink-0 rounded-full p-1 transition-colors duration-200', value ? 'bg-primary' : 'bg-muted')}
+       >
+         <motion.span
+-          layout
+           className="h-5 w-5 rounded-full bg-white shadow-sm"
+           animate={{ x: value ? 20 : 0 }}
+           transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+@@ -110,7 +109,7 @@ export default function AccessibilityPanel({ isOpen, onClose }: AccessibilityPan
+               </button>
+             </div>
+ 
+-            <div className="max-h-[calc(85vh-84px)] overflow-y-auto p-5">
++            <div className="h-[min(72vh,560px)] overflow-y-scroll p-5 overscroll-contain">
+               <div className="grid gap-4 sm:grid-cols-2">
+                 <div className="rounded-[1.5rem] border border-border bg-card/80 p-4">
+                   <div className="flex items-center gap-3">
+diff --git a/components/explorar/LocationDetailsSheet.tsx b/components/explorar/LocationDetailsSheet.tsx
+index ecb85e6..bce9958 100644
+--- a/components/explorar/LocationDetailsSheet.tsx
++++ b/components/explorar/LocationDetailsSheet.tsx
+@@ -1,7 +1,7 @@
+ 'use client'
+ 
+ import { AnimatePresence, motion } from 'framer-motion'
+-import { Clock3, Layers3, MapPin, Sparkles, Users, X } from 'lucide-react'
++import { ArrowLeft, Clock3, Layers3, MapPin, Sparkles, Users, X } from 'lucide-react'
+ 
+ import {
+   type ExplorarCategoria,
+@@ -51,8 +51,22 @@ export default function LocationDetailsSheet({ isOpen, location, onClose }: Loca
+             transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+             className="fixed inset-x-0 bottom-0 z-[77] overflow-hidden rounded-t-[2rem] border border-border/70 bg-background/96 shadow-[0_-18px_65px_-35px_rgba(15,23,42,0.72)] backdrop-blur-xl sm:left-1/2 sm:max-w-2xl sm:-translate-x-1/2 sm:bottom-6 sm:rounded-[2rem]"
+           >
++            {/* Indicador drag ÔÇö mobile */}
+             <div className="mx-auto mt-3 h-1.5 w-14 rounded-full bg-foreground/10 sm:hidden" />
+ 
++            {/* Bot├úo Voltar ÔÇö apenas mobile */}
++            <div className="flex items-center gap-2 px-4 pt-3 sm:hidden">
++              <button
++                type="button"
++                onClick={onClose}
++                className="flex items-center gap-1.5 rounded-full py-1.5 pr-3 pl-2 text-sm font-semibold text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
++                aria-label="Voltar"
++              >
++                <ArrowLeft className="h-4 w-4" />
++                Voltar
++              </button>
++            </div>
++
+             <div className="flex items-start justify-between gap-4 px-4 pb-3 pt-4 sm:px-6 sm:pt-6">
+               <div>
+                 <div className="flex flex-wrap items-center gap-2">
+diff --git a/components/smart-fab.tsx b/components/smart-fab.tsx
+index 5abfb46..ac43d9d 100644
+--- a/components/smart-fab.tsx
++++ b/components/smart-fab.tsx
+@@ -2,7 +2,8 @@
+ 
+ import { useEffect, useMemo, useState } from 'react'
+ import { AnimatePresence, motion } from 'framer-motion'
+-import { Grid2x2Plus, Plus } from 'lucide-react'
++import { Plus } from 'lucide-react'
++import { IoAccessibility } from 'react-icons/io5'
+ import { usePathname } from 'next/navigation'
+ 
+ import AccessibilityPanel from '@/components/accessibility-panel'
+@@ -92,7 +93,8 @@ export function SmartFAB({ onScanSuccess }: SmartFABProps) {
+           whileHover={{ scale: 1.1 }}
+           whileTap={{ scale: 0.92 }}
+           onClick={handleFabToggle}
+-          className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-[0_22px_45px_-20px_rgba(37,99,235,0.95)]"
++          style={{ backgroundColor: '#1061AA' }}
++          className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full text-white shadow-[0_22px_45px_-20px_rgba(16,97,170,0.85)]"
+         >
+           <span className="absolute inset-0 animate-pulse rounded-full bg-white/10" />
+           <AnimatePresence>
+@@ -113,7 +115,7 @@ export function SmartFAB({ onScanSuccess }: SmartFABProps) {
+             transition={{ duration: 0.2 }}
+             className="relative z-10"
+           >
+-            {isFabOpen ? <Plus className="h-6 w-6" /> : <Grid2x2Plus className="h-6 w-6" />}
++            {isFabOpen ? <Plus className="h-6 w-6" /> : <IoAccessibility size={26} color="white" />}
+           </motion.div>
+         </motion.button>
+       </div>
+diff --git a/lib/data.ts b/lib/data.ts
+index 3149210..c9c3281 100644
+--- a/lib/data.ts
++++ b/lib/data.ts
+@@ -64,17 +64,17 @@ export const currentUser: User = {
+   points: 750,
+   pointsToNextLevel: 1000,
+   achievements: [
+-    { id: '1', name: 'Primeiro check-in', description: 'Fez seu primeiro check-in em um evento do Centro', icon: 'EA', unlocked: true, unlockedDate: '2026-03-10' },
+-    { id: '2', name: 'Circuito cultural', description: 'Visitou 3 pontos turisticos do Centro', icon: 'CT', unlocked: true, unlockedDate: '2026-03-14' },
+-    { id: '3', name: 'Cliente frequente', description: 'Passou por 5 lojas do Centro', icon: 'CF', unlocked: true, unlockedDate: '2026-03-18' },
+-    { id: '4', name: 'Guia local', description: 'Explorou pontos historicos e comerciais do bairro', icon: 'GL', unlocked: false },
+-    { id: '5', name: 'Curador do Centro', description: 'Avaliou experiencias do bairro Centro', icon: 'CC', unlocked: false },
++    { id: '1', name: 'Primeiro check-in', description: 'Fez seu primeiro check-in em um evento do Centro', icon: '­ƒôì', unlocked: true, unlockedDate: '2026-03-10' },
++    { id: '2', name: 'Circuito cultural', description: 'Visitou 3 pontos turisticos do Centro', icon: '­ƒÅø´©Å', unlocked: true, unlockedDate: '2026-03-14' },
++    { id: '3', name: 'Cliente frequente', description: 'Passou por 5 lojas do Centro', icon: '­ƒøì´©Å', unlocked: true, unlockedDate: '2026-03-18' },
++    { id: '4', name: 'Guia local', description: 'Explorou pontos historicos e comerciais do bairro', icon: '­ƒù║´©Å', unlocked: false },
++    { id: '5', name: 'Curador do Centro', description: 'Avaliou experiencias do bairro Centro', icon: 'Ô¡É', unlocked: false },
+   ],
+   history: [
+     { id: '1', action: 'Check-in na Feirinha da Praca Tobias Barreto', points: 50, date: '2026-03-20', type: 'earned' },
+     { id: '2', action: 'Resgate de cupom na Loja Moda Centro', points: -120, date: '2026-03-19', type: 'spent' },
+     { id: '3', action: 'Visita ao Museu da Gente Sergipana', points: 40, date: '2026-03-18', type: 'earned' },
+-    { id: '4', action: 'Avaliacao da Barbearia Central', points: 20, date: '2026-03-17', type: 'earned' },
++    { id: '4', action: 'Avaliacao das Oticas Diniz', points: 20, date: '2026-03-17', type: 'earned' },
+   ],
+   preferences: ['Lojas', 'Mercados', 'Farmacias'],
+ }
+@@ -128,7 +128,7 @@ export const stores: Store[] = [
+     subcategory: 'moda',
+     subcategoryLabel: 'Moda casual',
+     color: '#FF6B6B',
+-    image: '/images/boutique-atalaia.jpg',
++    image: '/images/lojamoda.png',
+     rating: 4.3,
+     reviewCount: 112,
+     address: 'Calcadao da Rua Laranjeiras, 210 - Centro',
+@@ -140,8 +140,8 @@ export const stores: Store[] = [
+     phone: '(79) 3211-4500',
+     description: 'Loja de moda localizada no eixo comercial do Centro, com pecas casuais e atendimento rapido.',
+     highlights: [
+-      { id: '1', name: 'Camisa de linho', price: 89.9, image: '/images/boutique-atalaia.jpg' },
+-      { id: '2', name: 'Bolsa urbana', price: 119.9, image: '/images/boutique-atalaia.jpg' },
++      { id: '1', name: 'Camisa de linho', price: 89.9, image: '/images/lojamoda.png' },
++      { id: '2', name: 'Bolsa urbana', price: 119.9, image: '/images/lojamoda.png' },
+     ],
+     hasPromotion: true,
+     promotionText: 'Colecao do Centro com 15% OFF em compras acima de R$ 200',
+@@ -173,7 +173,7 @@ export const stores: Store[] = [
+     subcategory: 'gastronomia',
+     subcategoryLabel: 'Gastronomia regional',
+     color: '#27AE60',
+-    image: '/images/cafe-sergipano.jpg',
++    image: '/img-explorar/restaurantepopular.jpg',
+     rating: 4.5,
+     reviewCount: 186,
+     address: 'Mercado Municipal Antonio Franco - Centro',
+@@ -185,8 +185,8 @@ export const stores: Store[] = [
+     phone: '(79) 3212-3001',
+     description: 'Operacao gastronomica popular dentro do mercado, com pratos regionais e alto fluxo turistico.',
+     highlights: [
+-      { id: '1', name: 'Prato executivo sergipano', price: 24.9, image: '/images/cafe-sergipano.jpg' },
+-      { id: '2', name: 'Suco regional', price: 8.9, image: '/images/cafe-sergipano.jpg' },
++      { id: '1', name: 'Prato executivo sergipano', price: 24.9, image: '/img-explorar/restaurantepopular.jpg' },
++      { id: '2', name: 'Suco regional', price: 8.9, image: '/img-explorar/restaurantepopular.jpg' },
+     ],
+     hasPromotion: true,
+     promotionText: 'Combo almoco do mercado com sobremesa inclusa',
+@@ -210,15 +210,15 @@ export const stores: Store[] = [
+   },
+   {
+     id: 'service_001',
+-    name: 'Barbearia Central',
++    name: 'Oticas Diniz',
+     category: 'Servicos',
+     categoryIcon: 'SV',
+     group: 'servicos',
+     groupLabel: 'Servicos',
+-    subcategory: 'barbearia',
+-    subcategoryLabel: 'Barbearia e cuidados',
++    subcategory: 'optica',
++    subcategoryLabel: 'Otica e cuidados visuais',
+     color: '#F39C12',
+-    image: '/img-centro/centrodeartesanatochicachaves.jpg',
++    image: '/img-centro/oticasdiniz.png',
+     rating: 4.6,
+     reviewCount: 94,
+     address: 'Rua Itabaianinha, 145 - Centro',
+@@ -228,12 +228,13 @@ export const stores: Store[] = [
+     openHour: 9,
+     closeHour: 19,
+     phone: '(79) 3213-8890',
+-    description: 'Barbearia no Centro com servicos rapidos para quem circula entre comercio, trabalho e turismo.',
++    description: 'Otica com grande variedade de oculos, lentes e acessorios visuais no coracao do Centro comercial de Aracaju.',
+     highlights: [
+-      { id: '1', name: 'Corte masculino', price: 35, image: '/img-centro/centrodeartesanatochicachaves.jpg' },
+-      { id: '2', name: 'Barba modelada', price: 22, image: '/img-centro/centrodeartesanatochicachaves.jpg' },
++      { id: '1', name: 'Oculos de grau completo', price: 199.9, image: '/img-centro/oticasdiniz.png' },
++      { id: '2', name: 'Lentes de contato mensais', price: 89.9, image: '/img-centro/oticasdiniz.png' },
+     ],
+-    hasPromotion: false,
++    hasPromotion: true,
++    promotionText: 'Armacao gratis na compra de lentes de grau',
+     loyaltyPoints: 50,
+     physicalAccessibility: {
+       hasRamp: true,
+@@ -242,43 +243,44 @@ export const stores: Store[] = [
+       tactileFloor: false,
+       wideDoor: true,
+       wheelchairParking: false,
+-      stepsCount: 2,
+-      rampInclination: 'Moderada (11%)',
++      stepsCount: 0,
++      rampInclination: 'Suave (7%)',
+     },
+     accessibilityMap: {
+       accessibleRoutes: ['Rua Itabaianinha com acesso lateral', 'Travessa com menor fluxo de veiculos'],
+       adaptedSidewalks: ['Trecho frontal nivelado', 'Guia rebaixada na esquina mais proxima'],
+-      obstacleStreets: ['Calha antiga proxima ao meio-fio', 'Trecho estreito no horario comercial'],
+-      accessibleLocations: ['Recepcao principal', 'Area de espera'],
++      obstacleStreets: ['Trecho estreito no horario comercial'],
++      accessibleLocations: ['Recepcao principal', 'Area de atendimento'],
+     },
+   },
+   {
+     id: 'pharma_001',
+-    name: 'Farmacia Centro Saude',
+-    category: 'Farmacias',
+-    categoryIcon: 'FM',
+-    group: 'farmacias',
+-    groupLabel: 'Farmacias',
+-    subcategory: 'farmacia',
+-    subcategoryLabel: 'Farmacia 24 horas',
+-    color: '#3498DB',
++    name: 'Livraria Escariz',
++    category: 'Lojas',
++    categoryIcon: 'LV',
++    group: 'lojas',
++    groupLabel: 'Lojas',
++    subcategory: 'livraria',
++    subcategoryLabel: 'Livraria e papelaria',
++    color: '#8B5CF6',
+     image: '/images/livraria-leitura.jpg',
+-    rating: 4.4,
+-    reviewCount: 138,
++    rating: 4.7,
++    reviewCount: 203,
+     address: 'Rua Pacatuba, 98 - Centro',
+     neighborhood: 'Centro',
+     latitude: -10.9137,
+     longitude: -37.0493,
+-    openHour: 0,
+-    closeHour: 24,
++    openHour: 8,
++    closeHour: 18,
+     phone: '(79) 3214-1020',
+-    description: 'Farmacia de apoio no Centro com atendimento estendido e conveniencia para moradores e visitantes.',
++    description: 'Livraria classica do Centro de Aracaju com vasto acervo de livros, papelaria fina e atendimento especializado.',
+     highlights: [
+-      { id: '1', name: 'Kit primeiros socorros', price: 39.9, image: '/images/livraria-leitura.jpg' },
+-      { id: '2', name: 'Protetor solar urbano', price: 32.9, image: '/images/livraria-leitura.jpg' },
++      { id: '1', name: 'Livros nacionais e importados', price: 49.9, image: '/images/livraria-leitura.jpg' },
++      { id: '2', name: 'Kit papelaria premium', price: 28.9, image: '/images/livraria-leitura.jpg' },
+     ],
+-    hasPromotion: false,
+-    loyaltyPoints: 45,
++    hasPromotion: true,
++    promotionText: '20% OFF em livros selecionados e papelaria',
++    loyaltyPoints: 60,
+     physicalAccessibility: {
+       hasRamp: true,
+       hasElevator: false,
+@@ -291,9 +293,9 @@ export const stores: Store[] = [
+     },
+     accessibilityMap: {
+       accessibleRoutes: ['Rua Pacatuba com travessia rebaixada', 'Ligacao acessivel pela Rua Laranjeiras'],
+-      adaptedSidewalks: ['Faixa livre sinalizada', 'Acesso 24h com piso regular'],
++      adaptedSidewalks: ['Faixa livre sinalizada', 'Entrada com piso regular'],
+       obstacleStreets: ['Trecho com carga e descarga em horario comercial'],
+-      accessibleLocations: ['Balcao preferencial', 'Banheiro acessivel', 'Entrada 24 horas'],
++      accessibleLocations: ['Balcao preferencial', 'Banheiro acessivel', 'Area de leitura'],
+     },
+   },
+ ]
+@@ -310,7 +312,7 @@ export const storeSubcategoryFilters: Record<StoreGroup, Array<{ id: string; nam
+   lojas: [{ id: 'moda', name: 'Moda casual' }],
+   mercados: [{ id: 'gastronomia', name: 'Gastronomia regional' }],
+   farmacias: [{ id: 'farmacia', name: 'Farmacia 24 horas' }],
+-  servicos: [{ id: 'barbearia', name: 'Barbearia e cuidados' }],
++  servicos: [{ id: 'optica', name: 'Otica e cuidados visuais' }],
+ }
+ 
+ export const storesGeoJson = {
+@@ -354,7 +356,7 @@ export const events: Event[] = [
+     id: '1',
+     title: 'Feirinha da Praca Tobias Barreto',
+     description: 'Feira de domingo com gastronomia, pequenos produtores e clima de encontro no Centro de Aracaju.',
+-    image: '/images/evento-feira-artesanato.jpg',
++    image: '/images/feirinha.jpg',
+     date: '2026-03-22',
+     time: '16:00',
+     location: 'Praca Tobias Barreto - Centro',
+@@ -383,7 +385,7 @@ export const events: Event[] = [
+     id: '2',
+     title: 'Programacao do Museu da Gente Sergipana',
+     description: 'Agenda cultural com exposicoes, visitas mediadas e atividades sobre a memoria sergipana.',
+-    image: '/img-centro/museudagentesergipana.jpg',
++    image: '/img-explorar/museudagentesergipana.jpg',
+     date: '2026-03-27',
+     time: '10:00',
+     location: 'Museu da Gente Sergipana',
+@@ -412,7 +414,7 @@ export const events: Event[] = [
+     id: '3',
+     title: 'Feiras Gastronomicas nos Mercados',
+     description: 'Circuito de sabores regionais nos mercados do Centro, com boxes, pratos tipicos e produtos locais.',
+-    image: '/images/cafe-sergipano.jpg',
++    image: '/images/evento-gastronomia.jpg',
+     date: '2026-03-29',
+     time: '11:00',
+     location: 'Mercado Municipal Antonio Franco',
+@@ -488,12 +490,12 @@ export const rewards: Reward[] = [
+   },
+   {
+     id: '3',
+-    title: 'Corte express',
+-    description: 'Corte masculino com horario reduzido na Barbearia Central',
+-    storeName: 'Barbearia Central',
++    title: 'Desconto em oculos de grau',
++    description: '20% OFF em armacoes selecionadas nas Oticas Diniz do Centro',
++    storeName: 'Oticas Diniz',
+     storeId: 'service_001',
+     pointsCost: 220,
+-    image: '/img-centro/centrodeartesanatochicachaves.jpg',
++    image: '/img-centro/oticasdiniz.png',
+     expiresAt: '2026-04-18',
+   },
+ ]
+@@ -543,23 +545,23 @@ export const discoverySuggestions: DiscoverySuggestion[] = [
+     id: '3',
+     title: 'Palacio Museu Olimpio Campos',
+     description: 'Patrimonio historico da Praca Fausto Cardoso com visita guiada e conteudo sobre a historia sergipana.',
+-    image: '/img-centro/centrodeartesanatochicachaves.jpg',
++    image: '/img-centro/colinasantoantonio.jpg',
+     type: 'experience',
+     rating: 4.6,
+   },
+   {
+     id: '4',
+-    title: 'Ponte do Imperador',
+-    description: 'Ponto turistico classico do Centro com vista para o rio e conexao com o circuito historico.',
++    title: 'Projeto Verao Aracaju',
++    description: 'Grande festival de verao na orla com shows, atra├º├Áes e muita agita├º├úo na beira-mar de Aracaju.',
+     image: '/img-centro/projetoveraoaracaju.jpg',
+     type: 'experience',
+     rating: 4.4,
+   },
+   {
+     id: '5',
+-    title: 'Calcadao da Rua Laranjeiras',
+-    description: 'Corredor comercial com lojas populares, servicos e grande circulacao durante o dia.',
+-    image: '/images/boutique-atalaia.jpg',
++    title: 'Centro de Artesanato Chica Chaves',
++    description: 'Espaco dedicado ao artesanato sergipano com pecas unicas, cultura local e producao dos artesaos do estado.',
++    image: '/img-centro/centrodeartesanatochicachaves.jpg',
+     type: 'experience',
+     rating: 4.3,
+   },
+diff --git a/lib/eventos-map.ts b/lib/eventos-map.ts
+index 8c012f7..b31f120 100644
+--- a/lib/eventos-map.ts
++++ b/lib/eventos-map.ts
+@@ -40,6 +40,7 @@ export type EventGeoJsonFeature = {
+     nome: string
+     categoria: EventMapCategory
+     descricao: string
++    image?: string
+     dataInicio: string
+     dataFim: string
+     horario: string
+@@ -61,6 +62,7 @@ export type EventMapItem = {
+   nome: string
+   categoria: EventMapCategory
+   descricao: string
++  image?: string
+   dataInicio: string
+   dataFim: string
+   horario: string
+@@ -124,6 +126,7 @@ export function normalizeEventGeoJson(geoJson: EventGeoJson): EventMapItem[] {
+     nome: feature.properties.nome,
+     categoria: feature.properties.categoria,
+     descricao: feature.properties.descricao,
++    image: feature.properties.image,
+     dataInicio: feature.properties.dataInicio,
+     dataFim: feature.properties.dataFim,
+     horario: feature.properties.horario,
+diff --git a/lib/explorar-map.ts b/lib/explorar-map.ts
+index ab94b75..0922ced 100644
+--- a/lib/explorar-map.ts
++++ b/lib/explorar-map.ts
+@@ -23,6 +23,7 @@ export interface ExplorarLocation extends MapPoint {
+   flowLabel: string
+   badge: string
+   audienceLabel: string
++  image?: string
+ }
+ 
+ interface RawExplorarLocation extends MapPoint {
+@@ -34,6 +35,7 @@ interface RawExplorarLocation extends MapPoint {
+   tipo_publico: string[]
+   horario_funcionamento: string
+   peso_gamificacao: number
++  image?: string
+ }
+ 
+ const FLUXO_MULTIPLIERS: Record<ExplorarFluxo, number> = {
+@@ -75,6 +77,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
+     tipo_publico: ['turistas', 'estudantes', 'moradores'],
+     horario_funcionamento: '10:00 - 15:00',
+     peso_gamificacao: 10,
++    image: '/img-explorar/museudagentesergipana.jpg',
+   },
+   {
+     id: 'loc_002',
+@@ -87,6 +90,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
+     tipo_publico: ['turistas', 'moradores', 'trabalhadores'],
+     horario_funcionamento: '06:00 - 17:00',
+     peso_gamificacao: 10,
++    image: '/img-explorar/Mercado-Municipal-Antonio-Franco-980x653.jpg',
+   },
+   {
+     id: 'loc_003',
+@@ -99,6 +103,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
+     tipo_publico: ['turistas', 'estudantes'],
+     horario_funcionamento: '09:00 - 17:00',
+     peso_gamificacao: 8,
++    image: '/img-centro/colinasantoantonio.jpg',
+   },
+   {
+     id: 'loc_004',
+@@ -111,6 +116,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
+     tipo_publico: ['turistas', 'moradores'],
+     horario_funcionamento: 'Aberto 24h',
+     peso_gamificacao: 7,
++    image: '/img-centro/orladeatalaia.jpg',
+   },
+   {
+     id: 'loc_005',
+@@ -123,6 +129,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
+     tipo_publico: ['moradores', 'trabalhadores', 'compradores'],
+     horario_funcionamento: '08:00 - 18:00',
+     peso_gamificacao: 10,
++    image: '/img-explorar/calcadaodarualaranjeiras.jpg',
+   },
+   {
+     id: 'loc_006',
+@@ -135,6 +142,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
+     tipo_publico: ['moradores', 'visitantes', 'familias'],
+     horario_funcionamento: 'Aberto 24h',
+     peso_gamificacao: 8,
++    image: '/img-explorar/pracatobiasbarreto.jpg',
+   },
+   {
+     id: 'loc_007',
+@@ -147,6 +155,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
+     tipo_publico: ['trabalhadores', 'moradores', 'turistas'],
+     horario_funcionamento: '08:00 - 15:00',
+     peso_gamificacao: 7,
++    image: '/img-explorar/restaurantepopular.jpg',
+   },
+   {
+     id: 'loc_008',
+@@ -159,30 +168,33 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
+     tipo_publico: ['trabalhadores', 'moradores'],
+     horario_funcionamento: '05:00 - 23:00',
+     peso_gamificacao: 9,
++    image: '/img-explorar/terminaldocentro.jpg',
+   },
+   {
+     id: 'loc_009',
+-    nome: 'Barbearia Central',
++    nome: 'Oticas Diniz',
+     categoria: 'servicos',
+-    descricao: 'Servico de apoio para o fluxo comercial do Centro, perto do circuito de compras.',
++    descricao: 'Otica com grande variedade de oculos, lentes e acessorios visuais no coracao do Centro.',
+     lat: -10.9139,
+     lng: -37.0492,
+     fluxo: 'medio',
+     tipo_publico: ['moradores', 'trabalhadores'],
+     horario_funcionamento: '09:00 - 19:00',
+     peso_gamificacao: 6,
++    image: '/img-centro/oticasdiniz.png',
+   },
+   {
+     id: 'loc_010',
+-    nome: 'Farmacia Centro Saude',
++    nome: 'Livraria Escariz',
+     categoria: 'servicos',
+-    descricao: 'Ponto de conveniencia 24 horas para quem circula ou mora no Centro.',
++    descricao: 'Livraria classica do Centro com acervo de livros, papelaria e atendimento especializado.',
+     lat: -10.9137,
+     lng: -37.0493,
+     fluxo: 'alto',
+-    tipo_publico: ['moradores', 'visitantes'],
+-    horario_funcionamento: '24h',
++    tipo_publico: ['moradores', 'estudantes', 'visitantes'],
++    horario_funcionamento: '08:00 - 18:00',
+     peso_gamificacao: 7,
++    image: '/images/livraria-leitura.jpg',
+   },
+ ]
+ 
+@@ -231,6 +243,7 @@ function buildExplorarLocation(location: RawExplorarLocation): ExplorarLocation
+     flowLabel: FLOW_LABELS[location.fluxo],
+     badge: buildBadge(location),
+     audienceLabel: buildAudienceLabel(location.tipo_publico),
++    image: location.image,
+   }
+ }
+ 
+diff --git a/package-lock.json b/package-lock.json
+index bc53dbe..6a3d4ed 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -54,6 +54,7 @@
+         "react-day-picker": "9.13.2",
+         "react-dom": "19.2.4",
+         "react-hook-form": "^7.54.1",
++        "react-icons": "^5.6.0",
+         "react-map-gl": "^8.1.0",
+         "react-resizable-panels": "^2.1.7",
+         "recharts": "2.15.0",
+@@ -2939,7 +2940,7 @@
+       "version": "19.2.14",
+       "resolved": "https://registry.npmjs.org/@types/react/-/react-19.2.14.tgz",
+       "integrity": "sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==",
+-      "devOptional": true,
++      "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "csstype": "^3.2.2"
+@@ -2949,7 +2950,7 @@
+       "version": "19.2.3",
+       "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.2.3.tgz",
+       "integrity": "sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==",
+-      "devOptional": true,
++      "dev": true,
+       "license": "MIT",
+       "peerDependencies": {
+         "@types/react": "^19.2.0"
+@@ -4250,6 +4251,7 @@
+       "version": "8.5.8",
+       "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.8.tgz",
+       "integrity": "sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==",
++      "dev": true,
+       "funding": [
+         {
+           "type": "opencollective",
+@@ -4373,6 +4375,15 @@
+         "react": "^16.8.0 || ^17 || ^18 || ^19"
+       }
+     },
++    "node_modules/react-icons": {
++      "version": "5.6.0",
++      "resolved": "https://registry.npmjs.org/react-icons/-/react-icons-5.6.0.tgz",
++      "integrity": "sha512-RH93p5ki6LfOiIt0UtDyNg/cee+HLVR6cHHtW3wALfo+eOHTp8RnU2kRkI6E+H19zMIs03DyxUG/GfZMOGvmiA==",
++      "license": "MIT",
++      "peerDependencies": {
++        "react": "*"
++      }
++    },
+     "node_modules/react-is": {
+       "version": "18.3.1",
+       "resolved": "https://registry.npmjs.org/react-is/-/react-is-18.3.1.tgz",
+diff --git a/package.json b/package.json
+index 1ea4aa6..6727a40 100644
+--- a/package.json
++++ b/package.json
+@@ -55,6 +55,7 @@
+     "react-day-picker": "9.13.2",
+     "react-dom": "19.2.4",
+     "react-hook-form": "^7.54.1",
++    "react-icons": "^5.6.0",
+     "react-map-gl": "^8.1.0",
+     "react-resizable-panels": "^2.1.7",
+     "recharts": "2.15.0",
+diff --git a/public/images/feirinha.jpg b/public/images/feirinha.jpg
+new file mode 100644
+index 0000000..2fa5f7f
+Binary files /dev/null and b/public/images/feirinha.jpg differ
+diff --git a/public/images/lojamoda.png b/public/images/lojamoda.png
+new file mode 100644
+index 0000000..287b0eb
+Binary files /dev/null and b/public/images/lojamoda.png differ
+diff --git a/public/img-explorar/Mercado-Municipal-Antonio-Franco-980x653.jpg b/public/img-explorar/Mercado-Municipal-Antonio-Franco-980x653.jpg
+new file mode 100644
+index 0000000..aefc2d6
+Binary files /dev/null and b/public/img-explorar/Mercado-Municipal-Antonio-Franco-980x653.jpg differ
+diff --git a/public/img-explorar/calcadaodarualaranjeiras.jpg b/public/img-explorar/calcadaodarualaranjeiras.jpg
+new file mode 100644
+index 0000000..1961b9b
+Binary files /dev/null and b/public/img-explorar/calcadaodarualaranjeiras.jpg differ
+diff --git a/public/img-explorar/museudagentesergipana.jpg b/public/img-explorar/museudagentesergipana.jpg
+new file mode 100644
+index 0000000..04efe55
+Binary files /dev/null and b/public/img-explorar/museudagentesergipana.jpg differ
+diff --git a/public/img-explorar/pracatobiasbarreto.jpg b/public/img-explorar/pracatobiasbarreto.jpg
+new file mode 100644
+index 0000000..d222526
+Binary files /dev/null and b/public/img-explorar/pracatobiasbarreto.jpg differ
+diff --git a/public/img-explorar/restaurantepopular.jpg b/public/img-explorar/restaurantepopular.jpg
+new file mode 100644
+index 0000000..eba202a
+Binary files /dev/null and b/public/img-explorar/restaurantepopular.jpg differ
+diff --git a/public/img-explorar/terminaldocentro.jpg b/public/img-explorar/terminaldocentro.jpg
+new file mode 100644
+index 0000000..56ddda4
+Binary files /dev/null and b/public/img-explorar/terminaldocentro.jpg differ
+diff --git a/public/mock/eventos.json b/public/mock/eventos.json
+index 77547a7..9ac7728 100644
+--- a/public/mock/eventos.json
++++ b/public/mock/eventos.json
+@@ -6,6 +6,7 @@
+       "properties": {
+         "id": "event_001",
+         "nome": "Feirinha da Praca Tobias Barreto",
++        "image": "/images/feirinha.jpg",
+         "descricao": "Feira de domingo com gastronomia, pequenos produtores e clima de encontro no bairro Centro.",
+         "dataInicio": "2026-03-22",
+         "dataFim": "2026-03-22",
+@@ -66,6 +67,7 @@
+       "properties": {
+         "id": "event_002",
+         "nome": "Eventos no Museu da Gente Sergipana",
++        "image": "/img-explorar/museudagentesergipana.jpg",
+         "descricao": "Programacao cultural semanal com visitas mediadas, oficinas e atividades ligadas a memoria sergipana.",
+         "dataInicio": "2026-03-27",
+         "dataFim": "2026-03-27",
+@@ -114,6 +116,7 @@
+       "properties": {
+         "id": "event_003",
+         "nome": "Feiras Gastronomicas nos Mercados",
++        "image": "/images/evento-gastronomia.jpg",
+         "descricao": "Circuito diario de sabores nos mercados do Centro, com boxes tradicionais e experiencias regionais.",
+         "dataInicio": "2026-03-29",
+         "dataFim": "2026-03-29",
