@@ -1,6 +1,6 @@
-﻿export type ServicoCategoria = 'saude' | 'seguranca' | 'financeiro' | 'publico' | 'emergencia'
+export type ServicoCategoria = 'saude' | 'seguranca' | 'financeiro' | 'publico' | 'emergencia'
 
-export type ServicoPúblico = {
+export type ServicoPublico = {
   id: string
   nome: string
   categoria: ServicoCategoria
@@ -57,7 +57,7 @@ export const SERVICOS_FILTERS: Array<{ id: 'all' | ServicoCategoria; label: stri
   { id: 'emergencia', label: 'Emergencia' },
 ]
 
-export const servicosPúblicos: ServicoPúblico[] = [
+export const servicosPublicos: ServicoPublico[] = [
   {
     id: 'srv_001',
     nome: 'Hospital Nestor Piva',
