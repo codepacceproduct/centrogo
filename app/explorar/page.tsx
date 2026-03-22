@@ -342,10 +342,23 @@ export default function ExplorarPage() {
                                         : 'border-border bg-card/92 hover:border-primary/30 hover:bg-card',
                                   )}
                                 >
-                                  <div className={cn('flex h-20 w-20 shrink-0 flex-col rounded-[1.3rem] bg-gradient-to-br p-3 shadow-lg', getCategoryPanelClass(location.categoria))}>
-                                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">{location.categoryLabel}</span>
-                                    <span className="mt-auto text-lg font-semibold leading-none">{formatLocationScore(location.score)}</span>
-                                    <span className="mt-1 text-[11px] text-white/80">{location.flowLabel}</span>
+                                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.3rem] shadow-lg">
+                                    {location.image ? (
+                                      <img
+                                        src={location.image}
+                                        alt={location.nome}
+                                        className="h-full w-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className={cn('flex h-full w-full flex-col rounded-[1.3rem] bg-gradient-to-br p-3', getCategoryPanelClass(location.categoria))}>
+                                        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">{location.categoryLabel}</span>
+                                        <span className="mt-auto text-lg font-semibold leading-none text-white">{formatLocationScore(location.score)}</span>
+                                        <span className="mt-1 text-[11px] text-white/80">{location.flowLabel}</span>
+                                      </div>
+                                    )}
+                                    <div className={cn('absolute bottom-1 left-1 rounded-lg px-1.5 py-0.5 text-[9px] font-bold text-white shadow bg-gradient-to-r', getCategoryPanelClass(location.categoria))}>
+                                      {formatLocationScore(location.score)}
+                                    </div>
                                   </div>
 
                                   <div className="min-w-0 flex-1">

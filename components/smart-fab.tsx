@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Grid2x2Plus, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { IoAccessibility } from 'react-icons/io5'
 import { usePathname } from 'next/navigation'
 
 import AccessibilityPanel from '@/components/accessibility-panel'
@@ -92,7 +93,8 @@ export function SmartFAB({ onScanSuccess }: SmartFABProps) {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.92 }}
           onClick={handleFabToggle}
-          className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-[0_22px_45px_-20px_rgba(37,99,235,0.95)]"
+          style={{ backgroundColor: '#1061AA' }}
+          className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full text-white shadow-[0_22px_45px_-20px_rgba(16,97,170,0.85)]"
         >
           <span className="absolute inset-0 animate-pulse rounded-full bg-white/10" />
           <AnimatePresence>
@@ -113,7 +115,7 @@ export function SmartFAB({ onScanSuccess }: SmartFABProps) {
             transition={{ duration: 0.2 }}
             className="relative z-10"
           >
-            {isFabOpen ? <Plus className="h-6 w-6" /> : <Grid2x2Plus className="h-6 w-6" />}
+            {isFabOpen ? <Plus className="h-6 w-6" /> : <IoAccessibility size={26} color="white" />}
           </motion.div>
         </motion.button>
       </div>

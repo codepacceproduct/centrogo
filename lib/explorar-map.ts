@@ -23,6 +23,7 @@ export interface ExplorarLocation extends MapPoint {
   flowLabel: string
   badge: string
   audienceLabel: string
+  image?: string
 }
 
 interface RawExplorarLocation extends MapPoint {
@@ -34,6 +35,7 @@ interface RawExplorarLocation extends MapPoint {
   tipo_publico: string[]
   horario_funcionamento: string
   peso_gamificacao: number
+  image?: string
 }
 
 const FLUXO_MULTIPLIERS: Record<ExplorarFluxo, number> = {
@@ -75,6 +77,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     tipo_publico: ['turistas', 'estudantes', 'moradores'],
     horario_funcionamento: '10:00 - 15:00',
     peso_gamificacao: 10,
+    image: '/img-explorar/museudagentesergipana.jpg',
   },
   {
     id: 'loc_002',
@@ -87,6 +90,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     tipo_publico: ['turistas', 'moradores', 'trabalhadores'],
     horario_funcionamento: '06:00 - 17:00',
     peso_gamificacao: 10,
+    image: '/img-explorar/Mercado-Municipal-Antonio-Franco-980x653.jpg',
   },
   {
     id: 'loc_003',
@@ -99,6 +103,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     tipo_publico: ['turistas', 'estudantes'],
     horario_funcionamento: '09:00 - 17:00',
     peso_gamificacao: 8,
+    image: '/img-centro/colinasantoantonio.jpg',
   },
   {
     id: 'loc_004',
@@ -111,6 +116,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     tipo_publico: ['turistas', 'moradores'],
     horario_funcionamento: 'Aberto 24h',
     peso_gamificacao: 7,
+    image: '/img-centro/orladeatalaia.jpg',
   },
   {
     id: 'loc_005',
@@ -123,6 +129,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     tipo_publico: ['moradores', 'trabalhadores', 'compradores'],
     horario_funcionamento: '08:00 - 18:00',
     peso_gamificacao: 10,
+    image: '/img-explorar/calcadaodarualaranjeiras.jpg',
   },
   {
     id: 'loc_006',
@@ -135,6 +142,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     tipo_publico: ['moradores', 'visitantes', 'familias'],
     horario_funcionamento: 'Aberto 24h',
     peso_gamificacao: 8,
+    image: '/img-explorar/pracatobiasbarreto.jpg',
   },
   {
     id: 'loc_007',
@@ -147,6 +155,7 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     tipo_publico: ['trabalhadores', 'moradores', 'turistas'],
     horario_funcionamento: '08:00 - 15:00',
     peso_gamificacao: 7,
+    image: '/img-explorar/restaurantepopular.jpg',
   },
   {
     id: 'loc_008',
@@ -159,30 +168,33 @@ const RAW_LOCATIONS: RawExplorarLocation[] = [
     tipo_publico: ['trabalhadores', 'moradores'],
     horario_funcionamento: '05:00 - 23:00',
     peso_gamificacao: 9,
+    image: '/img-explorar/terminaldocentro.jpg',
   },
   {
     id: 'loc_009',
-    nome: 'Barbearia Central',
+    nome: 'Oticas Diniz',
     categoria: 'servicos',
-    descricao: 'Servico de apoio para o fluxo comercial do Centro, perto do circuito de compras.',
+    descricao: 'Otica com grande variedade de oculos, lentes e acessorios visuais no coracao do Centro.',
     lat: -10.9139,
     lng: -37.0492,
     fluxo: 'medio',
     tipo_publico: ['moradores', 'trabalhadores'],
     horario_funcionamento: '09:00 - 19:00',
     peso_gamificacao: 6,
+    image: '/img-centro/oticasdiniz.png',
   },
   {
     id: 'loc_010',
-    nome: 'Farmacia Centro Saude',
+    nome: 'Livraria Escariz',
     categoria: 'servicos',
-    descricao: 'Ponto de conveniencia 24 horas para quem circula ou mora no Centro.',
+    descricao: 'Livraria classica do Centro com acervo de livros, papelaria e atendimento especializado.',
     lat: -10.9137,
     lng: -37.0493,
     fluxo: 'alto',
-    tipo_publico: ['moradores', 'visitantes'],
-    horario_funcionamento: '24h',
+    tipo_publico: ['moradores', 'estudantes', 'visitantes'],
+    horario_funcionamento: '08:00 - 18:00',
     peso_gamificacao: 7,
+    image: '/images/livraria-leitura.jpg',
   },
 ]
 
@@ -231,6 +243,7 @@ function buildExplorarLocation(location: RawExplorarLocation): ExplorarLocation 
     flowLabel: FLOW_LABELS[location.fluxo],
     badge: buildBadge(location),
     audienceLabel: buildAudienceLabel(location.tipo_publico),
+    image: location.image,
   }
 }
 

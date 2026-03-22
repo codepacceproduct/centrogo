@@ -6,6 +6,7 @@
       "properties": {
         "id": "event_001",
         "nome": "Feirinha da Praca Tobias Barreto",
+        "image": "/images/feirinha.jpg",
         "descricao": "Feira de domingo com gastronomia, pequenos produtores e clima de encontro no bairro Centro.",
         "dataInicio": "2026-03-22",
         "dataFim": "2026-03-22",
@@ -66,6 +67,7 @@
       "properties": {
         "id": "event_002",
         "nome": "Eventos no Museu da Gente Sergipana",
+        "image": "/img-explorar/museudagentesergipana.jpg",
         "descricao": "Programacao cultural semanal com visitas mediadas, oficinas e atividades ligadas a memoria sergipana.",
         "dataInicio": "2026-03-27",
         "dataFim": "2026-03-27",
@@ -114,6 +116,7 @@
       "properties": {
         "id": "event_003",
         "nome": "Feiras Gastronomicas nos Mercados",
+        "image": "/images/evento-gastronomia.jpg",
         "descricao": "Circuito diario de sabores nos mercados do Centro, com boxes tradicionais e experiencias regionais.",
         "dataInicio": "2026-03-29",
         "dataFim": "2026-03-29",

@@ -131,19 +131,21 @@ export default function PerfilPage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 + index * 0.05 }}
               className={cn(
-                'flex flex-col items-center p-3 rounded-xl border text-center',
+                'flex flex-col items-center p-3 rounded-xl border text-center gap-1',
                 achievement.unlocked 
                   ? 'bg-card border-gold/30' 
                   : 'bg-muted/50 border-border opacity-50'
               )}
             >
               <div className={cn(
-                'text-2xl mb-1',
-                !achievement.unlocked && 'grayscale'
+                'w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-1 shadow-sm',
+                achievement.unlocked
+                  ? 'bg-gradient-to-br from-gold/20 to-gold/10 border border-gold/30'
+                  : 'bg-muted border border-border'
               )}>
-                {achievement.icon}
+                <span role="img" aria-label={achievement.name}>{achievement.icon}</span>
               </div>
-              <p className="text-xs font-medium line-clamp-2">{achievement.name}</p>
+              <p className="text-xs font-medium line-clamp-2 leading-tight">{achievement.name}</p>
             </motion.div>
           ))}
         </div>
@@ -253,13 +255,13 @@ export default function PerfilPage() {
       {/* Menu adicional */}
       <section className="mt-6 px-4 pb-4 max-w-7xl mx-auto">
         <div className="bg-card rounded-xl border border-border divide-y divide-border">
-          <button className="w-full flex items-center justify-between p-4">
+          <Link href="/configuracoes" className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
             <div className="flex items-center gap-3">
               <Settings className="h-5 w-5 text-muted-foreground" />
               <span>Configurações</span>
             </div>
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
-          </button>
+          </Link>
           <button className="w-full flex items-center justify-between p-4 text-destructive">
             <div className="flex items-center gap-3">
               <LogOut className="h-5 w-5" />

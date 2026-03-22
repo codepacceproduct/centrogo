@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Clock3, Layers3, MapPin, Sparkles, Users, X } from 'lucide-react'
+import { ArrowLeft, Clock3, Layers3, MapPin, Sparkles, Users, X } from 'lucide-react'
 
 import {
   type ExplorarCategoria,
@@ -51,7 +51,21 @@ export default function LocationDetailsSheet({ isOpen, location, onClose }: Loca
             transition={{ type: 'spring', damping: 28, stiffness: 260 }}
             className="fixed inset-x-0 bottom-0 z-[77] overflow-hidden rounded-t-[2rem] border border-border/70 bg-background/96 shadow-[0_-18px_65px_-35px_rgba(15,23,42,0.72)] backdrop-blur-xl sm:left-1/2 sm:max-w-2xl sm:-translate-x-1/2 sm:bottom-6 sm:rounded-[2rem]"
           >
+            {/* Indicador drag — mobile */}
             <div className="mx-auto mt-3 h-1.5 w-14 rounded-full bg-foreground/10 sm:hidden" />
+
+            {/* Botão Voltar — apenas mobile */}
+            <div className="flex items-center gap-2 px-4 pt-3 sm:hidden">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex items-center gap-1.5 rounded-full py-1.5 pr-3 pl-2 text-sm font-semibold text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
+                aria-label="Voltar"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar
+              </button>
+            </div>
 
             <div className="flex items-start justify-between gap-4 px-4 pb-3 pt-4 sm:px-6 sm:pt-6">
               <div>

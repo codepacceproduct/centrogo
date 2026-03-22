@@ -175,16 +175,16 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
       <div className="mx-auto max-w-7xl px-4 py-4">
         <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_22px_60px_-38px_rgba(15,23,42,0.45)]">
-          <div className="relative h-[280px] md:h-[340px] lg:h-[390px]">
-            <Image src={image} alt={title} fill className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-foreground/82 via-foreground/58 to-foreground/18" />
+          <div className="relative h-[340px] md:h-[400px] lg:h-[440px]">
+            <Image src={image} alt={title} fill className="object-cover object-center" />
+            <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/50 to-foreground/10" />
             <div className="absolute inset-x-0 bottom-0 p-6 lg:p-8">
               <span className={cn('inline-flex rounded-full px-3 py-1 text-xs font-semibold', categoryPillClass, 'border border-white/10 shadow-sm backdrop-blur-sm')}>
                 {categoryLabel}
               </span>
-              <h2 className="mt-4 max-w-3xl text-3xl font-bold leading-tight text-white lg:text-4xl">{title}</h2>
-              <p className="mt-3 max-w-2xl text-sm text-white/78 lg:text-base">{description}</p>
-              <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-white/82">
+              <h2 className="mt-3 max-w-3xl text-2xl font-bold leading-tight text-white lg:text-3xl">{title}</h2>
+              <p className="mt-2 max-w-2xl text-sm text-white/78 lg:text-base line-clamp-2">{description}</p>
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-white/82">
                 <span>{dateFormatted}</span>
                 <span className="h-1.5 w-1.5 rounded-full bg-white/55" />
                 <span>{timeLabel}</span>

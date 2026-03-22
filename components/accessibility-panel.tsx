@@ -48,10 +48,9 @@ function ToggleRow({ icon: Icon, label, description, value, onChange }: ToggleRo
         type="button"
         aria-pressed={value}
         onClick={() => onChange(!value)}
-        className={cn('flex h-7 w-12 rounded-full p-1 transition-colors', value ? 'bg-primary' : 'bg-muted')}
+        className={cn('flex h-7 w-12 shrink-0 rounded-full p-1 transition-colors duration-200', value ? 'bg-primary' : 'bg-muted')}
       >
         <motion.span
-          layout
           className="h-5 w-5 rounded-full bg-white shadow-sm"
           animate={{ x: value ? 20 : 0 }}
           transition={{ type: 'spring', stiffness: 420, damping: 26 }}
@@ -110,7 +109,7 @@ export default function AccessibilityPanel({ isOpen, onClose }: AccessibilityPan
               </button>
             </div>
 
-            <div className="max-h-[calc(85vh-84px)] overflow-y-auto p-5">
+            <div className="h-[min(72vh,560px)] overflow-y-scroll p-5 overscroll-contain">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.5rem] border border-border bg-card/80 p-4">
                   <div className="flex items-center gap-3">

@@ -28,8 +28,8 @@ const storyData = [
   { id: '1', title: 'Museu', image: '/img-centro/museudagentesergipana.jpg', viewed: false },
   { id: '2', title: 'Mercado', image: '/images/cafe-sergipano.jpg', viewed: false },
   { id: '3', title: 'Feirinha', image: '/images/evento-feira-artesanato.jpg', viewed: true },
-  { id: '4', title: 'Palacio', image: '/img-centro/centrodeartesanatochicachaves.jpg', viewed: true },
-  { id: '5', title: 'Centro', image: '/images/boutique-atalaia.jpg', viewed: true },
+  { id: '4', title: 'Artesanato', image: '/img-centro/centrodeartesanatochicachaves.jpg', viewed: true },
+  { id: '5', title: 'Orla', image: '/img-centro/orladeatalaia.jpg', viewed: true },
 ]
 
 let hasShownStartupSplash = false

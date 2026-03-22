@@ -40,6 +40,7 @@ export type EventGeoJsonFeature = {
     nome: string
     categoria: EventMapCategory
     descricao: string
+    image?: string
     dataInicio: string
     dataFim: string
     horario: string
@@ -61,6 +62,7 @@ export type EventMapItem = {
   nome: string
   categoria: EventMapCategory
   descricao: string
+  image?: string
   dataInicio: string
   dataFim: string
   horario: string
@@ -124,6 +126,7 @@ export function normalizeEventGeoJson(geoJson: EventGeoJson): EventMapItem[] {
     nome: feature.properties.nome,
     categoria: feature.properties.categoria,
     descricao: feature.properties.descricao,
+    image: feature.properties.image,
     dataInicio: feature.properties.dataInicio,
     dataFim: feature.properties.dataFim,
     horario: feature.properties.horario,
