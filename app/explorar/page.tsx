@@ -19,6 +19,7 @@ import Link from 'next/link'
 import FloatingLocationPreview from '@/components/explorar/FloatingLocationPreview'
 import LocationDetailsSheet from '@/components/explorar/LocationDetailsSheet'
 import LocationDrawer from '@/components/explorar/LocationDrawer'
+import RoutePlannerSheet, { type TransportModeId } from '@/components/explorar/RoutePlannerSheet'
 import { Skeleton } from '@/components/skeleton-loader'
 import {
   type ExplorarCategoria,
@@ -137,6 +138,8 @@ export default function ExplorarPage() {
   const [isFullMap, setIsFullMap] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [plannerLocationId, setPlannerLocationId] = useState<string | null>(null)
+  const [activeRoute, setActiveRoute] = useState<{ locationId: string; modeId: TransportModeId } | null>(null)
   const [drawerSnap, setDrawerSnap] = useState<DrawerSnap>('peek')
   const [resetCounter, setResetCounter] = useState(0)
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -165,6 +168,16 @@ export default function ExplorarPage() {
     return locationById.get(selectedLocationId) ?? null
   }, [locationById, selectedLocationId])
 
+  const plannerLocation = useMemo(() => {
+    if (!plannerLocationId) return null
+    return locationById.get(plannerLocationId) ?? null
+  }, [locationById, plannerLocationId])
+
+  const activeRouteLocation = useMemo(() => {
+    if (!activeRoute) return null
+    return locationById.get(activeRoute.locationId) ?? null
+  }, [activeRoute, locationById])
+
   useEffect(() => {
     if (!selectedLocationId || isFullMap) return
 
@@ -185,6 +198,8 @@ export default function ExplorarPage() {
     setHoveredLocationId(location.id)
     setIsFullMap(true)
     setIsDetailsOpen(false)
+    setPlannerLocationId(null)
+    setActiveRoute(null)
 
     if (options?.openDrawer) {
       setIsDrawerOpen(true)
@@ -200,6 +215,8 @@ export default function ExplorarPage() {
     setHoveredLocationId(null)
     setIsDrawerOpen(false)
     setIsDetailsOpen(false)
+    setPlannerLocationId(null)
+    setActiveRoute(null)
     setResetCounter((current) => current + 1)
     setIsFullMap(true)
   }
@@ -210,6 +227,7 @@ export default function ExplorarPage() {
         <ExplorarMapLayer
           locations={explorarLocations}
           selected={selectedLocation}
+          routeTarget={activeRouteLocation}
           hoveredLocationId={hoveredLocationId}
           onHoverChange={setHoveredLocationId}
           onSelect={(location) => handleSelectLocation(location)}
@@ -418,12 +436,43 @@ export default function ExplorarPage() {
         </>
       ) : null}
 
-      <AnimatePresence>{isFullMap && selectedLocation ? <FloatingLocationPreview location={selectedLocation} onOpenDetails={() => { setIsDetailsOpen(true); setIsDrawerOpen(false) }} /> : null}</AnimatePresence>
+      <AnimatePresence>
+        {isFullMap && selectedLocation ? (
+          <FloatingLocationPreview
+            location={selectedLocation}
+            onOpenDetails={() => {
+              setIsDetailsOpen(true)
+              setIsDrawerOpen(false)
+            }}
+            onOpenRoute={() => {
+              setPlannerLocationId(selectedLocation.id)
+              setIsDrawerOpen(false)
+              setIsDetailsOpen(false)
+              setIsFullMap(true)
+            }}
+          />
+        ) : null}
+      </AnimatePresence>
 
       <LocationDetailsSheet
         isOpen={isDetailsOpen}
         location={selectedLocation}
         onClose={() => setIsDetailsOpen(false)}
+      />
+
+      <RoutePlannerSheet
+        isOpen={Boolean(plannerLocation)}
+        location={plannerLocation}
+        activeModeId={activeRoute && plannerLocation && activeRoute.locationId === plannerLocation.id ? activeRoute.modeId : null}
+        onSelectMode={(modeId) => {
+          if (!plannerLocation) return
+          setActiveRoute({ locationId: plannerLocation.id, modeId })
+        }}
+        onClose={() => setPlannerLocationId(null)}
+        onEndRoute={() => {
+          setActiveRoute(null)
+          setPlannerLocationId(null)
+        }}
       />
 
       <LocationDrawer
@@ -440,3 +489,4 @@ export default function ExplorarPage() {
     </main>
   )
 }
+

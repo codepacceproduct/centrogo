@@ -64,6 +64,7 @@ type UserFeatureCollection = {
 type ExplorarMapLayerProps = {
   locations: ExplorarLocation[]
   selected: ExplorarLocation | null
+  routeTarget?: ExplorarLocation | null
   hoveredLocationId?: string | null
   onSelect: (location: ExplorarLocation) => void
   onHoverChange?: (locationId: string | null) => void
@@ -156,6 +157,7 @@ function StatusPill({
 export default function ExplorarMapLayer({
   locations,
   selected,
+  routeTarget = null,
   hoveredLocationId = null,
   onSelect,
   onHoverChange,
@@ -308,7 +310,7 @@ export default function ExplorarMapLayer({
   }, [])
 
   useEffect(() => {
-    if (!selected) {
+    if (!routeTarget) {
       setRoute(null)
       setRouteMode(null)
       setIsRouting(false)
@@ -316,7 +318,7 @@ export default function ExplorarMapLayer({
     }
 
     mapRef.current?.flyTo({
-      center: selectedMarkerEntry?.coordinates ?? toMapCoordinates(selected),
+      center: toMapCoordinates(routeTarget),
       zoom: isFullMap ? 16 : 15.1,
       duration: 1000,
       essential: true,
@@ -326,7 +328,7 @@ export default function ExplorarMapLayer({
 
     const syncRoute = async () => {
       setIsRouting(true)
-      const result = await getRoute(userLocation, selected)
+      const result = await getRoute(userLocation, routeTarget)
       if (isCancelled) return
 
       setRoute(buildLineFeature(result.coordinates, 'route'))
@@ -339,7 +341,7 @@ export default function ExplorarMapLayer({
     return () => {
       isCancelled = true
     }
-  }, [selected, selectedMarkerEntry, userLocation, isFullMap])
+  }, [routeTarget, userLocation, isFullMap])
 
   useEffect(() => {
     if (resetCounter === 0) return
@@ -553,7 +555,7 @@ export default function ExplorarMapLayer({
           <StatusPill tone="warning">Localizacao aproximada em uso</StatusPill>
         )}
 
-        {selected ? (
+        {routeTarget ? (
           <StatusPill>
             {isRouting
               ? 'Gerando rota...'
@@ -596,12 +598,12 @@ export default function ExplorarMapLayer({
           {isRouting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
         </button>
 
-        {selected ? (
+        {routeTarget ? (
           <div className="hidden pointer-events-none rounded-2xl border border-white/45 bg-background/84 px-3 py-2 text-xs shadow-xl backdrop-blur-md sm:block">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Route className="h-3.5 w-3.5" />
               <span>
-                {selected.pesoGamificacao} x {selected.multiplicadorFluxo} = {formatLocationScore(selected.score)}
+                {routeTarget.pesoGamificacao} x {routeTarget.multiplicadorFluxo} = {formatLocationScore(routeTarget.score)}
               </span>
             </div>
           </div>

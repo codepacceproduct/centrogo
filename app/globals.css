@@ -145,27 +145,15 @@
     @apply border-border outline-ring/50;
   }
   html, body {
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   body {
     @apply bg-background text-foreground antialiased;
   }
 }
 
-.app-container {
-  position: relative;
-  height: 100dvh;
-  overflow: hidden;
-}
-
-.app-content {
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-}
 
 
 /* Custom animations for CentroGO */
@@ -564,4 +552,6 @@ body.screen-reader *:focus-visible {
   outline: 3px solid #0ea5e9;
   outline-offset: 3px;
 }
+
+
 

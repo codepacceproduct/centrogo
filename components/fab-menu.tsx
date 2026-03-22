@@ -27,7 +27,7 @@ export default function FabMenu({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="mb-3 flex flex-col items-end gap-3"
+          className="mb-5 flex flex-col items-end gap-4"
         >
           <FabItem
             icon={Accessibility}

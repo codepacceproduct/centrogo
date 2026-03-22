@@ -36,7 +36,7 @@ export default function FabItem({
       onClick={onClick}
       className="group flex items-center gap-3"
     >
-      <span className="hidden rounded-full border border-white/55 bg-background/92 px-3 py-2 text-xs font-semibold text-foreground shadow-lg backdrop-blur-md sm:inline-flex">
+      <span className="inline-flex rounded-full border border-white/55 bg-background/94 px-4 py-2.5 text-sm font-semibold text-foreground shadow-lg backdrop-blur-md">
         {label}
       </span>
       <span
