@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Star, ChevronRight, Gift, History, Trophy, Settings, LogOut } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BottomNav } from '@/components/bottom-nav'
 import { currentUser, rewards, getUserLevel } from '@/lib/data'
 import { cn } from '@/lib/utils'
 
@@ -316,7 +315,6 @@ export default function PerfilPage() {
         )}
       </AnimatePresence>
 
-      <BottomNav />
     </main>
   )
 }

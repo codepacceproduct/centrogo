@@ -13,16 +13,13 @@ type StoresMapLayerProps = {
   onSelect: (store: Store) => void
 }
 
-type MarkerFeatureCollection = {
+type UserFeatureCollection = {
   type: 'FeatureCollection'
   features: Array<{
     type: 'Feature'
     properties: {
-      id: string
+      kind: 'user'
       nome: string
-      cor: string
-      categoria: string
-      endereco: string
     }
     geometry: {
       type: 'Point'
@@ -31,13 +28,17 @@ type MarkerFeatureCollection = {
   }>
 }
 
-type UserFeatureCollection = {
+type StoreFeatureCollection = {
   type: 'FeatureCollection'
   features: Array<{
     type: 'Feature'
     properties: {
-      kind: 'user'
+      id: string
       nome: string
+      highlighted: boolean
+      label: string
+      color: string
+      group: string
     }
     geometry: {
       type: 'Point'
@@ -56,8 +57,12 @@ type RouteFeature = {
 }
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json'
-const HITBOX_LAYER_ID = 'stores-map-hitbox'
+const STORE_MARKER_COLOR = '#2563eb'
 const DEFAULT_CENTER: MapPoint = { lat: -10.9108, lng: -37.0494 }
+const STORE_HITBOX_LAYER_ID = 'stores-hitbox'
+const STORE_HALO_LAYER_ID = 'stores-halo'
+const STORE_POINT_LAYER_ID = 'stores-point'
+const STORE_LABEL_LAYER_ID = 'stores-label'
 
 const routeOutlineLayer: LayerProps = {
   id: 'stores-route-outline',
@@ -127,8 +132,13 @@ function fitMapToPoints(map: MapRef | null, points: Array<[number, number]>) {
   )
 }
 
+function getStoreMarkerLabel(store: Store) {
+  return `${store.loyaltyPoints} pts`
+}
+
 export default function StoresMapLayer({ stores, selectedStore, onSelect }: StoresMapLayerProps) {
   const mapRef = useRef<MapRef | null>(null)
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [userLocation, setUserLocation] = useState<MapPoint | null>(null)
   const [locationMode, setLocationMode] = useState<'locating' | 'live' | 'denied' | 'unsupported'>('locating')
   const [route, setRoute] = useState<RouteFeature | null>(null)
@@ -145,8 +155,10 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
   }, [stores])
 
   const userCoordinates = useMemo(() => (userLocation ? toMapCoordinates(userLocation) : null), [userLocation])
+  const selectedStoreId = selectedStore?.id ?? '__none__'
+  const hoveredStoreId = hoveredId ?? '__none__'
 
-  const markersGeoJSON = useMemo<MarkerFeatureCollection>(
+  const storesGeoJSON = useMemo<StoreFeatureCollection>(
     () => ({
       type: 'FeatureCollection',
       features: stores.map((store) => ({
@@ -154,9 +166,10 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
         properties: {
           id: store.id,
           nome: store.name,
-          cor: store.color,
-          categoria: store.group,
-          endereco: store.address,
+          highlighted: store.hasPromotion,
+          label: getStoreMarkerLabel(store),
+          color: store.color,
+          group: store.group,
         },
         geometry: {
           type: 'Point',
@@ -187,8 +200,6 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
       ],
     }
   }, [userCoordinates])
-
-  const selectedId = selectedStore?.id ?? '__none__'
 
   useEffect(() => {
     let isCancelled = false
@@ -287,13 +298,19 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
         attributionControl={false}
         dragRotate={false}
         touchPitch={false}
-        interactiveLayerIds={[HITBOX_LAYER_ID]}
+        interactiveLayerIds={[STORE_HITBOX_LAYER_ID]}
+        cursor={hoveredId ? 'pointer' : 'grab'}
+        onMouseMove={(event) => {
+          const id = event.features?.[0]?.properties?.id
+          setHoveredId(typeof id === 'string' ? id : null)
+        }}
+        onMouseLeave={() => setHoveredId(null)}
         onClick={(event) => {
           const id = event.features?.[0]?.properties?.id
           if (typeof id !== 'string') return
 
-          const store = stores.find((entry) => entry.id === id)
-          if (store) onSelect(store)
+          const selectedFeature = stores.find((item) => item.id === id)
+          if (selectedFeature) onSelect(selectedFeature)
         }}
       >
         {route ? (
@@ -342,48 +359,62 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
           </Source>
         ) : null}
 
-        <Source id="stores-pois" type="geojson" data={markersGeoJSON}>
+        <Source id="stores-points" type="geojson" data={storesGeoJSON}>
           <Layer
-            id={HITBOX_LAYER_ID}
+            id={STORE_HITBOX_LAYER_ID}
             type="circle"
             paint={{
-              'circle-radius': 20,
+              'circle-radius': 24,
               'circle-color': '#000000',
               'circle-opacity': 0.01,
             }}
           />
           <Layer
-            id="stores-selected-halo"
+            id={STORE_HALO_LAYER_ID}
             type="circle"
-            filter={['==', ['get', 'id'], selectedId] as any}
+            filter={['any', ['==', ['get', 'id'], selectedStoreId], ['==', ['get', 'id'], hoveredStoreId]] as any}
             paint={{
-              'circle-radius': 19,
+              'circle-radius': ['case', ['==', ['get', 'id'], selectedStoreId], 23, 19],
               'circle-color': '#ffffff',
-              'circle-opacity': 0.35,
+              'circle-opacity': ['case', ['==', ['get', 'id'], selectedStoreId], 0.34, 0.22],
             }}
           />
           <Layer
-            id="stores-pois-layer"
+            id={STORE_POINT_LAYER_ID}
             type="circle"
             paint={{
-              'circle-radius': ['case', ['==', ['get', 'id'], selectedId], 11, 8],
-              'circle-color': ['get', 'cor'],
-              'circle-stroke-color': ['case', ['==', ['get', 'id'], selectedId], '#0f172a', '#ffffff'],
-              'circle-stroke-width': ['case', ['==', ['get', 'id'], selectedId], 3, 2],
+              'circle-radius': [
+                'case',
+                ['==', ['get', 'id'], selectedStoreId],
+                13,
+                ['==', ['get', 'id'], hoveredStoreId],
+                11,
+                9,
+              ],
+              'circle-color': ['get', 'color'],
+              'circle-stroke-width': [
+                'case',
+                ['==', ['get', 'id'], selectedStoreId],
+                3,
+                ['==', ['get', 'highlighted'], true],
+                3,
+                2,
+              ],
+              'circle-stroke-color': ['case', ['==', ['get', 'id'], selectedStoreId], '#0f172a', '#ffffff'],
             }}
           />
           <Layer
-            id="stores-pois-label"
+            id={STORE_LABEL_LAYER_ID}
             type="symbol"
-            filter={['==', ['get', 'id'], selectedId] as any}
+            filter={['any', ['==', ['get', 'id'], selectedStoreId], ['==', ['get', 'id'], hoveredStoreId]] as any}
             layout={{
               'text-field': ['get', 'nome'],
               'text-size': 11,
-              'text-offset': [0, 1.9],
+              'text-offset': [0, 2.1],
               'text-anchor': 'top',
             }}
             paint={{
-              'text-color': '#0f172a',
+              'text-color': '#111827',
               'text-halo-color': '#ffffff',
               'text-halo-width': 2,
             }}
@@ -411,7 +442,9 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
                 : routeMode === 'mapbox'
                   ? 'Rota do usuario ate o destino'
                   : 'Rota aproximada do usuario ate o destino'
-            : 'Toque em um marker para ver os dados'}
+            : hoveredId
+              ? 'Marker premium ativo no mapa'
+              : 'Toque em um marker para ver os dados'}
         </div>
       </div>
 
@@ -475,3 +508,5 @@ export default function StoresMapLayer({ stores, selectedStore, onSelect }: Stor
     </div>
   )
 }
+
+

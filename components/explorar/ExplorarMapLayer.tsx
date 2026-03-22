@@ -19,7 +19,7 @@ import {
   type RouteMode,
 } from '@/services/mapbox'
 
-type RouteFeature = {
+type LineFeature = {
   type: 'Feature'
   properties: {
     mode: 'route'
@@ -102,11 +102,11 @@ const routeLineLayer: LayerProps = {
   },
 }
 
-function buildRouteFeature(coordinates: RouteCoordinates): RouteFeature {
+function buildLineFeature(coordinates: RouteCoordinates, mode: 'route'): LineFeature {
   return {
     type: 'Feature',
     properties: {
-      mode: 'route',
+      mode,
     },
     geometry: {
       type: 'LineString',
@@ -135,7 +135,7 @@ function StatusPill({
   tone = 'default',
 }: {
   children: string
-  tone?: 'default' | 'warning'
+  tone?: 'default' | 'warning' | 'accent'
 }) {
   return (
     <div
@@ -143,7 +143,9 @@ function StatusPill({
         'rounded-full border px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md',
         tone === 'warning'
           ? 'border-amber-300/40 bg-amber-100/88 text-amber-950'
-          : 'border-white/45 bg-background/84 text-foreground',
+          : tone === 'accent'
+            ? 'border-amber-300/35 bg-amber-50/92 text-amber-950'
+            : 'border-white/45 bg-background/84 text-foreground',
       )}
     >
       {children}
@@ -164,7 +166,7 @@ export default function ExplorarMapLayer({
   const mapRef = useRef<MapRef | null>(null)
   const [userLocation, setUserLocation] = useState<MapPoint>(DEFAULT_EXPLORAR_CENTER)
   const [locationMode, setLocationMode] = useState<'locating' | 'live' | 'fallback'>('locating')
-  const [route, setRoute] = useState<RouteFeature | null>(null)
+  const [route, setRoute] = useState<LineFeature | null>(null)
   const [routeMode, setRouteMode] = useState<RouteMode | null>(null)
   const [isRouting, setIsRouting] = useState(false)
   const [mapIssue, setMapIssue] = useState<string | null>(null)
@@ -224,14 +226,8 @@ export default function ExplorarMapLayer({
   const selectedId = selected?.id ?? '__none__'
   const hoveredId = hoveredLocationId ?? '__none__'
 
-  function focusAllLocations() {
+  function fitMapToCoordinates(points: Array<[number, number]>) {
     const map = mapRef.current
-    const shouldIncludeUser =
-      locationMode === 'live' && getDistanceInKm(userLocation, DEFAULT_EXPLORAR_CENTER) <= 4
-    const points = shouldIncludeUser
-      ? [userMapCoordinates, ...markerEntries.map(({ coordinates }) => coordinates)]
-      : markerEntries.map(({ coordinates }) => coordinates)
-
     if (!map || points.length === 0) {
       return
     }
@@ -265,6 +261,16 @@ export default function ExplorarMapLayer({
         maxZoom: 14.7,
       },
     )
+  }
+
+  function focusAllLocations() {
+    const shouldIncludeUser =
+      locationMode === 'live' && getDistanceInKm(userLocation, DEFAULT_EXPLORAR_CENTER) <= 4
+    const points = shouldIncludeUser
+      ? [userMapCoordinates, ...markerEntries.map(({ coordinates }) => coordinates)]
+      : markerEntries.map(({ coordinates }) => coordinates)
+
+    fitMapToCoordinates(points)
   }
 
   useEffect(() => {
@@ -323,7 +329,7 @@ export default function ExplorarMapLayer({
       const result = await getRoute(userLocation, selected)
       if (isCancelled) return
 
-      setRoute(buildRouteFeature(result.coordinates))
+      setRoute(buildLineFeature(result.coordinates, 'route'))
       setRouteMode(result.mode)
       setIsRouting(false)
     }

@@ -1,0 +1,61 @@
+'use client'
+
+import { AnimatePresence, motion } from 'framer-motion'
+import { Accessibility, QrCode, Star } from 'lucide-react'
+
+import FabItem from '@/components/fab-item'
+
+type FabMenuProps = {
+  isOpen: boolean
+  emphasizedAction?: 'scan' | 'rate' | 'accessibility' | null
+  onScan: () => void
+  onRate: () => void
+  onAccessibility: () => void
+}
+
+export default function FabMenu({
+  isOpen,
+  emphasizedAction = null,
+  onScan,
+  onRate,
+  onAccessibility,
+}: FabMenuProps) {
+  return (
+    <AnimatePresence>
+      {isOpen ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="mb-3 flex flex-col items-end gap-3"
+        >
+          <FabItem
+            icon={Accessibility}
+            label="Acessibilidade"
+            colorClass="bg-gradient-to-br from-emerald-500 to-teal-600"
+            index={0}
+            isHighlighted={emphasizedAction === 'accessibility'}
+            badgeText="NEW"
+            onClick={onAccessibility}
+          />
+          <FabItem
+            icon={Star}
+            label="Avaliar"
+            colorClass="bg-gradient-to-br from-amber-400 to-yellow-500"
+            index={1}
+            isHighlighted={emphasizedAction === 'rate'}
+            onClick={onRate}
+          />
+          <FabItem
+            icon={QrCode}
+            label="Escanear"
+            colorClass="bg-gradient-to-br from-blue-500 to-indigo-600"
+            index={2}
+            isHighlighted={emphasizedAction === 'scan'}
+            onClick={onScan}
+          />
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  )
+}

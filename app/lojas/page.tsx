@@ -4,14 +4,15 @@ import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, SlidersHorizontal, X, Star, MapPinned } from 'lucide-react'
-import Link from 'next/link'
+import { SlidersHorizontal, X, Star, MapPinned, Store } from 'lucide-react'
 
-import { BottomNav } from '@/components/bottom-nav'
-import { SearchBar } from '@/components/search-bar'
+import { AccessibilityMapCard } from '@/components/accessibility/accessibility-map-card'
+import { AccessibilityHighlights } from '@/components/accessibility/accessibility-physical-card'
+import { ActiveFiltersBar, PageFiltersHeader, type PageFilterChip } from '@/components/filters/page-filters'
 import { StoreCard } from '@/components/store-card'
 import { StoreCardSkeleton } from '@/components/skeleton-loader'
 import { categories, isStoreOpen, stores, storeSubcategoryFilters, type StoreGroup } from '@/lib/data'
+import { normalizeText } from '@/lib/text'
 import { cn } from '@/lib/utils'
 
 const StoresMapLayer = dynamic(() => import('@/components/stores-map-layer'), {
@@ -72,7 +73,7 @@ function LojasContent() {
   const filteredStores = useMemo(() => {
     return stores.filter((store) => {
       if (searchValue) {
-        const query = searchValue.toLowerCase()
+        const query = normalizeText(searchValue).toLowerCase()
         const matchesSearch =
           store.name.toLowerCase().includes(query) ||
           store.groupLabel.toLowerCase().includes(query) ||
@@ -126,109 +127,135 @@ function LojasContent() {
 
   const activeFiltersCount = useMemo(() => {
     let count = 0
+    if (selectedCategory) count += 1
+    if (selectedSubcategory) count += 1
     if (filters.openNow) count += 1
     if (filters.minRating > 0) count += 1
     if (filters.promoOnly) count += 1
-    if (selectedSubcategory) count += 1
     return count
-  }, [filters, selectedSubcategory])
+  }, [filters, selectedCategory, selectedSubcategory])
+
+  const primaryFilterChips = useMemo<PageFilterChip[]>(() => {
+    return [
+      {
+        id: 'all',
+        label: 'Todas',
+        active: !selectedCategory,
+        onClick: () => setSelectedCategory(null),
+      },
+      ...categories.map((category) => ({
+        id: category.id,
+        label: category.name,
+        active: selectedCategory === category.id,
+        onClick: () => setSelectedCategory((current) => (current === category.id ? null : category.id)),
+      })),
+    ]
+  }, [selectedCategory])
+
+  const secondaryFilterChips = useMemo<PageFilterChip[]>(() => {
+    return subcategoryOptions.map((subcategory) => ({
+      id: subcategory.id,
+      label: subcategory.name,
+      active: selectedSubcategory === subcategory.id,
+      onClick: () => setSelectedSubcategory((current) => (current === subcategory.id ? null : subcategory.id)),
+    }))
+  }, [selectedSubcategory, subcategoryOptions])
+
+  const activeFilterTags = useMemo(() => {
+    const tags: Array<{ id: string; label: string; onRemove?: () => void }> = []
+
+    if (selectedCategory) {
+      const category = categories.find((item) => item.id === selectedCategory)
+      if (category) {
+        tags.push({ id: 'category', label: category.name, onRemove: () => setSelectedCategory(null) })
+      }
+    }
+
+    if (selectedSubcategory) {
+      const subcategory = subcategoryOptions.find((item) => item.id === selectedSubcategory)
+      if (subcategory) {
+        tags.push({ id: 'subcategory', label: subcategory.name, onRemove: () => setSelectedSubcategory(null) })
+      }
+    }
+
+    if (filters.openNow) {
+      tags.push({ id: 'openNow', label: 'Aberto agora', onRemove: () => setFilters((current) => ({ ...current, openNow: false })) })
+    }
+
+    if (filters.minRating > 0) {
+      tags.push({ id: 'minRating', label: `${filters.minRating}+ estrelas`, onRemove: () => setFilters((current) => ({ ...current, minRating: 0 })) })
+    }
+
+    if (filters.promoOnly) {
+      tags.push({ id: 'promoOnly', label: 'Somente promocao', onRemove: () => setFilters((current) => ({ ...current, promoOnly: false })) })
+    }
+
+    return tags
+  }, [filters, selectedCategory, selectedSubcategory, subcategoryOptions])
+
+  const clearAllFilters = () => {
+    setSelectedCategory(null)
+    setSelectedSubcategory(null)
+    setFilters({ openNow: false, minRating: 0, promoOnly: false })
+  }
 
   return (
-    <main className="pb-24 lg:pb-8 lg:pt-24">
-      <header className="sticky top-0 z-40 border-b border-border bg-background lg:top-20">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
-          <Link href="/" className="rounded-full p-2 transition-colors hover:bg-muted">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div>
-            <h1 className="font-semibold text-lg">Lojas do Centro</h1>
-            <p className="text-xs text-muted-foreground">Filtros especificos por tipo e mapa integrado com markers</p>
-          </div>
-        </div>
-
-        <div className="mx-auto max-w-7xl">
-          <SearchBar value={searchValue} onChange={setSearchValue} className="pb-3" />
-        </div>
-
-        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 pb-3 no-scrollbar">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowFilters(true)}
-            className={cn(
-              'flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-              activeFiltersCount > 0 ? 'border-primary bg-primary/10 text-primary' : 'border-border',
-            )}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            Filtros
-            {activeFiltersCount > 0 ? (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                {activeFiltersCount}
-              </span>
-            ) : null}
-          </motion.button>
-
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className={cn(
-              'shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-              !selectedCategory ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:bg-muted',
-            )}
-          >
-            Todas
-          </button>
-
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory((current) => (current === category.id ? null : category.id))}
+    <main className="pb-24 pt-[17.5rem] lg:pb-8 lg:pt-[20rem]">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm lg:top-28">
+        <PageFiltersHeader
+          title="Lojas do Centro"
+          subtitle="Busca inteligente com categorias, subcategorias e filtros de conveniencia"
+          icon={<Store className="h-5 w-5" />}
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          actionSlot={
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowFilters(true)}
               className={cn(
-                'shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-                selectedCategory === category.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:bg-muted',
+                'hidden shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors md:flex',
+                activeFiltersCount > 0 ? 'border-primary bg-primary/10 text-primary' : 'border-border',
               )}
             >
-              {category.name}
-            </button>
-          ))}
-        </div>
-
-        {subcategoryOptions.length > 0 ? (
-          <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 pb-3 no-scrollbar">
-            {subcategoryOptions.map((subcategory) => (
-              <button
-                key={subcategory.id}
-                onClick={() => setSelectedSubcategory((current) => (current === subcategory.id ? null : subcategory.id))}
-                className={cn(
-                  'shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                  selectedSubcategory === subcategory.id
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border bg-card hover:bg-muted',
-                )}
-              >
-                {subcategory.name}
-              </button>
-            ))}
-          </div>
-        ) : null}
+              <SlidersHorizontal className="h-4 w-4" />
+              Ajustes
+              {activeFiltersCount > 0 ? (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                  {activeFiltersCount}
+                </span>
+              ) : null}
+            </motion.button>
+          }
+          primaryFilters={primaryFilterChips}
+          secondaryFilters={secondaryFilterChips}
+        />
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-5 px-4 py-4 xl:grid-cols-[1.08fr_0.92fr]">
         <section className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                {filteredStores.length} {filteredStores.length === 1 ? 'resultado encontrado' : 'resultados encontrados'}
-              </p>
-              <p className="text-xs text-muted-foreground">Dados mockados integrados ao mapa do Centro de Aracaju</p>
+          <div className="space-y-3 rounded-[1.75rem] border border-border bg-card p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  {filteredStores.length} {filteredStores.length === 1 ? 'resultado encontrado' : 'resultados encontrados'}
+                </p>
+                <p className="text-xs text-muted-foreground">Tudo sincronizado com lista, mapa e destaque selecionado.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowFilters(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted md:hidden"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Ajustes
+              </button>
             </div>
-            <div className="hidden items-center gap-2 md:flex">
-              {categories.map((category) => (
-                <div key={category.id} className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: category.markerColor }} />
-                  <span>{category.name}</span>
-                </div>
-              ))}
-            </div>
+
+            <ActiveFiltersBar
+              tags={activeFilterTags}
+              onClear={activeFilterTags.length > 0 ? clearAllFilters : undefined}
+              emptyLabel="Selecione uma categoria, subcategoria ou ajuste avancado para refinar a lista."
+            />
           </div>
 
           <StoresMapLayer
@@ -244,11 +271,11 @@ function LojasContent() {
                   <div className="mb-2 flex items-center gap-2">
                     <span className="h-3 w-3 rounded-full" style={{ backgroundColor: selectedStore.color }} />
                     <span className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      {selectedStore.groupLabel}
+                      {normalizeText(selectedStore.groupLabel)}
                     </span>
                   </div>
-                  <h2 className="font-semibold text-lg">{selectedStore.name}</h2>
-                  <p className="text-sm text-muted-foreground">{selectedStore.subcategoryLabel}</p>
+                  <h2 className="font-semibold text-lg">{normalizeText(selectedStore.name)}</h2>
+                  <p className="text-sm text-muted-foreground">{normalizeText(selectedStore.subcategoryLabel)}</p>
                 </div>
                 <div className="flex items-center gap-1 rounded-xl bg-gold/10 px-2.5 py-1.5 text-sm font-semibold">
                   <Star className="h-4 w-4 fill-gold text-gold" />
@@ -256,18 +283,26 @@ function LojasContent() {
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                <span>{selectedStore.address}</span>
+                <span>{normalizeText(selectedStore.address)}</span>
                 <span>{selectedStore.openHour}:00 - {selectedStore.closeHour}:00</span>
                 <span>{selectedStore.phone}</span>
               </div>
+              <AccessibilityHighlights data={selectedStore.physicalAccessibility} className="mt-4" />
             </div>
+          ) : null}
+
+          {selectedStore ? (
+            <AccessibilityMapCard
+              data={selectedStore.accessibilityMap}
+              description="Rotas e pontos do entorno para planejar a chegada a loja com mais conforto."
+            />
           ) : null}
         </section>
 
         <section>
           <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
             <MapPinned className="h-4 w-4" />
-            Cards e markers usam a mesma base mockada: nome, categoria, cor e localizacao.
+            Os filtros afetam lista, mapa e card selecionado ao mesmo tempo.
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-1">
@@ -277,26 +312,28 @@ function LojasContent() {
               filteredStores.map((store, index) => (
                 <div
                   key={store.id}
-                  onClick={() => setSelectedStoreId(store.id)}
                   className={cn(
-                    'cursor-pointer rounded-[1.75rem] transition-all',
+                    'rounded-[1.75rem] transition-all',
                     selectedStore?.id === store.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : '',
                   )}
                 >
-                  <StoreCard store={store} index={index} />
+                  <StoreCard
+                    store={store}
+                    index={index}
+                    onCardClick={() => setSelectedStoreId(store.id)}
+                    showDetailsButton
+                  />
                 </div>
               ))
             ) : (
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="py-14 text-center">
                 <div className="mb-3 text-4xl">MAP</div>
                 <h3 className="font-semibold text-lg">Nenhum ponto encontrado</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Ajuste os filtros para exibir lojas e markers novamente.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Remova algum filtro ou ajuste a busca para voltar a explorar.</p>
                 <button
                   onClick={() => {
                     setSearchValue('')
-                    setSelectedCategory(null)
-                    setSelectedSubcategory(null)
-                    setFilters({ openNow: false, minRating: 0, promoOnly: false })
+                    clearAllFilters()
                   }}
                   className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
                 >
@@ -326,16 +363,20 @@ function LojasContent() {
               className="fixed bottom-0 left-0 right-0 z-50 max-h-[72vh] overflow-auto rounded-t-3xl bg-background"
             >
               <div className="flex items-center justify-between border-b border-border p-4">
-                <h2 className="font-semibold text-lg">Filtros da rota /lojas</h2>
+                <div>
+                  <h2 className="font-semibold text-lg">Refinar lojas</h2>
+                  <p className="text-xs text-muted-foreground">Ajustes rapidos para disponibilidade, promocao e nota.</p>
+                </div>
                 <button onClick={() => setShowFilters(false)} className="rounded-full p-2 transition-colors hover:bg-muted">
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
               <div className="space-y-6 p-4">
-                <div>
+                <div className="rounded-2xl border border-border p-4">
+                  <p className="mb-3 font-medium">Disponibilidade</p>
                   <label className="flex cursor-pointer items-center justify-between">
-                    <span className="font-medium">Aberto agora</span>
+                    <span className="text-sm text-muted-foreground">Mostrar apenas lojas abertas agora</span>
                     <div
                       className={cn('h-7 w-12 rounded-full p-1 transition-colors', filters.openNow ? 'bg-primary' : 'bg-muted')}
                       onClick={() => setFilters((current) => ({ ...current, openNow: !current.openNow }))}
@@ -345,9 +386,10 @@ function LojasContent() {
                   </label>
                 </div>
 
-                <div>
+                <div className="rounded-2xl border border-border p-4">
+                  <p className="mb-3 font-medium">Promocoes</p>
                   <label className="flex cursor-pointer items-center justify-between">
-                    <span className="font-medium">Somente promocao</span>
+                    <span className="text-sm text-muted-foreground">Exibir somente lojas com promocao ativa</span>
                     <div
                       className={cn('h-7 w-12 rounded-full p-1 transition-colors', filters.promoOnly ? 'bg-primary' : 'bg-muted')}
                       onClick={() => setFilters((current) => ({ ...current, promoOnly: !current.promoOnly }))}
@@ -357,7 +399,7 @@ function LojasContent() {
                   </label>
                 </div>
 
-                <div>
+                <div className="rounded-2xl border border-border p-4">
                   <p className="mb-3 font-medium">Avaliacao minima</p>
                   <div className="flex flex-wrap gap-2">
                     {[0, 3, 4, 4.5].map((rating) => (
@@ -385,12 +427,12 @@ function LojasContent() {
                 <div className="flex gap-3 border-t border-border pt-4">
                   <button
                     onClick={() => {
-                      setSelectedSubcategory(null)
-                      setFilters({ openNow: false, minRating: 0, promoOnly: false })
+                      clearAllFilters()
+                      setShowFilters(false)
                     }}
                     className="flex-1 rounded-xl border border-border py-3 font-medium"
                   >
-                    Limpar
+                    Resetar
                   </button>
                   <button
                     onClick={() => setShowFilters(false)}
@@ -404,25 +446,22 @@ function LojasContent() {
           </>
         ) : null}
       </AnimatePresence>
-
-      <BottomNav />
     </main>
   )
 }
 
 function LojasPageFallback() {
   return (
-    <main className="pb-24 lg:pb-8 lg:pt-24">
-      <header className="sticky top-0 z-40 border-b border-border bg-background lg:top-20">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
-          <Link href="/" className="rounded-full p-2 transition-colors hover:bg-muted">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <h1 className="font-semibold text-lg">Lojas do Centro</h1>
-        </div>
-        <div className="mx-auto max-w-7xl px-4 pb-3">
-          <div className="h-10 animate-pulse rounded-xl bg-muted" />
-        </div>
+    <main className="pb-24 pt-[17.5rem] lg:pb-8 lg:pt-[19rem]">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm lg:top-28">
+        <PageFiltersHeader
+          title="Lojas do Centro"
+          subtitle="Carregando busca e filtros"
+          icon={<Store className="h-5 w-5" />}
+          searchValue=""
+          onSearchChange={() => undefined}
+          primaryFilters={[]}
+        />
       </header>
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-4 py-4 xl:grid-cols-2">
         <div className="h-[360px] animate-pulse rounded-[2rem] bg-muted" />
@@ -432,7 +471,6 @@ function LojasPageFallback() {
           ))}
         </div>
       </div>
-      <BottomNav />
     </main>
   )
 }

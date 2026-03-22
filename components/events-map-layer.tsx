@@ -2,15 +2,32 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Map, Source, type LayerProps, type MapRef } from 'react-map-gl/maplibre'
-import { Layers3, LoaderCircle, LocateFixed, MapPin } from 'lucide-react'
+import { Layers3, LoaderCircle, LocateFixed, MapPin, Star } from 'lucide-react'
 
-import type { EventMapItem } from '@/lib/eventos-map'
+import { EVENT_CATEGORY_META, type AmbulanteMapItem, type EventMapItem } from '@/lib/eventos-map'
 import { getRoute, toMapCoordinates, type MapPoint, type RouteCoordinates, type RouteMode } from '@/services/mapbox'
 
 type EventsMapLayerProps = {
   events: EventMapItem[]
   selectedEvent: EventMapItem | null
+  selectedAmbulante: AmbulanteMapItem | null
   onSelect: (event: EventMapItem) => void
+  onSelectAmbulante: (ambulante: AmbulanteMapItem) => void
+}
+
+type UserFeatureCollection = {
+  type: 'FeatureCollection'
+  features: Array<{
+    type: 'Feature'
+    properties: {
+      kind: 'user'
+      nome: string
+    }
+    geometry: {
+      type: 'Point'
+      coordinates: [number, number]
+    }
+  }>
 }
 
 type EventFeatureCollection = {
@@ -21,9 +38,8 @@ type EventFeatureCollection = {
       id: string
       nome: string
       categoria: string
-      descricao: string
-      cor: string
-      endereco: string
+      highlighted: boolean
+      label: string
     }
     geometry: {
       type: 'Point'
@@ -32,13 +48,15 @@ type EventFeatureCollection = {
   }>
 }
 
-type UserFeatureCollection = {
+type AmbulanteFeatureCollection = {
   type: 'FeatureCollection'
   features: Array<{
     type: 'Feature'
     properties: {
-      kind: 'user'
+      id: string
       nome: string
+      highlighted: boolean
+      label: string
     }
     geometry: {
       type: 'Point'
@@ -57,9 +75,17 @@ type RouteFeature = {
 }
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json'
-const EVENTOS_HITBOX_LAYER_ID = 'eventos-hitbox'
-const EVENTOS_LAYER_ID = 'eventos-layer'
+const EVENT_MARKER_COLOR = '#7c3aed'
+const AMBULANTE_MARKER_COLOR = '#f59e0b'
 const DEFAULT_CENTER: MapPoint = { lat: -10.9478, lng: -37.0575 }
+const EVENT_HITBOX_LAYER_ID = 'eventos-hitbox'
+const EVENT_HALO_LAYER_ID = 'eventos-halo'
+const EVENT_POINT_LAYER_ID = 'eventos-point'
+const EVENT_LABEL_LAYER_ID = 'eventos-label'
+const AMBULANTE_HITBOX_LAYER_ID = 'ambulantes-hitbox'
+const AMBULANTE_HALO_LAYER_ID = 'ambulantes-halo'
+const AMBULANTE_POINT_LAYER_ID = 'ambulantes-point'
+const AMBULANTE_LABEL_LAYER_ID = 'ambulantes-label'
 
 const routeOutlineLayer: LayerProps = {
   id: 'eventos-route-outline',
@@ -116,7 +142,7 @@ function fitMapToPoints(map: MapRef | null, points: Array<[number, number]>) {
     {
       padding: { top: 56, right: 32, bottom: 88, left: 32 },
       duration: 900,
-      maxZoom: 14.8,
+      maxZoom: 15.2,
       essential: true,
     },
   )
@@ -129,9 +155,25 @@ function buildPoint(event: EventMapItem): MapPoint {
   }
 }
 
-export default function EventsMapLayer({ events, selectedEvent, onSelect }: EventsMapLayerProps) {
+function getEventMarkerLabel(event: EventMapItem) {
+  return EVENT_CATEGORY_META[event.categoria].label
+}
+
+function getAmbulanteMarkerLabel(ambulante: AmbulanteMapItem) {
+  const priceMatch = ambulante.precoMedio.match(/R\$\s*\d+/)
+  return priceMatch?.[0] ?? ambulante.nome.split(' ')[0] ?? 'Food'
+}
+
+export default function EventsMapLayer({
+  events,
+  selectedEvent,
+  selectedAmbulante,
+  onSelect,
+  onSelectAmbulante,
+}: EventsMapLayerProps) {
   const mapRef = useRef<MapRef | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const [hoveredAmbulanteId, setHoveredAmbulanteId] = useState<string | null>(null)
   const [userLocation, setUserLocation] = useState<MapPoint | null>(null)
   const [locationMode, setLocationMode] = useState<'locating' | 'live' | 'denied' | 'unsupported'>('locating')
   const [route, setRoute] = useState<RouteFeature | null>(null)
@@ -148,8 +190,13 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
   }, [events])
 
   const userCoordinates = useMemo(() => (userLocation ? toMapCoordinates(userLocation) : null), [userLocation])
+  const ambulantes = useMemo(() => events.flatMap((event) => event.ambulantes), [events])
+  const selectedEventId = selectedEvent?.id ?? '__none__'
+  const selectedAmbulanteId = selectedAmbulante?.id ?? '__none__'
+  const hoveredEventFeatureId = hoveredId ?? '__none__'
+  const hoveredAmbulanteFeatureId = hoveredAmbulanteId ?? '__none__'
 
-  const eventosGeoJSON = useMemo<EventFeatureCollection>(
+  const eventsGeoJSON = useMemo<EventFeatureCollection>(
     () => ({
       type: 'FeatureCollection',
       features: events.map((event) => ({
@@ -158,18 +205,8 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
           id: event.id,
           nome: event.nome,
           categoria: event.categoria,
-          descricao: event.descricao,
-          cor:
-            event.categoria === 'show'
-              ? '#E74C3C'
-              : event.categoria === 'cultural'
-                ? '#8E44AD'
-                : event.categoria === 'religioso'
-                  ? '#3498DB'
-                  : event.categoria === 'corporativo'
-                    ? '#2ECC71'
-                    : '#F1C40F',
-          endereco: event.endereco,
+          highlighted: event.ambulantes.some((ambulante) => ambulante.destaque),
+          label: getEventMarkerLabel(event),
         },
         geometry: {
           type: 'Point',
@@ -178,6 +215,26 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
       })),
     }),
     [events],
+  )
+
+  const ambulantesGeoJSON = useMemo<AmbulanteFeatureCollection>(
+    () => ({
+      type: 'FeatureCollection',
+      features: ambulantes.map((ambulante) => ({
+        type: 'Feature',
+        properties: {
+          id: ambulante.id,
+          nome: ambulante.nome,
+          highlighted: ambulante.destaque,
+          label: getAmbulanteMarkerLabel(ambulante),
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [ambulante.longitude, ambulante.latitude],
+        },
+      })),
+    }),
+    [ambulantes],
   )
 
   const userGeoJSON = useMemo<UserFeatureCollection | null>(() => {
@@ -200,8 +257,6 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
       ],
     }
   }, [userCoordinates])
-
-  const selectedId = selectedEvent?.id ?? '__none__'
 
   useEffect(() => {
     let isCancelled = false
@@ -248,6 +303,24 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
 
   useEffect(() => {
     if (events.length === 0) return
+
+    if (selectedEvent?.ambulantes.length) {
+      const selectedPoints = selectedEvent.ambulantes.map(
+        (ambulante) => [ambulante.longitude, ambulante.latitude] as [number, number],
+      )
+
+      if (userCoordinates) {
+        fitMapToPoints(mapRef.current, [
+          userCoordinates,
+          [selectedEvent.longitude, selectedEvent.latitude],
+          ...selectedPoints,
+        ])
+        return
+      }
+
+      fitMapToPoints(mapRef.current, [[selectedEvent.longitude, selectedEvent.latitude], ...selectedPoints])
+      return
+    }
 
     if (selectedEvent && userCoordinates) {
       fitMapToPoints(mapRef.current, [userCoordinates, [selectedEvent.longitude, selectedEvent.latitude]])
@@ -300,19 +373,54 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
         attributionControl={false}
         dragRotate={false}
         touchPitch={false}
-        interactiveLayerIds={[EVENTOS_HITBOX_LAYER_ID, EVENTOS_LAYER_ID]}
-        cursor={hoveredId ? 'pointer' : 'grab'}
+        interactiveLayerIds={[EVENT_HITBOX_LAYER_ID, AMBULANTE_HITBOX_LAYER_ID]}
+        cursor={hoveredId || hoveredAmbulanteId ? 'pointer' : 'grab'}
         onMouseMove={(event) => {
-          const id = event.features?.[0]?.properties?.id
-          setHoveredId(typeof id === 'string' ? id : null)
+          const feature = event.features?.[0]
+          const id = feature?.properties?.id
+          const layerId = feature?.layer?.id
+
+          if (typeof id !== 'string') {
+            setHoveredId(null)
+            setHoveredAmbulanteId(null)
+            return
+          }
+
+          if (layerId === EVENT_HITBOX_LAYER_ID) {
+            setHoveredId(id)
+            setHoveredAmbulanteId(null)
+            return
+          }
+
+          if (layerId === AMBULANTE_HITBOX_LAYER_ID) {
+            setHoveredId(null)
+            setHoveredAmbulanteId(id)
+            return
+          }
+
+          setHoveredId(null)
+          setHoveredAmbulanteId(null)
         }}
-        onMouseLeave={() => setHoveredId(null)}
+        onMouseLeave={() => {
+          setHoveredId(null)
+          setHoveredAmbulanteId(null)
+        }}
         onClick={(event) => {
-          const id = event.features?.[0]?.properties?.id
+          const feature = event.features?.[0]
+          const id = feature?.properties?.id
+          const layerId = feature?.layer?.id
           if (typeof id !== 'string') return
 
-          const selected = events.find((item) => item.id === id)
-          if (selected) onSelect(selected)
+          if (layerId === EVENT_HITBOX_LAYER_ID) {
+            const selectedFeature = events.find((item) => item.id === id)
+            if (selectedFeature) onSelect(selectedFeature)
+            return
+          }
+
+          if (layerId === AMBULANTE_HITBOX_LAYER_ID) {
+            const selectedFeature = ambulantes.find((item) => item.id === id)
+            if (selectedFeature) onSelectAmbulante(selectedFeature)
+          }
         }}
       >
         {route ? (
@@ -361,79 +469,124 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
           </Source>
         ) : null}
 
-        <Source id="eventos" type="geojson" data={eventosGeoJSON}>
+        <Source id="eventos-points" type="geojson" data={eventsGeoJSON}>
           <Layer
-            id={EVENTOS_HITBOX_LAYER_ID}
+            id={EVENT_HITBOX_LAYER_ID}
             type="circle"
-            source="eventos"
             paint={{
-              'circle-radius': 20,
+              'circle-radius': 24,
               'circle-color': '#000000',
               'circle-opacity': 0.01,
             }}
           />
           <Layer
-            id="eventos-selected-halo"
+            id={EVENT_HALO_LAYER_ID}
             type="circle"
-            source="eventos"
-            filter={['==', ['get', 'id'], selectedId] as any}
+            filter={['any', ['==', ['get', 'id'], selectedEventId], ['==', ['get', 'id'], hoveredEventFeatureId]] as any}
             paint={{
-              'circle-radius': 19,
+              'circle-radius': ['case', ['==', ['get', 'id'], selectedEventId], 23, 19],
               'circle-color': '#ffffff',
-              'circle-opacity': 0.35,
+              'circle-opacity': ['case', ['==', ['get', 'id'], selectedEventId], 0.32, 0.22],
             }}
           />
           <Layer
-            id={EVENTOS_LAYER_ID}
+            id={EVENT_POINT_LAYER_ID}
             type="circle"
-            source="eventos"
             paint={{
               'circle-radius': [
                 'case',
-                ['==', ['get', 'id'], selectedId],
+                ['==', ['get', 'id'], selectedEventId],
+                13,
+                ['==', ['get', 'id'], hoveredEventFeatureId],
                 11,
-                ['==', ['get', 'id'], hoveredId ?? '__none__'],
                 9,
-                6,
               ],
-              'circle-color': [
-                'match',
-                ['get', 'categoria'],
-                'show', '#E74C3C',
-                'cultural', '#8E44AD',
-                'religioso', '#3498DB',
-                'corporativo', '#2ECC71',
-                '#F1C40F',
-              ],
+              'circle-color': EVENT_MARKER_COLOR,
               'circle-stroke-width': [
                 'case',
-                ['==', ['get', 'id'], selectedId],
+                ['==', ['get', 'id'], selectedEventId],
                 3,
-                ['==', ['get', 'id'], hoveredId ?? '__none__'],
+                ['==', ['get', 'highlighted'], true],
                 3,
                 2,
               ],
-              'circle-stroke-color': [
-                'case',
-                ['==', ['get', 'id'], selectedId],
-                '#0f172a',
-                '#ffffff',
-              ],
+              'circle-stroke-color': ['case', ['==', ['get', 'id'], selectedEventId], '#4c1d95', '#ffffff'],
             }}
           />
           <Layer
-            id="eventos-label"
+            id={EVENT_LABEL_LAYER_ID}
             type="symbol"
-            source="eventos"
-            filter={['==', ['get', 'id'], selectedId] as any}
+            filter={['any', ['==', ['get', 'id'], selectedEventId], ['==', ['get', 'id'], hoveredEventFeatureId]] as any}
             layout={{
               'text-field': ['get', 'nome'],
               'text-size': 11,
-              'text-offset': [0, 1.9],
+              'text-offset': [0, 2.1],
               'text-anchor': 'top',
             }}
             paint={{
-              'text-color': '#0f172a',
+              'text-color': '#111827',
+              'text-halo-color': '#ffffff',
+              'text-halo-width': 2,
+            }}
+          />
+        </Source>
+
+        <Source id="ambulantes-points" type="geojson" data={ambulantesGeoJSON}>
+          <Layer
+            id={AMBULANTE_HITBOX_LAYER_ID}
+            type="circle"
+            paint={{
+              'circle-radius': 24,
+              'circle-color': '#000000',
+              'circle-opacity': 0.01,
+            }}
+          />
+          <Layer
+            id={AMBULANTE_HALO_LAYER_ID}
+            type="circle"
+            filter={['any', ['==', ['get', 'id'], selectedAmbulanteId], ['==', ['get', 'id'], hoveredAmbulanteFeatureId]] as any}
+            paint={{
+              'circle-radius': ['case', ['==', ['get', 'id'], selectedAmbulanteId], 23, 19],
+              'circle-color': '#ffffff',
+              'circle-opacity': ['case', ['==', ['get', 'id'], selectedAmbulanteId], 0.32, 0.22],
+            }}
+          />
+          <Layer
+            id={AMBULANTE_POINT_LAYER_ID}
+            type="circle"
+            paint={{
+              'circle-radius': [
+                'case',
+                ['==', ['get', 'id'], selectedAmbulanteId],
+                13,
+                ['==', ['get', 'id'], hoveredAmbulanteFeatureId],
+                11,
+                9,
+              ],
+              'circle-color': AMBULANTE_MARKER_COLOR,
+              'circle-stroke-width': [
+                'case',
+                ['==', ['get', 'id'], selectedAmbulanteId],
+                3,
+                ['==', ['get', 'highlighted'], true],
+                3,
+                2,
+              ],
+              'circle-stroke-color': ['case', ['==', ['get', 'id'], selectedAmbulanteId], '#92400e', '#ffffff'],
+            }}
+          />
+          <Layer
+            id={AMBULANTE_LABEL_LAYER_ID}
+            type="symbol"
+            filter={['any', ['==', ['get', 'id'], selectedAmbulanteId], ['==', ['get', 'id'], hoveredAmbulanteFeatureId]] as any}
+            layout={{
+              'text-field': ['get', 'nome'],
+              'text-size': 11,
+              'text-offset': [0, 2.1],
+              'text-anchor': 'top',
+            }}
+            paint={{
+              'text-color': '#111827',
               'text-halo-color': '#ffffff',
               'text-halo-width': 2,
             }}
@@ -453,15 +606,19 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
               : 'Ative a geolocalizacao para tracar a rota'}
         </div>
         <div className="rounded-full border border-white/55 bg-background/85 px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-md">
-          {selectedEvent
-            ? !userLocation
-              ? 'Selecione um evento e ative a localizacao'
-              : isRouting
-                ? 'Gerando rota para o evento...'
-                : routeMode === 'mapbox'
-                  ? 'Rota do usuario ate o evento'
-                  : 'Rota aproximada do usuario ate o evento'
-            : 'Passe o mouse ou toque nos markers de eventos'}
+          {selectedAmbulante
+            ? 'Ambulante destacado no mapa'
+            : selectedEvent
+              ? !userLocation
+                ? 'Selecione um evento e ative a localizacao'
+                : isRouting
+                  ? 'Gerando rota para o evento...'
+                  : routeMode === 'mapbox'
+                    ? 'Rota do usuario ate o evento'
+                    : 'Rota aproximada do usuario ate o evento'
+              : hoveredId || hoveredAmbulanteId
+                ? 'Marker premium em foco'
+                : 'Passe o mouse ou toque nos markers de eventos'}
         </div>
       </div>
 
@@ -469,6 +626,14 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
         <button
           type="button"
           onClick={() => {
+            if (selectedEvent?.ambulantes.length) {
+              const selectedPoints = selectedEvent.ambulantes.map(
+                (ambulante) => [ambulante.longitude, ambulante.latitude] as [number, number],
+              )
+              fitMapToPoints(mapRef.current, [[selectedEvent.longitude, selectedEvent.latitude], ...selectedPoints])
+              return
+            }
+
             if (selectedEvent && userCoordinates) {
               fitMapToPoints(mapRef.current, [userCoordinates, [selectedEvent.longitude, selectedEvent.latitude]])
               return
@@ -504,7 +669,23 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
         </button>
       </div>
 
-      {selectedEvent ? (
+      {selectedAmbulante ? (
+        <div className="absolute bottom-3 left-3 right-20 z-10 rounded-2xl border border-white/55 bg-background/90 px-4 py-3 shadow-lg backdrop-blur-md">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-foreground">{selectedAmbulante.nome}</p>
+              <p className="text-xs capitalize text-muted-foreground">
+                {selectedAmbulante.tipo} • {selectedAmbulante.precoMedio}
+              </p>
+            </div>
+            {selectedAmbulante.destaque ? <Star className="h-4 w-4 fill-amber-400 text-amber-400" /> : null}
+          </div>
+          <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5" />
+            <span className="truncate">{selectedAmbulante.eventNome}</span>
+          </div>
+        </div>
+      ) : selectedEvent ? (
         <div className="absolute bottom-3 left-3 right-20 z-10 rounded-2xl border border-white/55 bg-background/90 px-4 py-3 shadow-lg backdrop-blur-md">
           <p className="text-sm font-semibold text-foreground">{selectedEvent.nome}</p>
           <p className="text-xs text-muted-foreground">{selectedEvent.categoria}</p>
@@ -517,3 +698,4 @@ export default function EventsMapLayer({ events, selectedEvent, onSelect }: Even
     </div>
   )
 }
+

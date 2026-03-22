@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, MapPin, X, ChevronRight, Trophy, Star, TrendingUp } from 'lucide-react'
+import { Bell, MapPin, X, ChevronRight, Trophy, Star, TrendingUp, CalendarDays, Ticket, Gift } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { currentUser, notifications } from '@/lib/data'
+import { normalizeText } from '@/lib/text'
 import { cn } from '@/lib/utils'
 
 export function Header() {
@@ -51,7 +52,7 @@ export function Header() {
                 <div className="relative h-full w-full rounded-full bg-primary-foreground/20 overflow-hidden">
                   <Image
                     src="/1.jpg"
-                    alt={`Foto de ${currentUser.name}`}
+                    alt={`Foto de ${normalizeText(currentUser.name)}`}
                     fill
                     sizes="56px"
                     className="object-cover"
@@ -68,7 +69,7 @@ export function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 className="text-white/70 text-sm font-medium"
               >
-                <span suppressHydrationWarning>{getGreeting()}</span>, <span className="font-bold text-white">{currentUser.firstName}!</span>
+                <span suppressHydrationWarning>{getGreeting()}</span>, <span className="font-bold text-white">{normalizeText(currentUser.firstName)}!</span>
               </motion.p>
               <motion.div 
                 initial={{ opacity: 0, x: -10 }}
@@ -77,7 +78,7 @@ export function Header() {
                 className="flex items-center gap-1.5 mt-1"
               >
                 <MapPin className="h-3.5 w-3.5 text-white/60" />
-                <span className="text-xs text-white/60">Centro Histórico - Aracaju</span>
+                <span className="text-xs text-white/60">{'Centro Hist\u00f3rico - Aracaju'}</span>
               </motion.div>
             </div>
           </div>
@@ -132,8 +133,8 @@ export function Header() {
                   <Trophy className="h-5 w-5 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-white font-bold text-lg leading-tight">Nível {currentUser.levelNumber}</p>
-                  <p className="text-amber-400 text-xs font-medium">{currentUser.level}</p>
+                  <p className="text-white font-bold text-lg leading-tight">{'N\u00edvel'} {currentUser.levelNumber}</p>
+                  <p className="text-amber-400 text-xs font-medium">{normalizeText(currentUser.level)}</p>
                 </div>
               </div>
 
@@ -146,7 +147,7 @@ export function Header() {
             {/* Progress bar */}
             <div className="mt-4">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs text-white/50">Progresso para Nível {currentUser.levelNumber + 1}</span>
+                <span className="text-xs text-white/50">{'Progresso para N\u00edvel'} {currentUser.levelNumber + 1}</span>
                 <span className="text-xs text-white/70 font-medium">{progressToNextLevel}%</span>
               </div>
               <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
@@ -181,8 +182,8 @@ export function Header() {
             >
               <div className="sticky top-0 bg-card/95 backdrop-blur-lg flex items-center justify-between p-4 border-b border-border">
                 <div>
-                  <h2 className="font-bold text-lg">Notificações</h2>
-                  <p className="text-xs text-muted-foreground">{unreadCount} não lidas</p>
+                  <h2 className="font-bold text-lg">{'Notifica\u00e7\u00f5es'}</h2>
+                  <p className="text-xs text-muted-foreground">{unreadCount} {'n\u00e3o lidas'}</p>
                 </div>
                 <button 
                   onClick={() => setShowNotifications(false)}
@@ -211,10 +212,10 @@ export function Header() {
                       notification.type === 'points' && 'bg-gold/10',
                       notification.type === 'reward' && 'bg-success/10'
                     )}>
-                      {notification.type === 'event' && '📅'}
-                      {notification.type === 'promo' && '🏷️'}
-                      {notification.type === 'points' && '⭐'}
-                      {notification.type === 'reward' && '🎁'}
+                      {notification.type === 'event' && <CalendarDays className="h-5 w-5 text-secondary" />}
+                      {notification.type === 'promo' && <Ticket className="h-5 w-5 text-live" />}
+                      {notification.type === 'points' && <Star className="h-5 w-5 text-gold fill-gold" />}
+                      {notification.type === 'reward' && <Gift className="h-5 w-5 text-success" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
@@ -237,7 +238,7 @@ export function Header() {
               
               <div className="p-4 border-t border-border">
                 <button className="w-full py-3 text-center text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors">
-                  Ver todas as notificações
+                  {'Ver todas as notifica\u00e7\u00f5es'}
                 </button>
               </div>
             </motion.div>
@@ -247,3 +248,5 @@ export function Header() {
     </header>
   )
 }
+
+

@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, QrCode, CheckCircle, Sparkles } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Camera, QrCode, ScanLine, X } from 'lucide-react'
 
 interface QRScannerModalProps {
   isOpen: boolean
@@ -12,172 +11,88 @@ interface QRScannerModalProps {
 }
 
 export function QRScannerModal({ isOpen, onClose, onScanSuccess }: QRScannerModalProps) {
-  const [scanning, setScanning] = useState(true)
-  const [success, setSuccess] = useState(false)
+  const [phase, setPhase] = useState<'scanning' | 'success'>('scanning')
   const [pointsEarned, setPointsEarned] = useState(0)
 
   useEffect(() => {
-    if (isOpen) {
-      setScanning(true)
-      setSuccess(false)
-      
-      // Simular scan após 2.5 segundos
-      const timer = setTimeout(() => {
-        setScanning(false)
-        setSuccess(true)
-        const points = Math.floor(Math.random() * 50) + 30
-        setPointsEarned(points)
-        onScanSuccess?.(points)
-      }, 2500)
+    if (!isOpen) return
 
-      return () => clearTimeout(timer)
-    }
+    setPhase('scanning')
+    const timer = window.setTimeout(() => {
+      const points = Math.floor(Math.random() * 50) + 30
+      setPointsEarned(points)
+      setPhase('success')
+      onScanSuccess?.(points)
+    }, 2600)
+
+    return () => window.clearTimeout(timer)
   }, [isOpen, onScanSuccess])
 
   return (
     <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[70] bg-foreground flex items-center justify-center"
-        >
-          {/* Close button */}
+      {isOpen ? (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[82] bg-[#020617] text-white">
           <button
+            type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-primary-foreground/20 text-primary-foreground z-10"
+            className="absolute right-4 top-4 z-10 rounded-full border border-white/15 bg-white/10 p-2 backdrop-blur-md"
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </button>
 
-          {scanning ? (
-            <>
-              {/* Scanning UI */}
-              <div className="relative">
-                {/* Scanner frame */}
-                <div className="relative h-64 w-64">
-                  {/* Corner borders */}
-                  <div className="absolute top-0 left-0 h-12 w-12 border-t-4 border-l-4 border-primary rounded-tl-2xl" />
-                  <div className="absolute top-0 right-0 h-12 w-12 border-t-4 border-r-4 border-primary rounded-tr-2xl" />
-                  <div className="absolute bottom-0 left-0 h-12 w-12 border-b-4 border-l-4 border-primary rounded-bl-2xl" />
-                  <div className="absolute bottom-0 right-0 h-12 w-12 border-b-4 border-r-4 border-primary rounded-br-2xl" />
-                  
-                  {/* Scanning line */}
-                  <motion.div
-                    animate={{ y: [0, 240, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                    className="absolute top-2 left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"
-                  />
-
-                  {/* QR Icon */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <motion.div
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      <QrCode className="h-20 w-20 text-primary-foreground/30" />
-                    </motion.div>
-                  </div>
+          {phase === 'scanning' ? (
+            <div className="flex min-h-screen flex-col items-center justify-center px-6">
+              <div className="max-w-sm text-center">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 backdrop-blur-md">
+                  <Camera className="h-8 w-8 text-cyan-300" />
                 </div>
-
-                {/* Instructions */}
-                <motion.p
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-primary-foreground text-center mt-8 text-lg"
-                >
-                  Posicione o QR Code da loja
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 0.7 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-primary-foreground/70 text-center mt-2"
-                >
-                  Escaneando...
-                </motion.p>
+                <h2 className="text-2xl font-bold">Scanner inteligente</h2>
+                <p className="mt-2 text-sm text-white/70">Leitura continua com overlay premium para check-in e ativacoes contextuais.</p>
               </div>
-            </>
-          ) : success ? (
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-center px-8"
-            >
-              {/* Success animation */}
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', damping: 10 }}
-                className="relative mb-6"
-              >
-                <div className="h-24 w-24 mx-auto bg-success rounded-full flex items-center justify-center">
-                  <CheckCircle className="h-12 w-12 text-primary-foreground" />
-                </div>
-                
-                {/* Sparkles */}
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ scale: 0, opacity: 1 }}
-                    animate={{ 
-                      scale: [0, 1, 1],
-                      opacity: [1, 1, 0],
-                      x: Math.cos(i * 60 * Math.PI / 180) * 60,
-                      y: Math.sin(i * 60 * Math.PI / 180) * 60,
-                    }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-                  >
-                    <Sparkles className="h-5 w-5 text-gold" />
+
+              <div className="relative mt-10 h-72 w-72 rounded-[2rem] border border-white/12 bg-white/5 p-4 shadow-[0_28px_80px_-35px_rgba(34,211,238,0.4)] backdrop-blur-md">
+                <div className="absolute inset-5 rounded-[1.6rem] border border-cyan-400/60" />
+                <div className="absolute left-5 top-5 h-10 w-10 rounded-tl-2xl border-l-4 border-t-4 border-cyan-300" />
+                <div className="absolute right-5 top-5 h-10 w-10 rounded-tr-2xl border-r-4 border-t-4 border-cyan-300" />
+                <div className="absolute bottom-5 left-5 h-10 w-10 rounded-bl-2xl border-b-4 border-l-4 border-cyan-300" />
+                <div className="absolute bottom-5 right-5 h-10 w-10 rounded-br-2xl border-b-4 border-r-4 border-cyan-300" />
+                <motion.div
+                  animate={{ y: [0, 185, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                  className="absolute left-8 right-8 top-8 h-1 rounded-full bg-gradient-to-r from-transparent via-cyan-300 to-transparent shadow-[0_0_20px_rgba(34,211,238,0.8)]"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div animate={{ scale: [1, 1.06, 1] }} transition={{ duration: 1.2, repeat: Infinity }}>
+                    <QrCode className="h-24 w-24 text-white/18" />
                   </motion.div>
-                ))}
+                </div>
+                <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-cyan-400/12 px-3 py-1.5 text-xs font-semibold text-cyan-200">
+                  <ScanLine className="h-3.5 w-3.5" />
+                  Escaneando...
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+              <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="rounded-[2rem] border border-emerald-400/30 bg-emerald-400/10 p-8 shadow-[0_28px_80px_-35px_rgba(16,185,129,0.45)]">
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500 text-white">
+                  <QrCode className="h-10 w-10" />
+                </div>
+                <h2 className="mt-5 text-2xl font-bold">QR reconhecido</h2>
+                <p className="mt-2 text-sm text-white/70">Check-in confirmado com leitura premium e suporte a fluxo continuo.</p>
+                <div className="mt-5 rounded-2xl bg-white/10 px-5 py-4 text-3xl font-bold text-amber-300">+{pointsEarned} pontos</div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="mt-6 inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900"
+                >
+                  Continuar
+                </button>
               </motion.div>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-2xl font-bold text-primary-foreground mb-2"
-              >
-                Check-in realizado!
-              </motion.h2>
-
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="flex items-center justify-center gap-2 text-gold text-3xl font-bold mb-4"
-              >
-                <Sparkles className="h-6 w-6" />
-                +{pointsEarned} pontos
-                <Sparkles className="h-6 w-6" />
-              </motion.div>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.8 }}
-                transition={{ delay: 0.7 }}
-                className="text-primary-foreground/80 mb-8"
-              >
-                Continue explorando o centro para ganhar mais pontos!
-              </motion.p>
-
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onClose}
-                className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-semibold text-lg"
-              >
-                Continuar Explorando
-              </motion.button>
-            </motion.div>
-          ) : null}
+            </div>
+          )}
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   )
 }

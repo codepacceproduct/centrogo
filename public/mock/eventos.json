@@ -5,92 +5,169 @@
       "type": "Feature",
       "properties": {
         "id": "event_001",
-        "nome": "Aracaju Summer Fest",
-        "categoria": "show",
-        "descricao": "Festival de musica com atracoes nacionais",
-        "data": "2026-04-10",
-        "horario": "20:00 - 03:00",
-        "preco": "A partir de R$ 80",
-        "atracoes": ["DJ Alok", "Xand Aviao", "Vintage Culture"],
-        "endereco": "Orla de Atalaia, Aracaju - SE"
+        "nome": "Feirinha da Praca Tobias Barreto",
+        "descricao": "Feira de domingo com gastronomia, pequenos produtores e clima de encontro no bairro Centro.",
+        "dataInicio": "2026-03-22",
+        "dataFim": "2026-03-22",
+        "horario": "16:00 - 22:00",
+        "categoria": "festival",
+        "endereco": "Praca Tobias Barreto, Centro - Aracaju",
+        "atracoes": ["Comidas regionais", "Musica ao vivo", "Artesanato local"],
+        "physicalAccessibility": {
+          "hasRamp": true,
+          "hasElevator": false,
+          "accessibleBathroom": true,
+          "tactileFloor": false,
+          "wideDoor": true,
+          "wheelchairParking": false,
+          "stepsCount": 0,
+          "rampInclination": "Suave (5%)"
+        },
+        "accessibilityMap": {
+          "accessibleRoutes": ["Acesso principal pela Praca Tobias Barreto", "Trecho plano vindo da Av. Ivo do Prado"],
+          "adaptedSidewalks": ["Calcada ampliada no entorno da praca", "Faixa rebaixada na entrada principal"],
+          "obstacleStreets": ["Trecho com mesas e fluxo intenso durante o pico da feira"],
+          "accessibleLocations": ["Palco central", "Area de alimentacao acessivel", "Ponto de apoio com banheiro"]
+        },
+        "ambulantes": [
+          {
+            "id": "amb_001",
+            "nome": "Sabores da Praca",
+            "tipo": "comida",
+            "descricao": "Barraca com pratos regionais e petiscos sergipanos para o publico da feirinha.",
+            "lat": -10.9139,
+            "lng": -37.0487,
+            "especialidade": ["Tapioca", "Escondidinho", "Sucos regionais"],
+            "horario": "16:00 - 22:00",
+            "precoMedio": "R$ 10 - R$ 28",
+            "destaque": true
+          },
+          {
+            "id": "amb_002",
+            "nome": "Doce Centro",
+            "tipo": "comida",
+            "descricao": "Doces artesanais e cafe passado na hora para quem circula pela praca.",
+            "lat": -10.9137,
+            "lng": -37.049,
+            "especialidade": ["Bolos caseiros", "Cafe", "Cocadas"],
+            "horario": "16:00 - 21:30",
+            "precoMedio": "R$ 6 - R$ 20",
+            "destaque": false
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [-37.0525, -10.9875]
+        "coordinates": [-37.0489, -10.9138]
       }
     },
     {
       "type": "Feature",
       "properties": {
         "id": "event_002",
-        "nome": "Feira Cultural do Centro",
+        "nome": "Eventos no Museu da Gente Sergipana",
+        "descricao": "Programacao cultural semanal com visitas mediadas, oficinas e atividades ligadas a memoria sergipana.",
+        "dataInicio": "2026-03-27",
+        "dataFim": "2026-03-27",
+        "horario": "10:00 - 17:00",
         "categoria": "cultural",
-        "descricao": "Artesanato, gastronomia e musica local",
-        "data": "2026-04-05",
-        "horario": "09:00 - 17:00",
-        "preco": "Gratuito",
-        "atracoes": ["Artistas locais", "Bandas regionais"],
-        "endereco": "Praca Fausto Cardoso, Centro, Aracaju - SE"
+        "endereco": "Av. Ivo do Prado, 398 - Centro, Aracaju",
+        "atracoes": ["Visita guiada", "Oficina educativa", "Exposicao interativa"],
+        "physicalAccessibility": {
+          "hasRamp": true,
+          "hasElevator": true,
+          "accessibleBathroom": true,
+          "tactileFloor": true,
+          "wideDoor": true,
+          "wheelchairParking": true,
+          "stepsCount": 0,
+          "rampInclination": "Suave (4%)"
+        },
+        "accessibilityMap": {
+          "accessibleRoutes": ["Acesso pela Av. Ivo do Prado", "Percurso assistido pelo calcadao lateral do museu"],
+          "adaptedSidewalks": ["Piso regular no entorno do museu", "Entrada sinalizada com faixa rebaixada"],
+          "obstacleStreets": ["Trecho com parada rapida de veiculos turisticos"],
+          "accessibleLocations": ["Bilheteria", "Elevador interno", "Banheiro acessivel", "Exposicao terrea"]
+        },
+        "ambulantes": [
+          {
+            "id": "amb_003",
+            "nome": "Cafe do Museu",
+            "tipo": "bebida",
+            "descricao": "Ponto de apoio com cafe, bebidas geladas e doces leves na area externa do museu.",
+            "lat": -10.9174,
+            "lng": -37.0475,
+            "especialidade": ["Cafe coado", "Capuccino", "Brownie"],
+            "horario": "10:00 - 17:00",
+            "precoMedio": "R$ 7 - R$ 18",
+            "destaque": true
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [-37.0500, -10.9110]
+        "coordinates": [-37.04766, -10.91756]
       }
     },
     {
       "type": "Feature",
       "properties": {
         "id": "event_003",
-        "nome": "Congresso Tech Sergipe",
-        "categoria": "corporativo",
-        "descricao": "Evento de tecnologia e inovacao",
-        "data": "2026-05-02",
-        "horario": "08:00 - 18:00",
-        "preco": "A partir de R$ 150",
-        "atracoes": ["Especialistas em IA", "Empreendedores"],
-        "endereco": "SergipeTec, Aracaju - SE"
+        "nome": "Feiras Gastronomicas nos Mercados",
+        "descricao": "Circuito diario de sabores nos mercados do Centro, com boxes tradicionais e experiencias regionais.",
+        "dataInicio": "2026-03-29",
+        "dataFim": "2026-03-29",
+        "horario": "11:00 - 20:00",
+        "categoria": "festival",
+        "endereco": "Mercado Municipal Antonio Franco, Centro - Aracaju",
+        "atracoes": ["Boxes regionais", "Degustacoes", "Comida popular"],
+        "physicalAccessibility": {
+          "hasRamp": true,
+          "hasElevator": false,
+          "accessibleBathroom": true,
+          "tactileFloor": false,
+          "wideDoor": true,
+          "wheelchairParking": true,
+          "stepsCount": 1,
+          "rampInclination": "Moderada (9%)"
+        },
+        "accessibilityMap": {
+          "accessibleRoutes": ["Entrada acessivel pelo portao lateral do mercado", "Corredor principal com menor inclinacao"],
+          "adaptedSidewalks": ["Calcada rebaixada na frente do mercado", "Corredor central com largura ampliada"],
+          "obstacleStreets": ["Setor de carga e descarga no fundo do mercado"],
+          "accessibleLocations": ["Boxes principais", "Area de refeicao", "Banheiro acessivel"]
+        },
+        "ambulantes": [
+          {
+            "id": "amb_004",
+            "nome": "Temperos do Mercado",
+            "tipo": "comida",
+            "descricao": "Pratos regionais e petiscos preparados com ingredientes vendidos no mercado.",
+            "lat": -10.9141,
+            "lng": -37.0476,
+            "especialidade": ["Carne de sol", "Pirao", "Bolinhos"],
+            "horario": "11:00 - 20:00",
+            "precoMedio": "R$ 12 - R$ 30",
+            "destaque": true
+          },
+          {
+            "id": "amb_005",
+            "nome": "Sucos do Antonio Franco",
+            "tipo": "bebida",
+            "descricao": "Bebidas naturais e refrescos para o circuito gastronomico do mercado.",
+            "lat": -10.9143,
+            "lng": -37.0478,
+            "especialidade": ["Umbu", "Acerola", "Manga"],
+            "horario": "11:00 - 19:00",
+            "precoMedio": "R$ 5 - R$ 14",
+            "destaque": false
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [-37.0731, -10.9384]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "event_004",
-        "nome": "Noite Gospel Aracaju",
-        "categoria": "religioso",
-        "descricao": "Show com bandas gospel e pregacao",
-        "data": "2026-04-12",
-        "horario": "18:00 - 22:00",
-        "preco": "Gratuito",
-        "atracoes": ["Fernandinho", "Diante do Trono"],
-        "endereco": "Praca de Eventos, Aracaju - SE"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-37.0602, -10.9478]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "event_005",
-        "nome": "SE MAPPING",
-        "categoria": "corporativo",
-        "descricao": "Evento gratuito de mapeamento, tecnologia, colaboracao e dados geograficos em Sergipe",
-        "data": "2026-03-21",
-        "horario": "08:30 - 18:00 | 22/03/2026 08:30 - 12:30",
-        "preco": "Gratuito",
-        "atracoes": ["Comunidade de mapeamento", "Palestras tecnicas", "Oficinas colaborativas"],
-        "endereco": "Praca Fausto Cardoso, Centro, Aracaju - SE"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-37.0500, -10.9110]
+        "coordinates": [-37.0477, -10.9142]
       }
     }
   ]
 }
-

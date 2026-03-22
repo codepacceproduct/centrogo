@@ -1,22 +1,82 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Star, MapPin, Clock, Heart } from 'lucide-react'
+import { Clock, Heart, MapPin, Star, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+
 import { Store, isStoreOpen } from '@/lib/data'
+import { normalizeText } from '@/lib/text'
 import { cn } from '@/lib/utils'
-import { LiveBadge, PromoBadge, PointsBadge } from './live-badge'
 
 interface StoreCardProps {
   store: Store
   index?: number
   variant?: 'default' | 'compact' | 'horizontal' | 'featured'
+  onCardClick?: (store: Store) => void
+  showDetailsButton?: boolean
 }
 
-export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardProps) {  const [isOpen, setIsOpen] = useState(true)
+function PromoPill({ text }: { text: string }) {
+  return (
+    <span className="absolute left-2 top-2 rounded-full bg-orange-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-white shadow-lg">
+      {normalizeText(text)}
+    </span>
+  )
+}
+
+function PromoInfo({ text }: { text: string }) {
+  return (
+    <div className="inline-flex max-w-full items-center rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-semibold text-orange-700">
+      <span className="truncate">{normalizeText(text)}</span>
+    </div>
+  )
+}
+
+function StatusPill({ isOpen }: { isOpen: boolean }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
+        isOpen ? 'bg-green-100 text-green-700' : 'bg-neutral-200 text-neutral-600',
+      )}
+    >
+      {isOpen ? 'Aberto' : 'Fechado'}
+    </span>
+  )
+}
+
+function ScorePill({ points }: { points: number }) {
+  return (
+    <span className="inline-flex rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
+      {points} pts
+    </span>
+  )
+}
+
+function useNormalizedStore(store: Store) {
+  return useMemo(
+    () => ({
+      name: normalizeText(store.name),
+      subcategoryLabel: normalizeText(store.subcategoryLabel),
+      neighborhood: normalizeText(store.neighborhood),
+      promotionText: normalizeText(store.promotionText || 'Promo'),
+    }),
+    [store],
+  )
+}
+
+export function StoreCard({
+  store,
+  index = 0,
+  variant = 'default',
+  onCardClick,
+  showDetailsButton = false,
+}: StoreCardProps) {
+  const [isOpen, setIsOpen] = useState(true)
   const [isFavorite, setIsFavorite] = useState(false)
+  const content = useNormalizedStore(store)
 
   useEffect(() => {
     setIsOpen(isStoreOpen(store.openHour, store.closeHour))
@@ -24,67 +84,48 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
 
   if (variant === 'featured') {
     return (
-      <Link href={`/lojas/${store.id}`}>
+      <Link href={`/lojas/${store.id}`} className="snap-start">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: index * 0.1 }}
+          transition={{ delay: index * 0.08 }}
+          whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
-          className="relative w-72 shrink-0 lg:w-auto rounded-3xl overflow-hidden shadow-xl"
+          className="min-w-[260px] overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-xl lg:min-w-0"
         >
-          <div className="relative h-44">
-            <Image
-              src={store.image}
-              alt={store.name}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/20 to-transparent" />
-            
-            {/* Badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-2">
-              {store.hasPromotion && <LiveBadge text="PROMOCAO" />}
-            </div>
-
-            {/* Favorite button */}
-            <motion.button
-              whileTap={{ scale: 0.8 }}
-              onClick={(e) => {
-                e.preventDefault()
-                setIsFavorite(!isFavorite)
+          <div className="relative h-44 overflow-hidden">
+            <Image src={store.image} alt={content.name} fill className="object-cover transition-transform duration-300 hover:scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/75 via-neutral-950/15 to-transparent" />
+            {store.hasPromotion ? <PromoPill text={content.promotionText} /> : null}
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault()
+                setIsFavorite((current) => !current)
               }}
-              className="absolute top-3 right-3 h-9 w-9 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center"
+              className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/88 text-neutral-700 shadow-sm backdrop-blur-md"
+              aria-label="Favoritar loja"
             >
-              <Heart className={cn('h-5 w-5', isFavorite ? 'fill-live text-live' : 'text-muted-foreground')} />
-            </motion.button>
-
-            {/* Points badge */}
-            <div className="absolute top-3 right-14">
-              <PointsBadge points={store.loyaltyPoints} size="sm" />
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 text-primary-foreground">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className="font-bold text-lg leading-tight">{store.name}</h3>
-                <p className="text-primary-foreground/70 text-sm">{store.subcategoryLabel}</p>
+              <Heart className={cn('h-4.5 w-4.5 transition-colors', isFavorite ? 'fill-red-500 text-red-500' : 'text-neutral-600')} />
+            </button>
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="line-clamp-1 text-lg font-semibold">{content.name}</h3>
+                  <p className="text-sm text-white/75">{content.subcategoryLabel}</p>
+                </div>
+                <div className="flex items-center gap-1 rounded-full bg-white/18 px-2.5 py-1 text-xs font-semibold backdrop-blur-md">
+                  <Star className="h-3.5 w-3.5 fill-amber-300 text-amber-300" />
+                  {store.rating}
+                </div>
               </div>
-              <div className="flex items-center gap-1 bg-primary-foreground/20 backdrop-blur-sm px-2.5 py-1 rounded-xl">
-                <Star className="h-4 w-4 text-gold fill-gold" />
-                <span className="font-bold text-sm">{store.rating}</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 mt-3 text-sm text-primary-foreground/70">
-              <div className="flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5" />
-                <span>{store.neighborhood}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" />
-                <span className={isOpen ? 'text-success' : 'text-live'}>{isOpen ? 'Aberto' : 'Fechado'}</span>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-white/80">
+                <StatusPill isOpen={isOpen} />
+                <ScorePill points={store.loyaltyPoints} />
+                <span className="inline-flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {content.neighborhood}
+                </span>
               </div>
             </div>
           </div>
@@ -95,53 +136,40 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
 
   if (variant === 'horizontal') {
     return (
-      <Link href={`/lojas/${store.id}`}>
+      <Link href={`/lojas/${store.id}`} className="snap-start min-w-[260px] md:min-w-0">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -18 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: index * 0.05 }}
-          whileTap={{ scale: 0.98 }}
-          className="flex gap-4 p-3 bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow"
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.985 }}
+          className="flex min-h-[122px] gap-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:shadow-md"
         >
-          <div className="relative h-24 w-24 rounded-xl overflow-hidden shrink-0">
-            <Image
-              src={store.image}
-              alt={store.name}
-              fill
-              className="object-cover"
-            />
-            {store.hasPromotion && (
-              <div className="absolute top-1.5 left-1.5">
-                <PromoBadge text="PROMO" variant="hot" />
-              </div>
-            )}
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
+            <Image src={store.image} alt={content.name} fill className="object-cover" />
+            {store.hasPromotion ? <PromoPill text="Promo" /> : null}
           </div>
 
-          <div className="flex-1 min-w-0 py-0.5">
-            <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 flex-1 flex-col justify-between">
+            <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="font-bold text-base truncate">{store.name}</h3>
-                <p className="text-sm text-muted-foreground">{store.subcategoryLabel}</p>
+                <h3 className="line-clamp-1 text-sm font-semibold text-neutral-900">{content.name}</h3>
+                <p className="text-xs text-neutral-500">{content.subcategoryLabel}</p>
               </div>
-              <span className={cn(
-                'px-2.5 py-1 text-xs font-semibold rounded-full shrink-0',
-                isOpen ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'
-              )}>
-                {isOpen ? 'Aberto' : 'Fechado'}
-              </span>
+              <StatusPill isOpen={isOpen} />
             </div>
 
-            <div className="flex items-center gap-4 mt-3">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-neutral-700">
               <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 text-gold fill-gold" />
-                <span className="text-sm font-semibold">{store.rating}</span>
-                <span className="text-xs text-muted-foreground">({store.reviewCount})</span>
+                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                <span className="font-medium">{store.rating}</span>
+                <span className="text-neutral-500">({store.reviewCount})</span>
               </div>
-              <div className="flex items-center gap-1 text-muted-foreground">
+              <div className="flex items-center gap-1 text-neutral-500">
                 <MapPin className="h-3.5 w-3.5" />
-                <span className="text-sm">{store.neighborhood}</span>
+                <span className="line-clamp-1">{content.neighborhood}</span>
               </div>
-              <PointsBadge points={store.loyaltyPoints} size="sm" showPlus={false} />
+              <ScorePill points={store.loyaltyPoints} />
             </div>
           </div>
         </motion.div>
@@ -151,121 +179,117 @@ export function StoreCard({ store, index = 0, variant = 'default' }: StoreCardPr
 
   if (variant === 'compact') {
     return (
-      <Link href={`/lojas/${store.id}`}>
+      <Link href={`/lojas/${store.id}`} className="snap-start">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: index * 0.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="w-40 shrink-0"
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          className="min-w-[200px] rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm transition hover:shadow-md"
         >
-          <div className="relative h-28 rounded-2xl overflow-hidden shadow-md">
-            <Image
-              src={store.image}
-              alt={store.name}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
-            
-            {store.hasPromotion && (
-              <div className="absolute top-2 left-2">
-                <LiveBadge />
-              </div>
-            )}
-
-            <div className="absolute bottom-2 left-2 right-2">
-              <p className="text-primary-foreground text-sm font-bold truncate drop-shadow-lg">{store.name}</p>
-            </div>
+          <div className="relative h-28 overflow-hidden rounded-xl">
+            <Image src={store.image} alt={content.name} fill className="object-cover" />
+            {store.hasPromotion ? <PromoPill text="Promo" /> : null}
           </div>
-
-          <div className="flex items-center justify-between mt-2 px-1">
-            <div className="flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 text-gold fill-gold" />
-              <span className="text-sm font-semibold">{store.rating}</span>
+          <div className="mt-3 space-y-2">
+            <h3 className="line-clamp-1 text-sm font-semibold text-neutral-900">{content.name}</h3>
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-1 text-neutral-700">
+                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                <span className="font-medium">{store.rating}</span>
+              </div>
+              <span className="text-neutral-500">{content.neighborhood}</span>
             </div>
-            <span className="text-xs text-muted-foreground">{store.neighborhood}</span>
           </div>
         </motion.div>
       </Link>
     )
   }
 
-  // Default variant
-  return (
-    <Link href={`/lojas/${store.id}`}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
+  const cardBody = (
+    <>
+      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
+        <Image src={store.image} alt={content.name} fill className="object-cover" />
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col justify-between">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="line-clamp-1 text-sm font-semibold text-neutral-900">{content.name}</h3>
+            <p className="text-xs text-neutral-500">{content.subcategoryLabel}</p>
+          </div>
+          <StatusPill isOpen={isOpen} />
+        </div>
+
+        {store.hasPromotion ? (
+          <div className="mt-2">
+            <PromoInfo text={content.promotionText} />
+          </div>
+        ) : null}
+
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs">
+          <div className="flex items-center gap-1 text-neutral-700">
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            <span className="font-medium">{store.rating}</span>
+            <span className="text-neutral-500">({store.reviewCount})</span>
+          </div>
+          <div className="flex items-center gap-1 text-neutral-500">
+            <MapPin className="h-3.5 w-3.5" />
+            <span>{content.neighborhood}</span>
+          </div>
+          <div className="flex items-center gap-1 text-neutral-500">
+            <Clock className="h-3.5 w-3.5" />
+            <span>{store.openHour}:00 - {store.closeHour}:00</span>
+          </div>
+          <ScorePill points={store.loyaltyPoints} />
+        </div>
+
+        {showDetailsButton ? (
+          <div className="mt-3 flex justify-end">
+            <Link
+              href={`/lojas/${store.id}`}
+              onClick={(event) => event.stopPropagation()}
+              className="inline-flex items-center gap-1 rounded-xl border border-primary/15 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/15"
+            >
+              Ver detalhes
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        ) : null}
+      </div>
+    </>
+  )
+
+  if (onCardClick) {
+    return (
+      <motion.button
+        type="button"
+        initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05 }}
-        whileTap={{ scale: 0.98 }}
-        className="bg-card rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-lg transition-all"
+        whileHover={{ scale: 1.02, y: -2 }}
+        whileTap={{ scale: 0.985 }}
+        onClick={() => onCardClick(store)}
+        className="flex h-full min-h-[132px] w-full gap-4 rounded-2xl border border-neutral-200 bg-white p-4 text-left shadow-sm transition hover:shadow-md"
       >
-        <div className="relative h-40">
-          <Image
-            src={store.image}
-            alt={store.name}
-            fill
-            className="object-cover"
-          />
-          
-          {/* Status badge */}
-          <div className="absolute top-3 right-3">
-            <span className={cn(
-              'px-3 py-1.5 text-xs font-semibold rounded-full backdrop-blur-sm',
-              isOpen ? 'bg-success/90 text-primary-foreground' : 'bg-muted/90 text-muted-foreground'
-            )}>
-              {isOpen ? 'Aberto agora' : 'Fechado'}
-            </span>
-          </div>
+        {cardBody}
+      </motion.button>
+    )
+  }
 
-          {/* Promo badge */}
-          {store.hasPromotion && (
-            <div className="absolute top-3 left-3">
-              <PromoBadge text={store.promotionText || 'PROMOCAO'} variant="hot" />
-            </div>
-          )}
-
-          {/* Favorite button */}
-          <motion.button
-            whileTap={{ scale: 0.8 }}
-            onClick={(e) => {
-              e.preventDefault()
-              setIsFavorite(!isFavorite)
-            }}
-            className="absolute bottom-3 right-3 h-10 w-10 rounded-full bg-card/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
-          >
-            <Heart className={cn('h-5 w-5 transition-colors', isFavorite ? 'fill-live text-live' : 'text-muted-foreground')} />
-          </motion.button>
-        </div>
-
-        <div className="p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h3 className="font-bold text-lg truncate">{store.name}</h3>
-              <p className="text-sm text-muted-foreground">{store.subcategoryLabel}</p>
-            </div>
-            <div className="flex items-center gap-1.5 bg-gold/10 px-2.5 py-1.5 rounded-xl shrink-0">
-              <Star className="h-4 w-4 text-gold fill-gold" />
-              <span className="font-bold">{store.rating}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center flex-wrap gap-3 mt-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4" />
-              <span>{store.neighborhood}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span>{store.reviewCount} avaliacoes</span>
-            </div>
-            <PointsBadge points={store.loyaltyPoints} size="sm" showPlus={false} />
-          </div>
-        </div>
+  return (
+    <Link href={`/lojas/${store.id}`} className="block h-full">
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        whileHover={{ scale: 1.02, y: -2 }}
+        whileTap={{ scale: 0.985 }}
+        className="flex h-full min-h-[132px] gap-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+      >
+        {cardBody}
       </motion.div>
     </Link>
   )
 }
-
-
-

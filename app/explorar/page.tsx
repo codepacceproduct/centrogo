@@ -16,7 +16,6 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-import { BottomNav } from '@/components/bottom-nav'
 import FloatingLocationPreview from '@/components/explorar/FloatingLocationPreview'
 import LocationDetailsSheet from '@/components/explorar/LocationDetailsSheet'
 import LocationDrawer from '@/components/explorar/LocationDrawer'
@@ -438,7 +437,6 @@ export default function ExplorarPage() {
         onHoverChange={setHoveredLocationId}
       />
 
-      {!isFullMap ? <BottomNav /> : null}
     </main>
   )
 }
