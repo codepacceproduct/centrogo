@@ -66,6 +66,9 @@ export function StoryHighlights({ stories }: StoryHighlightsProps) {
                     src={story.image}
                     alt={story.title}
                     fill
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={index === 0 ? 'high' : 'auto'}
+                    sizes="64px"
                     className="object-cover"
                   />
                 </div>

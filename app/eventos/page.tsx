@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
@@ -174,8 +174,8 @@ export default function EventosPage() {
   }
 
   return (
-    <main className="pb-24 pt-[17.5rem] lg:pb-8 lg:pt-[20rem]">
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm lg:top-28">
+    <main className="pb-24 pt-[17.5rem] lg:overflow-visible lg:pb-8 lg:pt-28">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm lg:sticky lg:top-28 lg:shadow-sm">
         <PageFiltersHeader
           title="Eventos da Cidade"
           subtitle="Busca por categoria, descricao, endereco e ambulantes vinculados"
@@ -452,3 +452,4 @@ export default function EventosPage() {
     </main>
   )
 }
+

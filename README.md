@@ -251,8 +251,6 @@ Depois, basta expor a porta do processo com o servidor ou proxy de sua infraestr
 
 ## Assinatura
 
-Assinado por:
-
 - Caio Lincoln
 - Ebert Ryan
 - Eyck Santos
