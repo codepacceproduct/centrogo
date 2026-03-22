@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
@@ -344,10 +345,11 @@ export default function ExplorarPage() {
                                 >
                                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.3rem] shadow-lg">
                                     {location.image ? (
-                                      <img
+                                      <Image
                                         src={location.image}
                                         alt={location.nome}
-                                        className="h-full w-full object-cover"
+                                        fill
+                                        className="object-cover"
                                       />
                                     ) : (
                                       <div className={cn('flex h-full w-full flex-col rounded-[1.3rem] bg-gradient-to-br p-3', getCategoryPanelClass(location.categoria))}>
