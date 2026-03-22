@@ -492,9 +492,6 @@ html {
 
 body {
   --color-mode-normal: none;
-  --color-mode-protanopia: saturate(0.78) hue-rotate(-18deg) contrast(1.05);
-  --color-mode-deuteranopia: saturate(0.82) hue-rotate(18deg) contrast(1.04);
-  --color-mode-tritanopia: saturate(0.78) hue-rotate(38deg) contrast(1.06);
   transition: background-color 180ms ease, color 180ms ease, filter 180ms ease;
 }
 
@@ -552,6 +549,7 @@ body.screen-reader *:focus-visible {
   outline: 3px solid #0ea5e9;
   outline-offset: 3px;
 }
+
 
 
 

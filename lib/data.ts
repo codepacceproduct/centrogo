@@ -7,18 +7,27 @@ export function isStoreOpen(openHour: number, closeHour: number): boolean {
   return currentHour >= openHour && currentHour < closeHour
 }
 
-export function getRandomDistance(): string {
+function getSeedFromText(seed?: string): number {
+  if (!seed) return Math.random()
+
+  return seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+}
+
+export function getRandomDistance(seed?: string): string {
   const distances = [50, 80, 120, 150, 200, 250, 300, 350, 400, 450]
-  const distance = distances[Math.floor(Math.random() * distances.length)]
+  const seedValue = getSeedFromText(seed)
+  const distance = distances[seed ? seedValue % distances.length : Math.floor(seedValue * distances.length)]
   return distance >= 1000 ? `${(distance / 1000).toFixed(1)}km` : `${distance}m`
 }
 
-export function getRandomVisitors(): number {
-  return Math.floor(Math.random() * 150) + 20
+export function getRandomVisitors(seed?: string): number {
+  const seedValue = getSeedFromText(seed)
+  return seed ? 20 + (seedValue % 150) : Math.floor(seedValue * 150) + 20
 }
 
-export function getRandomAttendees(): number {
-  return Math.floor(Math.random() * 200) + 30
+export function getRandomAttendees(seed?: string): number {
+  const seedValue = getSeedFromText(seed)
+  return seed ? 30 + (seedValue % 200) : Math.floor(seedValue * 200) + 30
 }
 
 export interface User {
@@ -579,3 +588,5 @@ export const levels = [
 export function getUserLevel(points: number) {
   return levels.find((level) => points >= level.minPoints && points < level.maxPoints) || levels[0]
 }
+
+

@@ -94,7 +94,7 @@ export function StoreCard({
           className="min-w-[260px] overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm transition hover:shadow-xl lg:min-w-0"
         >
           <div className="relative h-44 overflow-hidden">
-            <Image src={store.image} alt={content.name} fill className="object-cover transition-transform duration-300 hover:scale-105" />
+            <Image src={store.image} alt={content.name} fill priority={index === 0} loading={index === 0 ? 'eager' : 'lazy'} sizes="(max-width: 1024px) 260px, 25vw" className="object-cover transition-transform duration-300 hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/75 via-neutral-950/15 to-transparent" />
             {store.hasPromotion ? <PromoPill text={content.promotionText} /> : null}
             <button
@@ -293,3 +293,4 @@ export function StoreCard({
     </Link>
   )
 }
+

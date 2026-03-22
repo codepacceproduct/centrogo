@@ -18,7 +18,7 @@ interface EventCardProps {
 
 export function EventCard({ event, index = 0, variant = 'default' }: EventCardProps) {
   const [interested, setInterested] = useState(false)
-  const attendees = useMemo(() => getRandomAttendees(), [])
+  const attendees = useMemo(() => getRandomAttendees(event.id), [event.id])
   const dateFormatted = format(parseISO(event.date), "dd 'de' MMM", { locale: ptBR })
   const dayOfWeek = format(parseISO(event.date), 'EEEE', { locale: ptBR })
 
@@ -239,3 +239,4 @@ export function EventCard({ event, index = 0, variant = 'default' }: EventCardPr
     </Link>
   )
 }
+

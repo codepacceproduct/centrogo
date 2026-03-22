@@ -19,8 +19,8 @@ export default function StoreDetailPage({ params }: { params: Promise<{ id: stri
   const store = stores.find((item) => item.id === id)
 
   const isOpen = useMemo(() => (store ? isStoreOpen(store.openHour, store.closeHour) : false), [store])
-  const distance = useMemo(() => getRandomDistance(), [])
-  const visitors = useMemo(() => getRandomVisitors(), [])
+  const distance = useMemo(() => getRandomDistance(id), [id])
+  const visitors = useMemo(() => getRandomVisitors(id), [id])
 
   if (!store) {
     return (

@@ -35,22 +35,14 @@ function applyAccessibility(settings: AccessibilitySettings) {
   const body = document.body
 
   root.style.fontSize = `${settings.fontScale * 100}%`
-  root.dataset.colorMode = settings.colorMode
 
-  body.classList.toggle('high-contrast', settings.highContrast)
   body.classList.toggle('force-dark', settings.darkMode)
   body.classList.toggle('dyslexia', settings.dyslexiaMode)
   body.classList.toggle('text-spacing', settings.textSpacing)
   body.classList.toggle('highlight-clickable', settings.highlightClickable)
   body.classList.toggle('reduce-motion', settings.reduceMotion)
   body.classList.toggle('screen-reader', settings.screenReader)
-
-  const filters = [
-    settings.highContrast ? 'contrast(1.3) brightness(1.1)' : '',
-    settings.colorMode === 'normal' ? '' : `var(--color-mode-${settings.colorMode})`,
-  ].filter(Boolean)
-
-  body.style.filter = filters.length > 0 ? filters.join(' ') : 'none'
+  body.style.filter = 'none'
 }
 
 function getAnnouncementTarget(target: EventTarget | null) {
@@ -199,4 +191,3 @@ export function useAccessibility() {
 
   return context
 }
-

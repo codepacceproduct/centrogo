@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
 
 import { AppShell } from '../components/app-shell'
 import { AccessibilityProvider } from '@/context/AccessibilityContext'
@@ -10,6 +9,7 @@ const geist = Geist({
   subsets: ['latin'],
   variable: '--font-geist-sans',
 })
+
 const geistMono = Geist_Mono({
   subsets: ['latin'],
   variable: '--font-geist-mono',
@@ -37,22 +37,6 @@ export const viewport: Viewport = {
   themeColor: '#0056A3',
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
-  return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <head>
-        <meta charSet="UTF-8" />
-      </head>
-      <body suppressHydrationWarning className={`${geist.variable} ${geistMono.variable} icons-no-container font-sans antialiased`}>
-        <AccessibilityProvider>
-          <AppShell>{children}</AppShell>
-          <Analytics />
-        </AccessibilityProvider>
-      </body>
-    </html>
-  )
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <html lang="pt-BR"><body className={`${geist.variable} ${geistMono.variable} icons-no-container font-sans antialiased`}><AccessibilityProvider><AppShell>{children}</AppShell></AccessibilityProvider></body></html>
 }

@@ -1,13 +1,11 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   Accessibility,
-  Contrast,
   Eye,
   MoonStar,
-  Palette,
   RotateCcw,
   Type,
   Volume2,
@@ -16,7 +14,6 @@ import {
 } from 'lucide-react'
 
 import { useAccessibility } from '@/context/AccessibilityContext'
-import type { ColorMode } from '@/lib/accessibility'
 import { cn } from '@/lib/utils'
 
 type AccessibilityPanelProps = {
@@ -60,17 +57,21 @@ function ToggleRow({ icon: Icon, label, description, value, onChange }: ToggleRo
   )
 }
 
-const COLOR_MODE_OPTIONS: Array<{ id: ColorMode; label: string }> = [
-  { id: 'normal', label: 'Padrao' },
-  { id: 'protanopia', label: 'Protanopia' },
-  { id: 'deuteranopia', label: 'Deuteranopia' },
-  { id: 'tritanopia', label: 'Tritanopia' },
-]
-
 export default function AccessibilityPanel({ isOpen, onClose }: AccessibilityPanelProps) {
   const { settings, updateSetting, resetSettings } = useAccessibility()
 
   const panelTitle = useMemo(() => 'Painel de Acessibilidade', [])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isOpen])
 
   const adjustFontScale = (direction: 'up' | 'down') => {
     updateSetting('fontScale', settings.fontScale + (direction === 'up' ? 0.1 : -0.1))
@@ -84,7 +85,7 @@ export default function AccessibilityPanel({ isOpen, onClose }: AccessibilityPan
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[78] bg-foreground/35 backdrop-blur-sm"
+            className="fixed inset-0 z-[88] bg-foreground/35 backdrop-blur-sm"
             onClick={onClose}
           />
 
@@ -93,7 +94,7 @@ export default function AccessibilityPanel({ isOpen, onClose }: AccessibilityPan
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 80 }}
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-            className="fixed inset-x-0 bottom-0 z-[79] rounded-t-[2rem] border border-border/70 bg-background/96 shadow-[0_-18px_65px_-35px_rgba(15,23,42,0.7)] backdrop-blur-xl sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-h-[85vh] sm:w-[min(720px,calc(100%-2rem))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[2rem]"
+            className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] z-[89] max-h-[min(70vh,560px)] overflow-hidden rounded-[2rem] border border-border/70 bg-background/96 shadow-[0_-18px_65px_-35px_rgba(15,23,42,0.7)] backdrop-blur-xl sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-h-[85vh] sm:w-[min(720px,calc(100%-2rem))] sm:-translate-x-1/2 sm:-translate-y-1/2"
           >
             <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
               <div>
@@ -109,8 +110,8 @@ export default function AccessibilityPanel({ isOpen, onClose }: AccessibilityPan
               </button>
             </div>
 
-            <div className="h-[min(72vh,560px)] overflow-y-scroll p-5 overscroll-contain">
-              <div className="grid gap-4 sm:grid-cols-2">
+            <div className="overflow-y-auto p-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)] overscroll-contain max-h-[calc(min(70vh,560px)-5rem)] sm:max-h-[calc(85vh-5rem)]">
+              <div className="grid gap-4">
                 <div className="rounded-[1.5rem] border border-border bg-card/80 p-4">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-primary/10 p-2 text-primary">
@@ -129,39 +130,9 @@ export default function AccessibilityPanel({ isOpen, onClose }: AccessibilityPan
                     <button type="button" onClick={() => adjustFontScale('up')} className="rounded-full border border-border bg-card px-3 py-2 text-sm font-semibold">A+</button>
                   </div>
                 </div>
-
-                <div className="rounded-[1.5rem] border border-border bg-card/80 p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-2xl bg-emerald-500/10 p-2 text-emerald-600">
-                      <Palette className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Modo de cor</p>
-                      <p className="text-sm text-muted-foreground">Filtro global para daltonismo</p>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {COLOR_MODE_OPTIONS.map((mode) => (
-                      <button
-                        key={mode.id}
-                        type="button"
-                        onClick={() => updateSetting('colorMode', mode.id)}
-                        className={cn(
-                          'rounded-full border px-3 py-2 text-xs font-semibold',
-                          settings.colorMode === mode.id
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-border bg-card text-muted-foreground',
-                        )}
-                      >
-                        {mode.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               <div className="mt-4 grid gap-3">
-                <ToggleRow icon={Contrast} label="Alto contraste" description="Aumenta contraste e brilho global da interface." value={settings.highContrast} onChange={(value) => updateSetting('highContrast', value)} />
                 <ToggleRow icon={MoonStar} label="Modo noturno forcado" description="Escurece a interface sem depender do tema atual." value={settings.darkMode} onChange={(value) => updateSetting('darkMode', value)} />
                 <ToggleRow icon={CaseSensitive} label="Modo dislexia" description="Aplica fonte e leitura mais amigavel para dislexia." value={settings.dyslexiaMode} onChange={(value) => updateSetting('dyslexiaMode', value)} />
                 <ToggleRow icon={StretchHorizontal} label="Espacamento de texto" description="Aumenta espaco entre letras e linhas." value={settings.textSpacing} onChange={(value) => updateSetting('textSpacing', value)} />

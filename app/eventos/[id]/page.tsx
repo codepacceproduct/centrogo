@@ -28,7 +28,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const [showPointsAnimation, setShowPointsAnimation] = useState(false)
   const [mapEvents, setMapEvents] = useState<EventMapItem[]>([])
   const [isLoadingMapEvents, setIsLoadingMapEvents] = useState(true)
-  const attendees = useMemo(() => getRandomAttendees(), [])
+  const attendees = useMemo(() => getRandomAttendees(id), [id])
 
   useEffect(() => {
     let isCancelled = false
@@ -394,3 +394,4 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
     </main>
   )
 }
+

@@ -1,10 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
 import { IoAccessibility } from 'react-icons/io5'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 import AccessibilityPanel from '@/components/accessibility-panel'
 import FabMenu from '@/components/fab-menu'
@@ -17,6 +17,8 @@ type SmartFABProps = {
 
 function getContextAction(pathname: string | null) {
   if (!pathname) return null
+  if (pathname.includes('/sugestoes')) return 'suggestions'
+  if (pathname.includes('/seguranca')) return 'security'
   if (pathname.includes('/eventos')) return 'rate'
   if (pathname.includes('/explorar') || pathname.includes('/servicos') || pathname.includes('/lojas')) return 'scan'
   return 'accessibility'
@@ -24,6 +26,7 @@ function getContextAction(pathname: string | null) {
 
 export function SmartFAB({ onScanSuccess }: SmartFABProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const [isFabOpen, setIsFabOpen] = useState(false)
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false)
   const [isScannerOpen, setIsScannerOpen] = useState(false)
@@ -67,7 +70,7 @@ export function SmartFAB({ onScanSuccess }: SmartFABProps) {
         ) : null}
       </AnimatePresence>
 
-      <div className="fixed bottom-28 right-4 z-[73] flex flex-col items-end lg:bottom-6 lg:right-6">
+      <div className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+6.25rem)] right-4 z-[73] flex flex-col items-end lg:bottom-6 lg:right-6">
         <FabMenu
           isOpen={isFabOpen}
           emphasizedAction={emphasizedAction}
@@ -85,6 +88,16 @@ export function SmartFAB({ onScanSuccess }: SmartFABProps) {
             triggerFeedback()
             setIsFabOpen(false)
             setIsAccessibilityOpen(true)
+          }}
+          onSecurity={() => {
+            triggerFeedback()
+            setIsFabOpen(false)
+            router.push('/seguranca')
+          }}
+          onSuggestions={() => {
+            triggerFeedback()
+            setIsFabOpen(false)
+            router.push('/sugestoes')
           }}
         />
 

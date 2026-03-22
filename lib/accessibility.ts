@@ -1,9 +1,5 @@
-export type ColorMode = 'normal' | 'protanopia' | 'deuteranopia' | 'tritanopia'
-
 export interface AccessibilitySettings {
   fontScale: number
-  colorMode: ColorMode
-  highContrast: boolean
   darkMode: boolean
   dyslexiaMode: boolean
   textSpacing: boolean
@@ -16,8 +12,6 @@ export const ACCESSIBILITY_STORAGE_KEY = 'centrovivo:accessibility-settings'
 
 export const DEFAULT_ACCESSIBILITY_SETTINGS: AccessibilitySettings = {
   fontScale: 1,
-  colorMode: 'normal',
-  highContrast: false,
   darkMode: false,
   dyslexiaMode: false,
   textSpacing: false,
@@ -25,8 +19,6 @@ export const DEFAULT_ACCESSIBILITY_SETTINGS: AccessibilitySettings = {
   highlightClickable: false,
   reduceMotion: false,
 }
-
-const COLOR_MODES: ColorMode[] = ['normal', 'protanopia', 'deuteranopia', 'tritanopia']
 
 export function clampFontScale(value: number): number {
   if (Number.isNaN(value)) return DEFAULT_ACCESSIBILITY_SETTINGS.fontScale
@@ -36,10 +28,6 @@ export function clampFontScale(value: number): number {
 export function normalizeAccessibilitySettings(input?: Partial<AccessibilitySettings>): AccessibilitySettings {
   return {
     fontScale: clampFontScale(input?.fontScale ?? DEFAULT_ACCESSIBILITY_SETTINGS.fontScale),
-    colorMode: COLOR_MODES.includes(input?.colorMode as ColorMode)
-      ? (input?.colorMode as ColorMode)
-      : DEFAULT_ACCESSIBILITY_SETTINGS.colorMode,
-    highContrast: Boolean(input?.highContrast),
     darkMode: Boolean(input?.darkMode),
     dyslexiaMode: Boolean(input?.dyslexiaMode),
     textSpacing: Boolean(input?.textSpacing),
