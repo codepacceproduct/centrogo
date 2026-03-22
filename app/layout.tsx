@@ -43,11 +43,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <meta charSet="UTF-8" />
       </head>
-      <body className={`${geist.variable} ${geistMono.variable} icons-no-container font-sans antialiased`}>
+      <body suppressHydrationWarning className={`${geist.variable} ${geistMono.variable} icons-no-container font-sans antialiased`}>
         <AccessibilityProvider>
           <AppShell>{children}</AppShell>
           <Analytics />

@@ -49,8 +49,7 @@ export function StoryHighlights({ stories }: StoryHighlightsProps) {
 
   return (
     <>
-      {/* Story Circles */}
-      <div className="flex gap-3 overflow-x-auto no-scrollbar px-4 py-2 max-w-7xl mx-auto lg:justify-center">
+      <div className="mx-auto flex max-w-7xl gap-3 overflow-x-auto no-scrollbar px-4 py-2 lg:justify-center">
         {stories.map((story, index) => (
           <motion.button
             key={story.id}
@@ -58,16 +57,11 @@ export function StoryHighlights({ stories }: StoryHighlightsProps) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.05 }}
             onClick={() => openStory(index)}
-            className="flex flex-col items-center gap-1.5 shrink-0"
+            className="shrink-0 flex flex-col items-center gap-1.5"
           >
-            <div className={cn(
-              'p-0.5 rounded-full',
-              story.viewed 
-                ? 'bg-muted' 
-                : 'bg-gradient-to-tr from-primary via-secondary to-gold'
-            )}>
-              <div className="p-0.5 bg-background rounded-full">
-                <div className="relative h-16 w-16 rounded-full overflow-hidden">
+            <div className={cn('rounded-full p-0.5', story.viewed ? 'bg-muted' : 'bg-gradient-to-tr from-primary via-secondary to-gold')}>
+              <div className="rounded-full bg-background p-0.5">
+                <div className="relative h-16 w-16 overflow-hidden rounded-full">
                   <Image
                     src={story.image}
                     alt={story.title}
@@ -77,33 +71,31 @@ export function StoryHighlights({ stories }: StoryHighlightsProps) {
                 </div>
               </div>
             </div>
-            <span className="text-xs font-medium text-center w-16 truncate">
+            <span className="w-16 truncate text-center text-xs font-medium">
               {story.title}
             </span>
           </motion.button>
         ))}
       </div>
 
-      {/* Story Viewer Modal */}
       <AnimatePresence>
         {viewingStory !== null && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-foreground"
+            className="fixed inset-0 z-[120] bg-foreground"
           >
-            {/* Progress bars */}
-            <div className="absolute top-4 left-4 right-4 flex gap-1 z-10">
+            <div className="absolute left-4 right-4 top-4 z-10 flex gap-1">
               {stories.map((_, index) => (
-                <div key={index} className="flex-1 h-0.5 bg-primary-foreground/30 rounded-full overflow-hidden">
+                <div key={index} className="h-0.5 flex-1 overflow-hidden rounded-full bg-primary-foreground/30">
                   <motion.div
                     className="h-full bg-primary-foreground"
                     initial={{ width: index < viewingStory ? '100%' : '0%' }}
-                    animate={{ 
-                      width: index < viewingStory ? '100%' : index === viewingStory ? '100%' : '0%' 
+                    animate={{
+                      width: index < viewingStory ? '100%' : index === viewingStory ? '100%' : '0%'
                     }}
-                    transition={{ 
+                    transition={{
                       duration: index === viewingStory ? 5 : 0,
                       ease: 'linear'
                     }}
@@ -117,7 +109,6 @@ export function StoryHighlights({ stories }: StoryHighlightsProps) {
               ))}
             </div>
 
-            {/* Story content */}
             <motion.div
               key={viewingStory}
               initial={{ scale: 1.1, opacity: 0 }}
@@ -134,10 +125,9 @@ export function StoryHighlights({ stories }: StoryHighlightsProps) {
               <div className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-transparent to-foreground/50" />
             </motion.div>
 
-            {/* Header */}
-            <div className="absolute top-10 left-4 right-4 flex items-center justify-between z-10">
+            <div className="absolute left-4 right-4 top-10 z-10 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-primary-foreground">
+                <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-primary-foreground">
                   <Image
                     src={stories[viewingStory].image}
                     alt=""
@@ -146,54 +136,45 @@ export function StoryHighlights({ stories }: StoryHighlightsProps) {
                     className="object-cover"
                   />
                 </div>
-                <span className="text-primary-foreground font-semibold">{stories[viewingStory].title}</span>
+                <span className="font-semibold text-primary-foreground">{stories[viewingStory].title}</span>
               </div>
-              <button 
+              <button
                 onClick={closeStory}
-                className="p-2 rounded-full bg-primary-foreground/20 text-primary-foreground"
+                className="rounded-full bg-primary-foreground/20 p-2 text-primary-foreground"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Navigation areas */}
-            <button 
-              onClick={prevStory}
-              className="absolute left-0 top-1/4 bottom-1/4 w-1/3 z-10"
-            />
-            <button 
-              onClick={nextStory}
-              className="absolute right-0 top-1/4 bottom-1/4 w-1/3 z-10"
-            />
+            <button onClick={prevStory} className="absolute left-0 top-1/4 bottom-1/4 z-10 w-1/3" />
+            <button onClick={nextStory} className="absolute right-0 top-1/4 bottom-1/4 z-10 w-1/3" />
 
-            {/* Navigation arrows (visible on hover) */}
             {viewingStory > 0 && (
-              <button 
+              <button
                 onClick={prevStory}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary-foreground/20 text-primary-foreground z-10"
+                className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-primary-foreground/20 p-2 text-primary-foreground"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
             )}
             {viewingStory < stories.length - 1 && (
-              <button 
+              <button
                 onClick={nextStory}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary-foreground/20 text-primary-foreground z-10"
+                className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-primary-foreground/20 p-2 text-primary-foreground"
               >
                 <ChevronRight className="h-6 w-6" />
               </button>
             )}
 
-            {/* Bottom info */}
             <div className="absolute bottom-8 left-4 right-4 z-10">
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="bg-primary-foreground/10 backdrop-blur-md rounded-2xl p-4"
+                className="rounded-2xl bg-primary-foreground/10 p-4 backdrop-blur-md"
               >
-                <h3 className="text-primary-foreground font-bold text-lg">{stories[viewingStory].title}</h3>
-                <p className="text-primary-foreground/80 text-sm mt-1">Toque para continuar</p>
+                <h3 className="text-lg font-bold text-primary-foreground">{stories[viewingStory].title}</h3>
+                <p className="mt-1 text-sm text-primary-foreground/80">Toque para continuar</p>
               </motion.div>
             </div>
           </motion.div>
