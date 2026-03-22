@@ -43,6 +43,7 @@ export default function HomePageClient() {
   const [visitors, setVisitors] = useState(0)
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null)
   const [showSplash, setShowSplash] = useState(false)
+  const [isDesktopViewport, setIsDesktopViewport] = useState(false)
   const [onboardingStatus, setOnboardingStatus] = useState<OnboardingStatus>(() => {
     if (typeof window === 'undefined') return 'hidden'
 
@@ -73,6 +74,22 @@ export default function HomePageClient() {
     }
   }, [])
 
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1024px)')
+
+    const syncViewport = () => {
+      setIsDesktopViewport(mediaQuery.matches)
+    }
+
+    syncViewport()
+    mediaQuery.addEventListener('change', syncViewport)
+
+    return () => {
+      mediaQuery.removeEventListener('change', syncViewport)
+    }
+  }, [])
+
   const hotItems = useMemo(() => {
     const hotStores = stores.filter(s => s.hasPromotion).slice(0, 4)
     return hotStores
@@ -94,7 +111,7 @@ export default function HomePageClient() {
     <>
       <SplashScreen isVisible={showSplash} />
       <OnboardingWrapper
-        isVisible={!showSplash && !isLoading && onboardingStatus === 'visible'}
+        isVisible={!showSplash && !isLoading && onboardingStatus === 'visible' && !isDesktopViewport}
         onComplete={() => setOnboardingStatus('hidden')}
       />
       <main className="min-h-screen bg-background pb-28 lg:pb-8 lg:pt-24">

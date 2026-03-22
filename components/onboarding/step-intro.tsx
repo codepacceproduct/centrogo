@@ -60,7 +60,7 @@ const introSlides: IntroSlide[] = [
     accentClassName: 'from-fuchsia-500/20 via-rose-500/10 to-transparent text-fuchsia-700',
   },
   {
-    eyebrow: 'Prefeitura',
+    eyebrow: 'Governo',
     title: 'Para quem transforma a cidade',
     description:
       'Dados inteligentes e em tempo real para decis\u00f5es mais eficientes, impulsionando mobilidade, seguran\u00e7a e desenvolvimento econ\u00f4mico.',
